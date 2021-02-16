@@ -11,7 +11,6 @@ library(chemdoodle)
 library(rhandsontable)
 library(shinysky)
 library(shinyBS)
-library(darkmode)
 library(shinythemes)
 
 ui <- shinyUI(navbarPage("MAVEN", theme=shinytheme("flatly"),
