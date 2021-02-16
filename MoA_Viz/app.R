@@ -123,10 +123,51 @@ ui <- shinyUI(navbarPage("MAVEN", theme=shinytheme("flatly"),
                                        h5("Run Options"),
                                        tags$hr(),
                                        "Please specify PIDGIN parameters or leave as default",
-                                       textInput("prob", "Probability threshold (0-1)", value = "0.75", width = NULL, placeholder = NULL),
-                                       textInput("ad", "AD filter (0-1)", value = "0.8", width = NULL, placeholder = NULL),
-                                       textInput("no_targets","Top number of targets to include",value="5"),
-                                       textInput("ncores","Number of cores",value="10"),
+                                   
+            
+                                       textInput("prob", label = h5("Probability Threshold (0-1)",
+                                                                    tags$style(type = "text/css", "#q4 {vertical-align: top;}"),
+                                                                    bsButton("q4", label = "", icon = icon("question"), style = "info", size = "extra-small")
+                                       ), value = "0.5", width = NULL, placeholder = NULL),
+                                       bsPopover(id = "q4", title = "Probability Threshold (0-1)",
+                                                 content = paste0("RF probability threshold for defining activity, from 0 to 1."),
+                                                 placement = "right", 
+                                                 trigger = "click", 
+                                                 options = list(container = "body")
+                                       ),
+                                       
+                                       textInput("ad", label = h5("AD filter (0-1)",
+                                                                    tags$style(type = "text/css", "#q5 {vertical-align: top;}"),
+                                                                    bsButton("q5", label = "", icon = icon("question"), style = "info", size = "extra-small")
+                                       ), value = "0.75", width = NULL, placeholder = NULL),
+                                       bsPopover(id = "q5", title = "AD filter (0-1)",
+                                                 content = paste0("Applicability Domain filter (0-1)"),
+                                                 placement = "right", 
+                                                 trigger = "click", 
+                                                 options = list(container = "body")
+                                       ),
+                                       
+                                       textInput("no_targets", label = h5("Top number of targets to include",
+                                                                  tags$style(type = "text/css", "#q6 {vertical-align: top;}"),
+                                                                  bsButton("q6", label = "", icon = icon("question"), style = "info", size = "extra-small")
+                                       ), value = "5", width = NULL, placeholder = NULL),
+                                       bsPopover(id = "q6", title = "Top number of targets to include",
+                                                 content = paste0("Number of top (highest probability) targets to include in Causal Reasoning analysis. Positive integer."),
+                                                 placement = "right", 
+                                                 trigger = "click", 
+                                                 options = list(container = "body")
+                                       ),
+                                       
+                                       textInput("ncores", label = h5("Number of cores",
+                                                                          tags$style(type = "text/css", "#q6 {vertical-align: top;}"),
+                                                                          bsButton("q7", label = "", icon = icon("question"), style = "info", size = "extra-small")
+                                       ), value = "10", width = NULL, placeholder = NULL),
+                                       bsPopover(id = "q7", title = "Number of cores",
+                                                 content = paste0("Number of cores required for performing target prediction. Positive integer."),
+                                                 placement = "right", 
+                                                 trigger = "click", 
+                                                 options = list(container = "body")
+                                       ),
                                        
                                        tags$br(),
                                        
