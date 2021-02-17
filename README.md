@@ -31,3 +31,5 @@ PIDGIN is also required to be installed:
  - Clean up code
  - Separate tabs into separate scripts
  - Finish PIDGIN implementation
+ - Merge with Rosa's CARNIVAL app
+ - Case study :)
