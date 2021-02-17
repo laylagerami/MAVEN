@@ -17,6 +17,11 @@ Required R packages:
 - shinyBS -> twitter bootstrap components (buttons etc)
 - shinythemes -> change visual theme
 - chemdoodle (https://github.com/zachcp/chemdoodle)
+
+PIDGIN is also required to be installed:
+- https://github.com/BenderGroup/PIDGINv4 and https://pidginv4.readthedocs.io/en/latest/
+- The code will ask you to point to the installation directory and assumes that you have a file in there called predict.py
+- **DO NOT MODIFY ANY FILE NAMES!!!!**
  
  TO DO:
  - Documentation
