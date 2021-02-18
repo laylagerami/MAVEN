@@ -3,10 +3,10 @@
  R shiny app which allows for integrative bioinformatics and chemoinformatics analysis for mechansism of action analysis and visualisation.
  Target prediction provided by PIDGIN (BenderGroup/PIDGINv4) and causal reasoning provided by CARNIVAL (saezlab/CARNIVAL)
  
- Directory contains 3 files:
- - app.R -> Main app
- - gadget.R -> Chemical sketcher app
- - gadget_script.R -> Script to invoke the running of the chemical sketcher app 
+MoA_Viz directory contains:
+- sub -> this has all of the ui.R and server.R files for each of the tabs, as well as a global.R file to define packages
+- ui.R and server.R -> sources the individual server.R and ui.R files
+- example data for testing the app
 
 Required R packages:
 - shiny -> self-explanatory
@@ -29,7 +29,7 @@ PIDGIN is also required to be installed:
  TO DO:
  - Documentation
  - Clean up code
- - Separate tabs into separate scripts
+ - Separate tabs into separate scripts (DONE)
  - Finish PIDGIN implementation
  - Merge with Rosa's CARNIVAL app
  - Case study :)
