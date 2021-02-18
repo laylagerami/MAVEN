@@ -1,0 +1,12 @@
+# Functions and libraries
+
+library(shiny)
+library(shinyjs)
+library(igraph)
+library(DT)
+library(miniUI)
+library(chemdoodle)
+library(rhandsontable)
+library(shinysky)
+library(shinyBS)
+library(shinythemes)
