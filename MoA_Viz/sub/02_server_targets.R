@@ -1,14 +1,12 @@
 observeEvent(input$launch_app, {
-  rstudioapi::jobRunScript(path = "./gadget_script.R")
+  rstudioapi::jobRunScript(path = "gadget_script.R")
 })
 
-output$uploadedsmiles <- renderDT({
-  smi_file = input$smiles_file
+observeEvent(input$smiles_file, {
+  smi_file <<- input$smiles_file
   ext <- tools::file_ext(smi_file$datapath)
   req(file)
   validate(need(ext == "txt", "Please upload a txt file")) # if no .txt throws error
-  smidatadf <<- read.csv(smi_file$datapath, header = F,sep="\t") # read the chosen file 
-  datatable(smidatadf,options = list("pageLength" = 5))
 })
 
 output$smiles_uploaded_checker <- renderText({
@@ -38,8 +36,8 @@ observe(
 
 
 # Get pidgin parameters
-observeEvent(input$prob, {
-  pidginProb <<- input$prob
+observeEvent(input$ba, {
+  pidginBa <<- input$ba
 })
 observeEvent(input$ad, {
   pidginAd <<- input$ad
@@ -51,6 +49,31 @@ observeEvent(input$ncores, {
   pidginCores <<- input$ncores
 })
 
-output$pidginparams <- eventReactive(input$button, {
-  paste0("Running PIDGIN with probability threshold of: ",pidginProb, ", AD filter of: ",pidginAd, ", Keeping: ",pidginN, " targets, and using: ",pidginCores, " cores....")
+# Dirs
+volumes <- getVolumes()()
+shinyDirChoose(input, 'pidginfolder', roots=volumes, filetypes=c('', 'py'),allowDirCreate=T)
+observe({
+  pidginfolder <<- input$pidginfolder
+  pidgindir <<- paste(unlist(unname(pidginfolder[1])),collapse="/")
+  predictpy <<- paste0(pidgindir,"/predict.py")
 })
+
+
+output$pidginparams <- eventReactive(input$button, {
+  bin_bash <- "#!/bin/bash"
+  conda_activate <- "source activate pidgin3_env"
+  output_name <- paste0("./output/","PIDGIN_",pidginBa,"_",pidginAd,"_",pidginCores,"_",gsub(" ","_",Sys.time()),".txt")
+  args <- paste0("-f ",smi_file$datapath, " -d '\t' --organism 'Homo' -b ",pidginBa, " --ad ",pidginAd," -n ",pidginCores," -o ",output_name)
+  runline <- paste0("python ",predictpy," ",args)
+  bash_file <- data.frame(c(bin_bash,conda_activate,runline))
+  write.table(bash_file,"./run_pidgin.sh",quote=F,row.names=F,col.names=F)
+  system("bash -i run_pidgin.sh")
+})
+
+#output$pidginparams <- renderText({
+#  eventReactive(input$button, {
+#    print(paste0("Running PIDGIN at a Bioactivity threshold of: ",pidginBa, " uM, AD filter of: ",pidginAd, ", Keeping: ",pidginN, " targets, and using: ",pidginCores, " cores...."))
+#  })
+#})
+
+
