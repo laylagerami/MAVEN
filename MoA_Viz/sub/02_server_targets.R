@@ -1,7 +1,9 @@
+# Run chemical sketcher
 observeEvent(input$launch_app, {
   rstudioapi::jobRunScript(path = "gadget_script.R")
 })
 
+# Observe input
 observeEvent(input$smiles_file, {
   smi_file <<- input$smiles_file
   ext <- tools::file_ext(smi_file$datapath)
@@ -9,6 +11,7 @@ observeEvent(input$smiles_file, {
   validate(need(ext == "txt", "Please upload a txt file")) # if no .txt throws error
 })
 
+# Check if SMILES uploaded
 output$smiles_uploaded_checker <- renderText({
   if(!is.null(input$smiles_file)){
     "Data upload complete. Please move onto Run Options."
@@ -17,6 +20,7 @@ output$smiles_uploaded_checker <- renderText({
   }
 })
 
+# For later
 X <- ""
 Y <- ""
 x = data.frame(X,Y)
@@ -42,14 +46,11 @@ observeEvent(input$ba, {
 observeEvent(input$ad, {
   pidginAd <<- input$ad
 })
-observeEvent(input$no_targets, {
-  pidginN <<- input$no_targets
-})
 observeEvent(input$ncores, {
   pidginCores <<- input$ncores
 })
 
-# Dirs
+# Select PIDGINv4 dir
 volumes <- getVolumes()()
 shinyDirChoose(input, 'pidginfolder', roots=volumes, filetypes=c('', 'py'),allowDirCreate=T)
 observe({
@@ -59,21 +60,37 @@ observe({
 })
 
 
+# Run PIDGIN
+
 output$pidginparams <- eventReactive(input$button, {
-  bin_bash <- "#!/bin/bash"
-  conda_activate <- "source activate pidgin3_env"
-  output_name <- paste0("./output/","PIDGIN_",pidginBa,"_",pidginAd,"_",pidginCores,"_",gsub(" ","_",Sys.time()),".txt")
-  args <- paste0("-f ",smi_file$datapath, " -d '\t' --organism 'Homo' -b ",pidginBa, " --ad ",pidginAd," -n ",pidginCores," -o ",output_name)
-  runline <- paste0("python ",predictpy," ",args)
-  bash_file <- data.frame(c(bin_bash,conda_activate,runline))
-  write.table(bash_file,"./run_pidgin.sh",quote=F,row.names=F,col.names=F)
-  system("bash -i run_pidgin.sh")
+    bin_bash <- "#!/bin/bash"
+    conda_activate <- "source activate pidgin3_env"
+    output_name <<- paste0("./output/","PIDGIN_",pidginBa,"_",pidginAd,"_",pidginCores,"_",gsub(" ","_",Sys.time()),".txt")
+    args <- paste0("-f ",smi_file$datapath, " -d '\t' --organism 'Homo' -b ",pidginBa, " --ad ",pidginAd," -n ",pidginCores," -o ",output_name)
+    runline <- paste0("python ",predictpy," ",args)
+    bash_file <- data.frame(c(bin_bash,conda_activate,runline))
+    write.table(bash_file,"./run_pidgin.sh",quote=F,row.names=F,col.names=F)
+    system("bash -i run_pidgin.sh")
 })
 
-#output$pidginparams <- renderText({
-#  eventReactive(input$button, {
-#    print(paste0("Running PIDGIN at a Bioactivity threshold of: ",pidginBa, " uM, AD filter of: ",pidginAd, ", Keeping: ",pidginN, " targets, and using: ",pidginCores, " cores...."))
-#  })
-#})
 
+# Check if output file exists, if it does then read it in
+output_name <<- "output/PIDGIN_10_75_10_2021-02-25_10:53:09.txt_out_predictions_20210225-110610.txt"
+
+reactivePoll(1000, session,
+  checkFunc = function() {
+   if (file.exists(output_name))
+     preds <<- read.csv(output_name,header=T,sep="\t")
+     output$pidgindone <- renderText ({
+       paste0("DONE")
+  })
+})
+
+# Take top n targets and then place them in editable table
+output$testtable <- renderDT({
+  preds = preds[order(-preds[,17]),]
+  colnames(preds)[17] = "Probability"
+  preds = preds[,c(3,2,4,17)]
+  datatable(preds,options = list("pageLength" = 5))
+})
 

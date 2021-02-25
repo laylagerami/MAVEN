@@ -16,7 +16,7 @@ tabPanel("Targets",
      tabPanel("Upload SMILES",
               
               fluidRow(
-                column(8,
+                column(12,
                        h5("Data Input"),
                        tags$hr(),
                        fileInput(inputId = "smiles_file",
@@ -49,7 +49,7 @@ tabPanel("Targets",
      
      tabPanel("Run Options",
               fluidRow(
-                column(8,
+                column(12,
                        h5("Run Options for PIDGIN target prediction"),
                        tags$hr(),
                        "Please specify PIDGIN parameters or leave as default",
@@ -81,22 +81,11 @@ tabPanel("Targets",
                                  options = list(container = "body")
                        ),
                        
-                       textInput("no_targets", label = h5("Top number of targets to include",
-                                                          tags$style(type = "text/css", "#q6 {vertical-align: top;}"),
-                                                          bsButton("q6", label = "", icon = icon("question"), style = "info", size = "extra-small")
-                       ), value = "5", width = NULL, placeholder = NULL),
-                       bsPopover(id = "q6", title = "Top number of targets to include",
-                                 content = paste0("Number of top (highest probability) targets to include in Causal Reasoning analysis. Positive integer."),
-                                 placement = "right", 
-                                 trigger = "click", 
-                                 options = list(container = "body")
-                       ),
-                       
                        textInput("ncores", label = h5("Number of cores",
                                                       tags$style(type = "text/css", "#q6 {vertical-align: top;}"),
-                                                      bsButton("q7", label = "", icon = icon("question"), style = "info", size = "extra-small")
+                                                      bsButton("q6", label = "", icon = icon("question"), style = "info", size = "extra-small")
                        ), value = "10", width = NULL, placeholder = NULL),
-                       bsPopover(id = "q7", title = "Number of cores",
+                       bsPopover(id = "q6", title = "Number of cores",
                                  content = paste0("Number of cores required for performing target prediction. Positive integer."),
                                  placement = "right", 
                                  trigger = "click", 
@@ -106,20 +95,29 @@ tabPanel("Targets",
                        tags$br(),
                        tags$br(),
                        shinyDirButton('pidginfolder', 'Select PIDGIN folder', 'Please select the folder containing PIDGIN predict.py file', FALSE),
-                       tags$br(),
-                       tags$br(),
                        actionButton("button", "Run PIDGIN"),
+                       # Running PIDGIN message w/ js
                        tags$br(),
                        textOutput("pidginparams"),
+                       HTML('<script type="text/javascript">
+                                $(document).ready(function() {
+                                  $("#button").click(function() {
+                                    $("#pidginparams").text("Running PIDGIN...");
+                                  });
+                                });
+                              </script>'),
+                       textOutput("pidgindone"),
+                       tags$br(),
                        tags$br()
+                                                
                 )
                 
               )
      ),
      tabPanel("Results",
               fluidRow(
-                column(5,
-                       rHandsontableOutput("smilestable"),
+                column(12,
+                       DTOutput("testtable"),
                        tags$br()
                 )
               )
