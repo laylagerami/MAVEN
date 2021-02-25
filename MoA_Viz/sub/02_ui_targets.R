@@ -7,8 +7,7 @@ tabPanel("Targets",
         tags$br(),
         tags$br(),
         "If you do not require any targets, please continue to the Analysis tab."
-                      
- ),
+        ),
  
  mainPanel(
    
@@ -17,7 +16,6 @@ tabPanel("Targets",
      tabPanel("Upload SMILES",
               
               fluidRow(
-                
                 column(8,
                        h5("Data Input"),
                        tags$hr(),
@@ -27,20 +25,21 @@ tabPanel("Targets",
                                             bsButton("q3", label = "", icon = icon("question"), style = "info", size = "extra-small")
                                  ),multiple=F),
                        bsPopover(id = "q3", title = "Upload SMILES",
-                                 content = paste0("Tab-separated file in the format SMILES, Name"),
+                                 content = paste0("Tab-separated file in the format SMILES, Name. No header."),
                                  placement = "right", 
                                  trigger = "click", 
                                  options = list(container = "body")),
-                       tags$br(),
-                       DTOutput("uploadedsmiles"),
                        tags$br(),
                        tags$head(
                          tags$style(HTML('#launch_app{background-color:#95a5a6}'))),
                        "No SMILES? Use the sketcher applet to retrieve compound SMILES.",
                        tags$br(),
+                       tags$br(),
                        actionButton("launch_app", "Launch Sketcher"),
                        tags$br(),
-                       textOutput("smiles_uploaded_checker")
+                       tags$br(),
+                       textOutput("smiles_uploaded_checker"),
+                       tags$br()
                        
                 )
               )
@@ -51,28 +50,32 @@ tabPanel("Targets",
      tabPanel("Run Options",
               fluidRow(
                 column(8,
-                       h5("Run Options"),
+                       h5("Run Options for PIDGIN target prediction"),
                        tags$hr(),
                        "Please specify PIDGIN parameters or leave as default",
                        
+                       radioButtons("ba", label=h5("Bioactivity Threshold (uM)",
+                                                         tags$style(type = "text/css", "#q4 {vertical-align: top;}")),
+                                       
+                                        choices= list("0.1","1","10","100"),
+                                        selected="10",
+                                        inline = T
+                       ),
                        
-                       textInput("prob", label = h5("Probability Threshold (0-1)",
-                                                    tags$style(type = "text/css", "#q4 {vertical-align: top;}"),
-                                                    bsButton("q4", label = "", icon = icon("question"), style = "info", size = "extra-small")
-                       ), value = "0.5", width = NULL, placeholder = NULL),
-                       bsPopover(id = "q4", title = "Probability Threshold (0-1)",
-                                 content = paste0("RF probability threshold for defining activity, from 0 to 1."),
+        
+                       bsPopover(id = "q4", title = "Bioactivity Threshold (uM)",
+                                 content = paste0("Concentration at which activity is to be predicted, in uM."),
                                  placement = "right", 
                                  trigger = "click", 
                                  options = list(container = "body")
                        ),
                        
-                       textInput("ad", label = h5("AD filter (0-1)",
+                       textInput("ad", label = h5("AD filter (0-100)",
                                                   tags$style(type = "text/css", "#q5 {vertical-align: top;}"),
                                                   bsButton("q5", label = "", icon = icon("question"), style = "info", size = "extra-small")
-                       ), value = "0.75", width = NULL, placeholder = NULL),
-                       bsPopover(id = "q5", title = "AD filter (0-1)",
-                                 content = paste0("Applicability Domain filter (0-1)"),
+                       ), value = "75", width = NULL, placeholder = NULL),
+                       bsPopover(id = "q5", title = "AD filter (0-100)",
+                                 content = paste0("Applicability Domain filter (0-100) which computes if your prediction is within the applicability domain of the model, based on the Reliability Density Neighbourhood methodology."),
                                  placement = "right", 
                                  trigger = "click", 
                                  options = list(container = "body")
@@ -101,10 +104,14 @@ tabPanel("Targets",
                        ),
                        
                        tags$br(),
-                       
+                       tags$br(),
+                       shinyDirButton('pidginfolder', 'Select PIDGIN folder', 'Please select the folder containing PIDGIN predict.py file', FALSE),
+                       tags$br(),
+                       tags$br(),
                        actionButton("button", "Run PIDGIN"),
                        tags$br(),
-                       textOutput("pidginparams")
+                       textOutput("pidginparams"),
+                       tags$br()
                 )
                 
               )
@@ -118,6 +125,7 @@ tabPanel("Targets",
               )
      )
    )
+   
  )
 )
 
