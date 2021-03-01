@@ -95,17 +95,10 @@ tabPanel("Targets",
                        tags$br(),
                        tags$br(),
                        shinyDirButton('pidginfolder', 'Select PIDGIN folder', 'Please select the folder containing PIDGIN predict.py file', FALSE),
-                       actionButton("button", "Run PIDGIN"),
+                       shiny::actionButton("button", "Run PIDGIN"),
                        # Running PIDGIN message w/ js
                        tags$br(),
-                       textOutput("pidginparams"),
-                       HTML('<script type="text/javascript">
-                                $(document).ready(function() {
-                                  $("#button").click(function() {
-                                    $("#pidginparams").text("Running PIDGIN...");
-                                  });
-                                });
-                              </script>'),
+                       textOutput("pidginrunning"),
                        textOutput("pidgindone"),
                        tags$br(),
                        tags$br()
@@ -117,7 +110,7 @@ tabPanel("Targets",
      tabPanel("Results",
               fluidRow(
                 column(12,
-                       DTOutput("testtable"),
+                      # DTOutput("testtable"),
                        tags$br()
                 )
               )
