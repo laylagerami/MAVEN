@@ -50,6 +50,17 @@ tabPanel("Targets",
      tabPanel("Run Options",
               fluidRow(
                 column(12,
+                       tags$head(tags$style(HTML("
+                                .btn {
+                                color:rgb(255,255,255);
+                                text-align: left;
+                                #border-color:rgb(0,144,197);
+                                background-color:rgb(0,144,197);}
+
+                                # #button:active {
+                                # background-color:rgb(51,255,153);
+                                # }"))),
+                       
                        h5("Run Options for PIDGIN target prediction"),
                        tags$hr(),
                        "Please specify PIDGIN parameters or leave as default",
@@ -98,7 +109,6 @@ tabPanel("Targets",
                        shiny::actionButton("button", "Run PIDGIN"),
                        # Running PIDGIN message w/ js
                        tags$br(),
-                       textOutput("pidginrunning"),
                        textOutput("pidgindone"),
                        tags$br(),
                        tags$br()

@@ -1,3 +1,6 @@
+# init null output_name
+output_name = "Null"
+
 # Run chemical sketcher
 observeEvent(input$launch_app, {
   rstudioapi::jobRunScript(path = "gadget_script.R")
@@ -19,24 +22,6 @@ output$smiles_uploaded_checker <- renderText({
     "Please upload the required information before moving on to target prediction, or move to the Analysis tab to skip target prediction."
   }
 })
-
-# For later
-X <- ""
-Y <- ""
-x = data.frame(X,Y)
-colnames(x) = c("SMILES","Name")
-
-output$smilestable <- renderRHandsontable({
-  rhandsontable(x) 
-})
-
-observe(
-  if(!is.null(input$smilestable)){
-    asdf = data.frame(hot_to_r(input$smilestable))
-    smiles = asdf$SMILES
-    compounds_n = nrow(asdf)
-    name = asdf$Name
-  })
 
 
 # Get pidgin parameters
@@ -60,18 +45,7 @@ observe({
 })
 
 
-# Run PIDGIN
-#runPidgin_alert <- observeEvent(input$button, {
-#  paste0("Running PIDGIN...")
-#})
-#output$pidginrunning <- renderText({
-#  runPidgin_alert()
-#})
-
 observeEvent(input$button, {
-  output$pidginrunning <- renderText({
-    paste0("Running PIDGIN...")
-  })
   bin_bash <- "#!/bin/bash"
   conda_activate <- "source activate pidgin3_env"
   output_name <<- paste0("./output/","PIDGIN_",pidginBa,"_",pidginAd,"_",pidginCores,"_",gsub(" ","_",Sys.time()),".txt")
@@ -83,40 +57,28 @@ observeEvent(input$button, {
 })
 
 
-checkOutput <- eventReactive(input$button, {
-  reactivePoll(1000, session, checkFunc = function() {
-    if (file.exists(output_name))
-      assign(x = "preds", # Read it in if so
-      value = read.csv(output_name,header=T,sep="\t"),
-      envir = .GlobalEnv)
-      paste0("Done. Please move onto the Results tab.")
-    })
-})
-output$pidgindone <- renderText({
-  checkOutput()
-})
-    
-
-        
-    # If file successfully read in
-   # if(nrow(preds)>0){
-    #  output$pidgindone <- renderText ({
-     #   paste0("DONE")
-    #  })
-    #}
-#})
+# Check output
+reactivePoll(1000,session,
+             checkFunc = function(){
+               if (file.exists(output_name)==T){
+                 assign(x="preds",value=read.csv(output_name,
+                                                 header=T,sep="\t"),
+                        envir=.GlobalEnv)
+                 output$pidgindone <- renderText({
+                   paste0("PIDGIN run finished, please move onto Results tab.")
+                 })
+               }
+             })
 
 
 # Check if output file exists, if it does then read it in
 #output_name <<- "output/PIDGIN_10_75_10_2021-02-25_10:53:09.txt_out_predictions_20210225-110610.txt"
 
-
-
 # Take top n targets and then place them in editable table
-#output$testtable <- renderDT({
-#  preds = preds[order(-preds[,17]),]
-#  colnames(preds)[17] = "Probability"
-#  preds = preds[,c(3,2,4,17)]
-#  datatable(preds,options = list("pageLength" = 5))
-#})
+output$testtable <- renderDT({
+  preds = preds[order(-preds[,17]),]
+  colnames(preds)[17] = "Probability"
+  preds = preds[,c(3,2,4,17)]
+  datatable(preds,options = list("pageLength" = 5))
+})
 
