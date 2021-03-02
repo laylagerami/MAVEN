@@ -1,5 +1,5 @@
 # init null output_name
-output_name = "Null"
+output_name_pidgin <<- "Null"
 
 # Run chemical sketcher
 observeEvent(input$launch_app, {
@@ -44,41 +44,92 @@ observe({
   predictpy <<- paste0(pidgindir,"/predict.py")
 })
 
-
+# Run PIDGIN
+started <- reactiveVal(Sys.time()[NA])
 observeEvent(input$button, {
+  started(Sys.time())
   bin_bash <- "#!/bin/bash"
   conda_activate <- "source activate pidgin3_env"
-  output_name <<- paste0("./output/","PIDGIN_",pidginBa,"_",pidginAd,"_",pidginCores,"_",gsub(" ","_",Sys.time()),".txt")
-  args <- paste0("-f ",smi_file$datapath, " -d '\t' --organism 'Homo' -b ",pidginBa, " --ad ",pidginAd," -n ",pidginCores," -o ",output_name)
+  output_name <- paste0("output/","PIDGIN_",pidginBa,"_",pidginAd,"_",pidginCores,"_",gsub(" ","_",Sys.time()))
+  output_name_pidgin <<- paste0(output_name,"_out_predictions.txt")
+  args <- paste0("-f ",smi_file$datapath, " -d '\t' --organism 'Homo' -b ",pidginBa, " --ad ",pidginAd," -n ",pidginCores," -o ",output_name, " --target_class GPCR")
   runline <- paste0("python ",predictpy," ",args)
   bash_file <- data.frame(c(bin_bash,conda_activate,runline))
   write.table(bash_file,"./run_pidgin.sh",quote=F,row.names=F,col.names=F)
   system("bash -i run_pidgin.sh")
 })
 
-
-# Check output
-reactivePoll(1000,session,
-             checkFunc = function(){
-               if (file.exists(output_name)==T){
-                 assign(x="preds",value=read.csv(output_name,
-                                                 header=T,sep="\t"),
-                        envir=.GlobalEnv)
-                 output$pidgindone <- renderText({
-                   paste0("PIDGIN run finished, please move onto Results tab.")
-                 })
-               }
-             })
+# Check if PIDGIN has finished running
+observe({
+  req(started())
+  
+  if(file.exists(output_name_pidgin)){
+    preds <<- read.csv(output_name_pidgin,sep="\t",header=T)
+    output$pidgindone <- renderText({
+      paste0("PIDGIN run completed. Please move onto Results tab.")
+    })
+  }
+})
 
 
+
+#check_pidgin_done <- reactivePoll(1000,session,
+#                                  checkFunc = function(){
+#                                    if(file.exists(output_name_pidgin))
+#                                      output$pidgindone <- renderText({
+#                                        "Pidgin run done"
+#                                      })
+#                                    else
+#                                      ""
+#                                  },
+#                                  valueFunc = function(){
+#                                    assign(x="preds",
+#                                           value=read.csv(output_name_pidgin,
+#                                                          header=T,
+#                                                          sep="\t"),
+#                                           envir = .GlobalEnv)
+#          
+#                                  })
+#ord <- function(data) {
+#  print(data)
+#}
+
+#observe(ord(check_pidgin_done()))
+
+#check_pidgin_done <- reactivePoll(1000,session,
+#             checkFunc = function(){
+#               if (file.exists(output_name_pidgin)==T){
+#                 assign(x="preds",value=read.csv(output_name_pidgin,
+#                                                 header=T,sep="\t"),
+#                        envir=.GlobalEnv)
+#                 output$pidgindone <- renderText({
+#                   paste0("PIDGIN run finished, please move onto Results tab.")
+#                 })
+#               }
+#             })
+
+#observe(check_pidgin_done())
 # Check if output file exists, if it does then read it in
 #output_name <<- "output/PIDGIN_10_75_10_2021-02-25_10:53:09.txt_out_predictions_20210225-110610.txt"
 
 # Take top n targets and then place them in editable table
-output$testtable <- renderDT({
+output$targettable <- renderDT({
   preds = preds[order(-preds[,17]),]
   colnames(preds)[17] = "Probability"
   preds = preds[,c(3,2,4,17)]
-  datatable(preds,options = list("pageLength" = 5))
+  conversion = AnnotationDbi::select(org.Hs.eg.db,
+                                     as.character(preds$Gene_ID),
+                                     columns=c("ENTREZID","SYMBOL"),
+                                     ketype="ENTREZID")
+  preds$Gene_ID <- conversion$SYMBOL
+  preds_converted <<- preds
+  datatable(preds_converted,options = list("pageLength" = 5))
 })
 
+output$selected_targets <- renderText({
+  selected = input$targettable_rows_selected
+  if (length(selected)){
+    targets = as.character(preds_converted[selected,]$Gene_ID)
+    paste0("Selected Targets: ",paste(targets,collapse=", "),". When you have finished, please move to the Analysis tab.")
+  }
+})
