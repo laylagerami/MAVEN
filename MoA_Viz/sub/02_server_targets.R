@@ -71,47 +71,6 @@ observe({
   }
 })
 
-
-
-#check_pidgin_done <- reactivePoll(1000,session,
-#                                  checkFunc = function(){
-#                                    if(file.exists(output_name_pidgin))
-#                                      output$pidgindone <- renderText({
-#                                        "Pidgin run done"
-#                                      })
-#                                    else
-#                                      ""
-#                                  },
-#                                  valueFunc = function(){
-#                                    assign(x="preds",
-#                                           value=read.csv(output_name_pidgin,
-#                                                          header=T,
-#                                                          sep="\t"),
-#                                           envir = .GlobalEnv)
-#          
-#                                  })
-#ord <- function(data) {
-#  print(data)
-#}
-
-#observe(ord(check_pidgin_done()))
-
-#check_pidgin_done <- reactivePoll(1000,session,
-#             checkFunc = function(){
-#               if (file.exists(output_name_pidgin)==T){
-#                 assign(x="preds",value=read.csv(output_name_pidgin,
-#                                                 header=T,sep="\t"),
-#                        envir=.GlobalEnv)
-#                 output$pidgindone <- renderText({
-#                   paste0("PIDGIN run finished, please move onto Results tab.")
-#                 })
-#               }
-#             })
-
-#observe(check_pidgin_done())
-# Check if output file exists, if it does then read it in
-#output_name <<- "output/PIDGIN_10_75_10_2021-02-25_10:53:09.txt_out_predictions_20210225-110610.txt"
-
 # Take top n targets and then place them in editable table
 output$targettable <- renderDT({
   preds = preds[order(-preds[,17]),]

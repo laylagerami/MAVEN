@@ -31,6 +31,7 @@ tabPanel("Analysis",
                      trigger = "click", 
                      options = list(container = "body")
            ),
+           actionButton("run_dorothea","Run DoRoThEA"),
            tags$br(),
            tags$br(),
            "PROGENy: ",
@@ -41,7 +42,7 @@ tabPanel("Analysis",
          ),
          
          mainPanel(
-           textOutput("test_select")
+           plotOutput("tf_plot")
          )
          
 )
