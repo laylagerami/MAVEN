@@ -1,3 +1,3 @@
 #!/bin/bash
 source activate pidgin3_env
-python /scratch/software/PIDGINv4/predict.py -f /tmp/Rtmpb2nTk5/40742b742c83548735b05696/0.txt -d '	' --organism 'Homo' -b 0.1 --ad 75 -n 30 -o ./output/PIDGIN_0.1_75_30_2021-02-26_10:03:01.txt
+python /scratch/software/PIDGINv4/predict.py -f /tmp/RtmppUiGdx/aa202cb84c8db3e23f838cf1/0.txt -d '	' --organism 'Homo' -b 10 --ad 75 -n 40 -o output/PIDGIN_10_75_40_2021-03-02_15:09:46 --target_class GPCR

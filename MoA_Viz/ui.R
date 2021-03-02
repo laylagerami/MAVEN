@@ -9,6 +9,7 @@ ui = function(request) {
       footer = column(12, align="center", "MAVEN-App 2021 (version: 0.1)"),
       source("sub/01_ui_data.R")$value,
       source("sub/02_ui_targets.R")$value,
+      source("sub/03_ui_analysis.R")$value,
       hr()
     ) # close navbarPage
   ) # close fluidPage

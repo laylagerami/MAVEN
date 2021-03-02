@@ -30,8 +30,6 @@ tabPanel("Targets",
                                  trigger = "click", 
                                  options = list(container = "body")),
                        tags$br(),
-                       tags$head(
-                         tags$style(HTML('#launch_app{background-color:#95a5a6}'))),
                        "No SMILES? Use the sketcher applet to retrieve compound SMILES.",
                        tags$br(),
                        tags$br(),
@@ -66,8 +64,9 @@ tabPanel("Targets",
                        "Please specify PIDGIN parameters or leave as default",
                        
                        radioButtons("ba", label=h5("Bioactivity Threshold (uM)",
-                                                         tags$style(type = "text/css", "#q4 {vertical-align: top;}")),
-                                       
+                                                         tags$style(type = "text/css", "#q4 {vertical-align: top;}"),
+                                                   bsButton("q4", label = "", icon = icon("question"), style = "info", size = "extra-small")
+                       ),
                                         choices= list("0.1","1","10","100"),
                                         selected="10",
                                         inline = T
@@ -107,8 +106,10 @@ tabPanel("Targets",
                        tags$br(),
                        shinyDirButton('pidginfolder', 'Select PIDGIN folder', 'Please select the folder containing PIDGIN predict.py file', FALSE),
                        shiny::actionButton("button", "Run PIDGIN"),
-                       # Running PIDGIN message w/ js
+                       # Running PIDGIN message w/ j
                        tags$br(),
+                       tags$br(),
+                       textOutput("pidginrunning"),
                        textOutput("pidgindone"),
                        tags$br(),
                        tags$br()
@@ -120,8 +121,12 @@ tabPanel("Targets",
      tabPanel("Results",
               fluidRow(
                 column(12,
-                      # DTOutput("testtable"),
-                       tags$br()
+                       h5("Select targets for Causal Reasoning"),
+                       tags$hr(),
+                       DTOutput("targettable"),
+                       tags$br(),
+                       tags$br(),
+                       textOutput("selected_targets")
                 )
               )
      )
