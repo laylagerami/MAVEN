@@ -6,7 +6,6 @@ tabPanel("Analysis",
   tags$br(),
   "Perform TF enrichment, pathway inference and causal reasoning.",
   tags$br(),
-  tags$br(),
   # Dorothea options
   "DoRoThEA Options:",
   # Conf level
@@ -39,7 +38,6 @@ tabPanel("Analysis",
               options = list(container = "body")
     ),
   tags$br(),
-  tags$br(),
   "PROGENy Options:",
   # no. genes
   textInput("no_genes_progeny", label = h5("Number of top responsive genes to include",
@@ -51,14 +49,52 @@ tabPanel("Analysis",
             placement = "right", 
             trigger = "click", 
             options = list(container = "body")
-  )
+  ),
+  tags$br(),
+  "CARNIVAL Options:",
+  # Use targets
+  checkboxInput("target_bool",label=h5("Use targets?",
+                                       tags$style(type="text/css","#q10 {vertical-align: top;}"),
+                                       bsButton("q10",label="",icon=icon("question"),style="info",size="extra-small")
+                                       ), value=T,width=NULL),
+  bsPopover(id="q10",title="Include targets in CARNIVAL analysis.",
+            content=paste0("Include targets as input? If not, a proxy node will be generated to connect the interactions."),
+            placement="right",
+            trigger="click",
+            options=list(container="body")
+            ),
+  # Time limit
+  textInput("carnival_time_limit", label = h5("Time limit for CARNIVAL run",
+                                           tags$style(type = "text/css", "#q11 {vertical-align: top;}"),
+                                           bsButton("q11", label = "", icon = icon("question"), style = "info", size = "extra-small")
+  ), value = "7200", width = NULL, placeholder = NULL),
+  bsPopover(id = "q11", title = "Time limit for CARNIVAL run.",
+            content = paste0("Time limit (in seconds) for CARNIVAL run"),
+            placement = "right", 
+            trigger = "click", 
+            options = list(container = "body")
+  ),
+  # Cores
+  textInput("carnival_ncores", label = h5("Number of cores",
+                                              tags$style(type = "text/css", "#q12 {vertical-align: top;}"),
+                                              bsButton("q12", label = "", icon = icon("question"), style = "info", size = "extra-small")
+  ), value = "20", width = NULL, placeholder = NULL),
+  bsPopover(id = "q12", title = "Number of cores.",
+            content = paste0("Number of cores for ILP solver"),
+            placement = "right", 
+            trigger = "click", 
+            options = list(container = "body")
+  ),
+  shinyDirButton('ibmfolder', 'Select IBM folder', 'Please select the folder containing cplex file', FALSE),
+  
+  
     ),
     # Main panel has tabs inside
     mainPanel(
       tabsetPanel(
         # DoRoThEA
         tabPanel("DoRoThEA",
-          fluidRow(column(12,
+          fluidRow(column(10,
               h5("Run DoRoThEA and view plot"),
               tags$hr(),
               actionButton("run_dorothea","Run DoRoThEA"),
@@ -76,7 +112,7 @@ tabPanel("Analysis",
         ),
         tabPanel("Progeny",
                  fluidRow(
-                   column(12,
+                   column(10,
                   h5("Progeny"),
                   tags$hr(),
                   actionButton("run_progeny","Run PROGENy"),
@@ -94,8 +130,17 @@ tabPanel("Analysis",
                  ),
         tabPanel("CARNIVAL",
                  fluidRow(
-                   column(12,
-                          h5("CARNIVAL")
+                   column(10,
+                          h5("CARNIVAL"),
+                          tags$hr(),
+                          textOutput("carnival_check"),
+                          tags$br(),
+                          actionButton("run_carnival","Run CARNIVAL"),
+                          tags$br(),
+                          tags$br(),
+                          textOutput("carnivaldone"),
+                          tags$br(),
+                          tags$br()
                           )
                  )
             )

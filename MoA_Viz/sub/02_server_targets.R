@@ -47,16 +47,18 @@ observe({
 # Run PIDGIN
 started <- reactiveVal(Sys.time()[NA])
 observeEvent(input$button, {
-  started(Sys.time())
-  bin_bash <- "#!/bin/bash"
-  conda_activate <- "source activate pidgin3_env"
-  output_name <- paste0("output/","PIDGIN_",pidginBa,"_",pidginAd,"_",pidginCores,"_",gsub(" ","_",Sys.time()))
-  output_name_pidgin <<- paste0(output_name,"_out_predictions.txt")
-  args <- paste0("-f ",smi_file$datapath, " -d '\t' --organism 'Homo' -b ",pidginBa, " --ad ",pidginAd," -n ",pidginCores," -o ",output_name, " --target_class GPCR")
-  runline <- paste0("python ",predictpy," ",args)
-  bash_file <- data.frame(c(bin_bash,conda_activate,runline))
-  write.table(bash_file,"./run_pidgin.sh",quote=F,row.names=F,col.names=F)
-  system("bash -i run_pidgin.sh")
+  withProgress(message="Running PIDGIN...",value=1, {
+    started(Sys.time())
+    bin_bash <- "#!/bin/bash"
+    conda_activate <- "source activate pidgin3_env"
+    output_name <- paste0("output/","PIDGIN_",pidginBa,"_",pidginAd,"_",pidginCores,"_",gsub(" ","_",Sys.time()))
+    output_name_pidgin <<- paste0(output_name,"_out_predictions.txt")
+    args <- paste0("-f ",smi_file$datapath, " -d '\t' --organism 'Homo' -b ",pidginBa, " --ad ",pidginAd," -n ",pidginCores," -o ",output_name)
+    runline <- paste0("python ",predictpy," ",args)
+    bash_file <- data.frame(c(bin_bash,conda_activate,runline))
+    write.table(bash_file,"./run_pidgin.sh",quote=F,row.names=F,col.names=F)
+    system("bash -i run_pidgin.sh")
+  })
 })
 
 # Check if PIDGIN has finished running
@@ -88,7 +90,7 @@ output$targettable <- renderDT({
 output$selected_targets <- renderText({
   selected = input$targettable_rows_selected
   if (length(selected)){
-    targets = as.character(preds_converted[selected,]$Gene_ID)
+    targets <<- as.character(preds_converted[selected,]$Gene_ID)
     paste0("Selected Targets: ",paste(targets,collapse=", "),". When you have finished, please move to the Analysis tab.")
   }
 })
