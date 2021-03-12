@@ -10,6 +10,7 @@ ui = function(request) {
       source("sub/01_ui_data.R")$value,
       source("sub/02_ui_targets.R")$value,
       source("sub/03_ui_analysis.R")$value,
+      source("sub/04_ui_vis.R")$value,
       hr()
     ) # close navbarPage
   ) # close fluidPage

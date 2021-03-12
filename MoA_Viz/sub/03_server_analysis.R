@@ -128,23 +128,23 @@ observeEvent(input$run_carnival, {
   targetdf = data.frame(t(target_in_net))
   colnames(targetdf) = targetdf[1,]
   targetdf[1,] = rep(1,ncol(targetdf))
-  withProgress(message="Running CARNIVAL...",value=1, {
-    carnival_result <<- runCARNIVAL(inputObj=targetdf,
-                                  measObj = tf_activities_carnival[[1]],
-                                  netObj = networkdf,
-                                  weightObj = progenylist[[1]],
-                                  solverPath = paste0(ibmdir,"ILOG/CPLEX_Studio1210/cplex/bin/x86-64_linux/cplex"),
-                                  solver="cplex",
-                                  timelimit=as.numeric(input$carnival_time_limit),
-                                  mipGAP=0,
-                                  poolrelGAP=0,
-                                  threads=as.numeric(input$carnival_ncores))
-  })
+ # withProgress(message="Running CARNIVAL...",value=1, {
+  #  carnival_result <<- runCARNIVAL(inputObj=targetdf,
+  #                                measObj = tf_activities_carnival[[1]],
+  #                                netObj = networkdf,
+  #                                weightObj = progenylist[[1]],
+  #                                solverPath = paste0(ibmdir,"ILOG/CPLEX_Studio1210/cplex/bin/x86-64_linux/cplex"),
+  #                                solver="cplex",
+  #                                timelimit=as.numeric(input$carnival_time_limit),
+  #                                mipGAP=0,
+  #                                poolrelGAP=0,
+  #                                threads=as.numeric(input$carnival_ncores))
+  #})
 })
    
 observe({
   req(started())
-  if(exists(carnival_res)){
+  if(exists("carnival_result")){
     output$carnivaldone <- renderText({
       paste0("CARNIVAL run completed. Please move onto Visualisation tab.")
     })
