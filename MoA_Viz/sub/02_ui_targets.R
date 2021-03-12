@@ -121,7 +121,7 @@ tabPanel("Targets",
      tabPanel("Results",
               fluidRow(
                 column(12,
-                       h5("Select targets for Causal Reasoning"),
+                       h5("Select targets for Causal Reasoning - click to view ChEMBL link"),
                        tags$hr(),
                        DTOutput("targettable"),
                        tags$br(),

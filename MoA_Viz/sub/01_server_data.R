@@ -1,4 +1,4 @@
-
+# Render datatable of network
   output$networkrender <- renderDT({
     netfile=input$network
     ext <- tools::file_ext(netfile$datapath)
@@ -13,7 +13,8 @@
     netfile=input$network
     ext <- tools::file_ext(netfile$datapath)
     req(file)
-    networkdf=read.csv(netfile$datapath,sep="\t")
+    validate(need(ext == "sif", "Please upload a .sif network file"))
+    networkdf<-read.csv(netfile$datapath,sep="\t")
     
     g = try(igraph::graph_from_data_frame(networkdf))
     if(inherits(g,"try-error")){
@@ -26,7 +27,52 @@
              "Number of Nodes: ",round(nodecount,0),'  |  ',
              "Number of Edges: ",round(edgecount,0))
     }
+    
+    # Check if gene symbols
+    all_nodes = unique(c(as.character(networkdf[,1]),as.character(networkdf[,3])))
+    check = checkGeneSymbols(all_nodes, unmapped.as.na=TRUE)
+    na_symbols = subset(check,is.na(Suggested.Symbol))$x
+    na_symbols_flat = paste(na_symbols,collapse=", ")
+    if(length(na_symbols)>0){
+      Sys.sleep(1) # pause
+      shinyalert(
+        title = "Warning",
+        text = paste0("Some of the genes in your network (",na_symbols_flat,") are not valid HGNC symbols. This may disrupt downstream analysis."), ,
+        size = "s",
+        closeOnEsc = TRUE,
+        closeOnClickOutside = T,
+        html = FALSE,
+        type = "warning",
+        showConfirmButton = TRUE,
+        showCancelButton = FALSE,
+        confirmButtonText = "OK",
+        confirmButtonCol = "#AEDEF4",
+        timer = 0,
+        imageUrl = "",
+        animation = TRUE
+      )
+    }
+    if(length(na_symbols)==length(all_nodes)){
+      Sys.sleep(1) # pause
+      shinyalert(
+        title = "Warning",
+        text = paste0("None of the genes in your network are HGNC symbols. Please convert your symbols to HGNC and reupload."),
+        size = "s", 
+        closeOnEsc = TRUE,
+        closeOnClickOutside = T,
+        html = FALSE,
+        type = "warning",
+        showConfirmButton = TRUE,
+        showCancelButton = FALSE,
+        confirmButtonText = "OK",
+        confirmButtonCol = "#AEDEF4",
+        timer = 0,
+        imageUrl = "",
+        animation = TRUE
+      )
+    }
   })
+
   
   output$gextable <- renderDT({
     gexfile = input$gex
@@ -44,6 +90,50 @@
     validate(need(ext == "txt", "Please upload a txt file")) # if no .txt throws error
     datadf <<- read.csv(gexfile$datapath, header = T,sep="\t") # read the chosen file 
     paste0("Gene expression upload complete, for a total of ",nrow(datadf)," genes and ",ncol(datadf)-1, " compounds.")
+    
+    # Check if gene symbols
+    all_genes = as.character(datadf[,1])
+    check = checkGeneSymbols(all_genes, unmapped.as.na=TRUE)
+    na_symbols = subset(check,is.na(Suggested.Symbol))$x
+    na_symbols_flat = paste(na_symbols,collapse=", ")
+    if(length(na_symbols)>0){
+      Sys.sleep(1) # pause
+      shinyalert(
+        title = "Warning",
+        text = paste0("Some of the genes in your data (",na_symbols_flat,") are not valid HGNC symbols. This may disrupt downstream analysis."),
+        size = "s",
+        closeOnEsc = TRUE,
+        closeOnClickOutside = T,
+        html = FALSE,
+        type = "warning",
+        showConfirmButton = TRUE,
+        showCancelButton = FALSE,
+        confirmButtonText = "OK",
+        confirmButtonCol = "#AEDEF4",
+        timer = 0,
+        imageUrl = "",
+        animation = TRUE
+      )
+    }
+    if(length(na_symbols)==length(all_nodes)){
+      Sys.sleep(1) # pause
+      shinyalert(
+        title = "Warning",
+        text = paste0("None of the genes in your data are HGNC symbols. Please convert your symbols to HGNC and reupload."),
+        size = "s", 
+        closeOnEsc = TRUE,
+        closeOnClickOutside = T,
+        html = FALSE,
+        type = "warning",
+        showConfirmButton = TRUE,
+        showCancelButton = FALSE,
+        confirmButtonText = "OK",
+        confirmButtonCol = "#AEDEF4",
+        timer = 0,
+        imageUrl = "",
+        animation = TRUE
+      )
+    }
   })
   
   

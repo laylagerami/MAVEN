@@ -1,6 +1,7 @@
 
 tabPanel("Data",
         sidebarPanel(
+           useShinyalert(),
           "Step 1. Data Input",
           fileInput(inputId = "network",
                     label = h5("Upload network (.sif)",
