@@ -84,7 +84,13 @@ output$targettable <- renderDT({
                                      ketype="ENTREZID")
   preds$Gene_ID <- conversion$SYMBOL
   preds_converted <<- preds
-  datatable(preds_converted,options = list("pageLength" = 5))
+  url_df = readRDS("sub/hgnc_chembl_url.rds")
+  preds_and_url = merge(preds_converted,url_df,by.x="Gene_ID",by.y="hgncs")
+  preds_and_url$Gene_ID <- paste0("<a href='",preds_and_url$url,"' target='_blank'>",preds_and_url$Gene_ID,"</a>")
+  preds_and_url$Gene_ID = ifelse(preds_and_url$chembl_ids=="NaN",preds_converted$Gene_ID,preds_and_url$Gene_ID)
+  preds_and_url = preds_and_url[,c(1,2,3,4)]
+  preds_and_url = preds_and_url[order(-preds_and_url[,4]),]
+  datatable(preds_and_url,options = list("pageLength" = 5),escape=1)
 })
 
 output$selected_targets <- renderText({

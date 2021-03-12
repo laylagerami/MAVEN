@@ -10,6 +10,7 @@ server = function(input, output, session) {
 }
 
 # IMPROVEMENTS
-# Check gene symbol in network + gex
-# Link to ChEMBL in DT
-# venv
+# slider for tf etc
+# advanced options for CARNIVAL
+# downloaders?
+
