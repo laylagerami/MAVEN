@@ -1,2 +1,2 @@
-## MAVEN Documentation
+## Index
 
