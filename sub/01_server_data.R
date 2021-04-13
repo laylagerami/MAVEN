@@ -2,6 +2,7 @@
 output$networkrender <- renderDT({
     netfile=input$network
     ext <- tools::file_ext(netfile$datapath)
+    req(netfile)
     networkdf<<-read.csv(netfile$datapath,sep="\t")
     datatable(networkdf,options = list("pageLength" = 5))
 })
@@ -10,6 +11,7 @@ output$networkrender <- renderDT({
 output$networkstats <- renderText({
     netfile=input$network
     ext <- tools::file_ext(netfile$datapath)
+    req(netfile)
     networkdf<-read.csv(netfile$datapath,sep="\t",header=T)
     
     # Check 3 cols
@@ -42,6 +44,7 @@ output$networkstats <- renderText({
 observeEvent(input$network, {
   netfile=input$network
   ext <- tools::file_ext(netfile$datapath)
+  req(netfile)
   validate(need(ext == "sif", "Please upload a .sif network file"))
   networkdf<-read.csv(netfile$datapath,sep="\t")
   
@@ -105,7 +108,7 @@ observeEvent(input$network, {
 output$gextable <- renderDT({
   gexfile = input$gex
   ext <- tools::file_ext(gexfile$datapath)
-  req(file)
+  req(gexfile)
   validate(need(ext == "txt", "Please upload a txt file")) # if no .txt throws error
   datadf <- read.csv(gexfile$datapath, header = T,sep="\t") # read the chosen file 
   datadf <<- datadf[,c(1,2)] # only keep first two cols
@@ -133,6 +136,7 @@ output$gexdata <- renderText({
 observeEvent(input$gex, {
   gexfile = input$gex
   ext <- tools::file_ext(gexfile$datapath)
+  req(gexfile)
   datadf <- read.csv(gexfile$datapath, header = T,sep="\t") # read the chosen file 
 
   # Check if gene symbols

@@ -43,6 +43,7 @@ observe({
   pidginfolder <<- input$pidginfolder
   pidgindir <<- paste(unlist(unname(pidginfolder[1])),collapse="/")
   predictpy <<- paste0(pidgindir,"/predict.py")
+  sim2train <<- paste0(pidgindir,"/sim_to_train.py")
 })
 
 # Run PIDGIN
@@ -53,14 +54,19 @@ observeEvent(input$button, {
     time_now = gsub(" ","_",Sys.time())
     time_now = gsub(":","-",time_now)
     bin_bash <- "#!/bin/bash"
-    conda_activate <- "source activate pidgin3_env"
+    conda_activate <- "source activate pidgin3_env" # activate conda
+    # define output name and args
     output_name <- paste0("output/","PIDGIN_",pidginBa,"_",pidginAd,"_",pidginCores,"_",time_now)
     output_name_pidgin <<- paste0(output_name,"_out_predictions.txt")
-    args <- paste0("-f ",smi_file$datapath, " -d '\t' --organism 'Homo' -b ",pidginBa, " --ad ",pidginAd," -n ",pidginCores," -o ",output_name)
-    runline <- paste0("python ",predictpy," ",args)
-    bash_file <- data.frame(c(bin_bash,conda_activate,runline))
+    args <- paste0("-f ",smi_file$datapath, " -d '\t' --organism 'Homo' -b ",pidginBa, " --ad ",pidginAd," -n ",pidginCores," -o ",output_name_pidgin)
+    runline <- paste0("python ",predictpy," ",args) # command line input
+    # define sim to train 
+    output_name2 <<- paste0("output/","PIDGIN_",pidginBa,"_",pidginAd,"_",pidginCores,"_",time_now)
+    args2 <- paste0("-f",smi_file$datapath, " --organism 'Homo' -b ",pidginBa, " -n ",pidginCores," -o ",output_name2)
+    runline2 <- paste0("python ",sim2train," ",args2)
+    bash_file <- data.frame(c(bin_bash,conda_activate,runline,runline2))
     write.table(bash_file,"./run_pidgin.sh",quote=F,row.names=F,col.names=F)
-    write.table(bash_file,paste0("logs/pidgin_command_",time_now,".sh"))
+    write.table(bash_file,paste0("logs/pidgin_command_",time_now,".sh"),quote=F,row.names=F,col.names=F)
     system("bash -i run_pidgin.sh")
   })
 })
@@ -68,9 +74,9 @@ observeEvent(input$button, {
 # Check if PIDGIN has finished running
 observe({
   req(started())
-  
-  if(file.exists(output_name_pidgin)){
+  if(file.exists(output_name2)){
     preds <<- read.csv(output_name_pidgin,sep="\t",header=T)
+    simtrain <<- read.csv(output_name2,sep="\t",header=T)
     output$pidgindone <- renderText({
       paste0("PIDGIN run completed. Please move onto Results tab.")
     })
