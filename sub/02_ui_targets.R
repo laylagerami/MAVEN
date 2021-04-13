@@ -3,7 +3,7 @@ tabPanel("Targets",
         "Step 2. Define Targets",
         tags$br(),
         tags$br(),
-        "Upload your SMILES and run target prediction in the Target Prediction tab, view and edit results (and add user-defined targets) in Results",
+        "Upload your SMILES and run target prediction, view results, upload previous results, and optionally add user-defined targets (with or without running target prediction)",
         tags$br(),
         tags$br(),
         "If you do not require any targets, please continue to the Analysis tab."
@@ -17,20 +17,22 @@ tabPanel("Targets",
               
               fluidRow(
                 column(12,
-                       h5("Data Input"),
-                       tags$hr(),
+                       strong("SMILES Input for Target Prediction"),
+                       tags$br(),
+                       "Please note that only the first compound SMILES will be used, and any additional SMILES will be discarded. For batch upload, please see the 'Batch Upload' tab",
+                       tags$br(),
                        fileInput(inputId = "smiles_file",
                                  label = h5("Upload SMILES (.txt)",
                                             tags$style(type = "text/css", "#q3 {vertical-align: top;}"),
                                             bsButton("q3", label = "", icon = icon("question"), style = "info", size = "extra-small")
-                                 ),multiple=F),
+                                 ),multiple=F, accept=c(".txt")),
                        bsPopover(id = "q3", title = "Upload SMILES",
-                                 content = paste0("Tab-separated file in the format SMILES, Name. No header."),
+                                 content = paste0("Tab-separated file in the format SMILES, Name/ID (Optional). No header."),
                                  placement = "right", 
                                  trigger = "click", 
                                  options = list(container = "body")),
                        tags$br(),
-                       "No SMILES? Use the sketcher applet to retrieve compound SMILES.",
+                       "No SMILES? Use the sketcher applet to draw your compound and retrieve the corresponding SMILES. You can then copy them to a file and upload them above.",
                        tags$br(),
                        tags$br(),
                        actionButton("launch_app", "Launch Sketcher"),
@@ -38,6 +40,8 @@ tabPanel("Targets",
                        tags$br(),
                        textOutput("smiles_uploaded_checker"),
                        tags$br()
+                       
+                       
                        
                 )
               )
@@ -106,10 +110,10 @@ tabPanel("Targets",
                        tags$br(),
                        shinyDirButton('pidginfolder', 'Select PIDGIN folder', 'Please select the folder containing PIDGIN predict.py file', FALSE),
                        shiny::actionButton("button", "Run PIDGIN"),
-                       # Running PIDGIN message w/ j
+                       tags$br(),
+                       "You can check the progress of your PIDGIN run by keeping an eye on your R Console.",
                        tags$br(),
                        tags$br(),
-                       textOutput("pidginrunning"),
                        textOutput("pidgindone"),
                        tags$br(),
                        tags$br()
@@ -121,13 +125,31 @@ tabPanel("Targets",
      tabPanel("Results",
               fluidRow(
                 column(12,
-                       h5("Select targets for Causal Reasoning - click to view ChEMBL link"),
+                       h5("Select targets for Causal Reasoning - click to view UniProt link"),
                        tags$hr(),
                        DTOutput("targettable"),
                        tags$br(),
                        tags$br(),
-                       textOutput("selected_targets")
+                       strong("Selected targets: "),
+                       textOutput("selected_targets"),
+                       tags$br(),
+                       textOutput("target_check"),
+                       tags$br(),
+                       "When you have finished selecting targets, please move to the Analysis tab. You can also add additional targets in the Additional Targets tab.",
+                       tags$br(),
+                       tags$br()
                 )
+              )
+     ),
+     tabPanel("Additional Targets",
+              fluidRow(
+                      column(12,
+                h5("Add user-defined targets if required, line-separated (HGNC)"),
+                textAreaInput("udtargets", "Input targets", rows = 5),
+                textOutput("testudtargets")
+                             
+                      )
+                      
               )
      )
    )

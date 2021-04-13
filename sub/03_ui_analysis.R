@@ -6,6 +6,7 @@ tabPanel("Analysis",
   tags$br(),
   "Perform TF enrichment, pathway inference and causal reasoning.",
   tags$br(),
+  tags$br(),
   # Dorothea options
   "DoRoThEA Options:",
   # Conf level
@@ -27,10 +28,12 @@ tabPanel("Analysis",
               options = list(container = "body")
     ),
   # No TFS
-    textInput("no_tfs", label = h5("Number of TFs to include",
-     tags$style(type = "text/css", "#q8 {vertical-align: top;}"),
-     bsButton("q8", label = "", icon = icon("question"), style = "info", size = "extra-small")
-      ), value = "20", width = NULL, placeholder = NULL),
+    sliderInput("no_tfs", label = h5("Number of TFs to include",
+                                          tags$style(type = "text/css", "#q8 {vertical-align: top;}"),
+                                          bsButton("q8", label = "", icon = icon("question"), style = "info", size = "extra-small")
+                                        ),
+              min = 5, max = 100,
+              value = 10),
     bsPopover(id = "q8", title = "Number of TFs to include",
               content = paste0("Number of top enriched TFs to include as input to CARNIVAL."),
               placement = "right", 
@@ -40,10 +43,12 @@ tabPanel("Analysis",
   tags$br(),
   "PROGENy Options:",
   # no. genes
-  textInput("no_genes_progeny", label = h5("Number of top responsive genes to include",
-                                 tags$style(type = "text/css", "#q8 {vertical-align: top;}"),
-                                 bsButton("q9", label = "", icon = icon("question"), style = "info", size = "extra-small")
-  ), value = "100", width = NULL, placeholder = NULL),
+  sliderInput("no_genes_progeny", label = h5("Number of top responsive genes to include",
+                                   tags$style(type = "text/css", "#q9 {vertical-align: top;}"),
+                                   bsButton("q9", label = "", icon = icon("question"), style = "info", size = "extra-small")
+                                  ),
+      min = 100, max = 1000,
+      value = 100),
   bsPopover(id = "q9", title = "Number of top responsive genes to include.",
             content = paste0("Number of top differentially regulated genes to use for pathway analysis. This number can be increased depending on the coverage of your experiments. For instance, the number of quantified genes for single-cell RNA-seq is smaller than for Bulk RNA-seq or microarray. In those cases, we suggest to increase the number of responsive genes to 200-500."),
             placement = "right", 
@@ -95,37 +100,43 @@ tabPanel("Analysis",
         # DoRoThEA
         tabPanel("DoRoThEA",
           fluidRow(column(10,
-              h5("Run DoRoThEA and view plot"),
-              tags$hr(),
-              actionButton("run_dorothea","Run DoRoThEA"),
+              tags$br(),
+              strong("DoRoThEA Transcription Factor Enrichment"),
+              tags$br(),
+              "Use the slider to change the number of top TFs considered, this will re-run the calculation and update the output. TIP: Increasing the included confidence levels may enable more TFs to be enriched.",
               tags$br(),
               tags$br(),
-              "Table of enriched TFs:",
+              strong("Plot of enriched TFs:"),
+              plotOutput("tf_plot"),
+              tags$br(),
+              tags$br(),
+              strong("Table of enriched TFs:"),
               DTOutput("tf_df"),
               tags$br(),
-              tags$br(),
-              "Plot of enriched TFs:",
-              plotOutput("tf_plot")
-              
+              strong("When you are satisfied with the TFs to be used as input for CARNIVAL, please continue to the PROGENy tab"),
+              tags$br()
                         )
                  )
         ),
         tabPanel("Progeny",
-                 fluidRow(
-                   column(10,
-                  h5("Progeny"),
-                  tags$hr(),
-                  actionButton("run_progeny","Run PROGENy"),
-                  tags$br(),
-                  tags$br(),
-                  "Table of pathway scores:",
-                  DTOutput("progeny_df"),
-                  tags$br(),
-                  tags$br(),
-                  "Plot of pathway scores:",
-                  plotOutput("progeny_plot")
+                 fluidRow(column(10,
+                 tags$br(),
+                 strong("PROGENy pathway association scores"),
+                 tags$br(),
+                 "Use the slider to change the number of responsive genes to re-run and update the output.",
+                 tags$br(),
+                 tags$br(),
+                 strong("Plot of pathway scores:"),
+                 plotOutput("progeny_plot"),
+                 tags$br(),
+                 tags$br(),
+                 strong("Table of pathway scores:"),
+                 DTOutput("progeny_df"),
+                 tags$br(),
+                 strong("When you are satisfied with the TFs to be used as input for CARNIVAL, please continue to the PROGENy tab"),
+                 tags$br()
                   
-                          )
+                    )
                  )
                  ),
         tabPanel("CARNIVAL",
