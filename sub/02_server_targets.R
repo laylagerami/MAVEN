@@ -6,14 +6,17 @@ observeEvent(input$launch_app, {
   rstudioapi::jobRunScript(path = "gadget_script.R")
 })
 
-# get smiles and check
+# get smiles and render
 observeEvent(input$smiles_file, {
   smi_file <<- input$smiles_file
   ext <- tools::file_ext(smi_file$datapath)
-  req(file)
-  validate(need(ext == "txt", "Please upload a txt file")) # if no .txt throws error
-  #read.csv(smi_file$datapath, header = F,sep="\t")[1,1] # read the SMILES 
+  req(smi_file)
+  smi_string <<- read.csv(smi_file$datapath, header = F,sep="\t")[1,1] # read the SMILES 
+  output$chemdoodle = renderChemdoodle(
+    chemdoodle_viewer(smi_string,width=200,height=200)
+  )
 })
+
 
 # Check if SMILES uploaded
 output$smiles_uploaded_checker <- renderText({
@@ -60,7 +63,7 @@ observeEvent(input$button, {
     output_name_pidgin <<- paste0(output_name,"_out_predictions.txt")
     args <- paste0("-f ",smi_file$datapath, " -d '\t' --organism 'Homo' -b ",pidginBa, " --ad ",pidginAd," -n ",pidginCores," -o ",output_name_pidgin)
     runline <- paste0("python ",predictpy," ",args) # command line input
-    # define sim to train 
+    # define sim to train - doesnt work currently
     output_name2 <<- paste0("output/","PIDGIN_",pidginBa,"_",pidginAd,"_",pidginCores,"_",time_now)
     args2 <- paste0("-f",smi_file$datapath, " --organism 'Homo' -b ",pidginBa, " -n ",pidginCores," -o ",output_name2)
     runline2 <- paste0("python ",sim2train," ",args2)
@@ -68,6 +71,7 @@ observeEvent(input$button, {
     write.table(bash_file,"./run_pidgin.sh",quote=F,row.names=F,col.names=F)
     write.table(bash_file,paste0("logs/pidgin_command_",time_now,".sh"),quote=F,row.names=F,col.names=F)
     system("bash -i run_pidgin.sh")
+    file.remove("./run_pidgin.sh") # remove after
   })
 })
 
@@ -78,7 +82,7 @@ observe({
     preds <<- read.csv(output_name_pidgin,sep="\t",header=T)
     simtrain <<- read.csv(output_name2,sep="\t",header=T)
     output$pidgindone <- renderText({
-      paste0("PIDGIN run completed. Please move onto Results tab.")
+      paste0("PIDGIN run completed. Full results saved to 'output' folder. Please move onto Results tab to view the results.")
     })
   }
 })
@@ -127,7 +131,7 @@ output$target_check <-renderText({
     target_in_net <<- intersect(targets,all_nodes)
     if(length(target_not_in_net)>0){
       target_not_in_net_flat = paste(target_not_in_net,collapse=", ")
-      paste0("WARNING: your target(s): ",target_not_in_net_flat," are not in your input network. These will not be used in the MoA analysis pipeline. Alternatively, upload a different network (target results will be saved).")
+      paste0("WARNING: your target(s): ",target_not_in_net_flat," are not in your input network. These will not be used in the MoA analysis pipeline. Alternatively, go back and upload a different network (target results will be saved).")
     }
   }
 })
