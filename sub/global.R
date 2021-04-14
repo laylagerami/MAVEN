@@ -22,6 +22,8 @@ library(visNetwork)
 library(piano)
 library(HGNChelper)
 library(shinyalert)
+library(shinyWidgets)
+
 generateTFList <- function (df = df, top = 50, access_idx = 1) 
 {
   if (top == "all") {
