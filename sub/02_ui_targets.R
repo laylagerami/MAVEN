@@ -17,13 +17,20 @@ tabPanel("Targets",
               
               fluidRow(
                 column(12,
+                       tags$br(),
                        strong("SMILES Input for Target Prediction"),
                        tags$br(),
-                       "Please note that only the first compound SMILES will be used, and any additional SMILES will be discarded. For batch upload, please see the 'Batch Upload' tab",
+                       "Please note that only the first compound SMILES will be used, and any additional SMILES will be discarded. Batch upload coming soon.",
+                       tags$br(),
+                       tags$br(),
+                       "No SMILES? Use the sketcher applet to draw your compound and retrieve a .smi file",
+                       tags$br(),
+                       tags$br(),
+                       actionButton("launch_app", "Launch Sketcher"),
                        tags$br(),
                        tags$br(),
                        fileInput(inputId = "smiles_file",
-                                 label = h5("Upload SMILES (.txt)",
+                                 label = h5("Upload SMILES (.txt or .smi)",
                                             tags$style(type = "text/css", "#q3 {vertical-align: top;}"),
                                             bsButton("q3", label = "", icon = icon("question"), style = "info", size = "extra-small")
                                  ),multiple=F, accept=c(".txt")),
@@ -34,19 +41,12 @@ tabPanel("Targets",
                                  options = list(container = "body")),
                        tags$br(),
                        "Compound structure will render here after SMILES upload:",
+                       tags$br(),
                        chemdoodle_viewerOutput("chemdoodle",width='200',height='200'),
                        tags$br(),
-                       "No SMILES? Use the sketcher applet to draw your compound and retrieve the corresponding SMILES. You can then copy them to a file and upload them above.",
-                       tags$br(),
-                       tags$br(),
-                       actionButton("launch_app", "Launch Sketcher"),
-                       tags$br(),
-                       tags$br(),
                        textOutput("smiles_uploaded_checker"),
-                       tags$br()
-                       
-                       
-                       
+                       tags$br(),
+                       tags$br() 
                 )
               )
      ),
