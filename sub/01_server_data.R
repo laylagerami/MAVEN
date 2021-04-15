@@ -1,11 +1,3 @@
-# Define global vars
-values <- reactiveValues(
-  gex_uploaded=F,
-  network_uploaded=F,
-  networkdf=NULL,
-  datadf=NULL
-)
-
 # NETWORK
 observe({
   if (input$example_network){ # Example toggled ON

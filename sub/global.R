@@ -23,6 +23,20 @@ library(piano)
 library(HGNChelper)
 library(shinyalert)
 library(shinyWidgets)
+library(rcdk)
+
+# Define global vars
+values <- reactiveValues(
+  gex_uploaded=F,
+  network_uploaded=F,
+  networkdf=NULL,
+  datadf=NULL,
+  output_name_pidgin=NULL,
+  smi_string=NULL,
+  smi_file=NULL,
+  smiles_error=NULL
+)
+
 
 generateTFList <- function (df = df, top = 50, access_idx = 1) 
 {

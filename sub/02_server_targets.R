@@ -1,32 +1,52 @@
-# init null output_name which will be checked 
-output_name_pidgin <<- "Null"
-
-# Run chemical sketcher
+# Run chemical sketcher on launch
 observeEvent(input$launch_app, {
   rstudioapi::jobRunScript(path = "gadget_script.R")
 })
 
-# get smiles and render
+# Get smiles, check they're OK and render image
 observeEvent(input$smiles_file, {
-  smi_file <<- input$smiles_file
-  ext <- tools::file_ext(smi_file$datapath)
-  req(smi_file)
-  smi_string <<- read.csv(smi_file$datapath, header = F,sep="\t")[1,1] # read the SMILES 
-  output$chemdoodle = renderChemdoodle(
-    chemdoodle_viewer(smi_string,width=200,height=200)
-  )
-})
-
-
-# Check if SMILES uploaded
-output$smiles_uploaded_checker <- renderText({
-  if(!is.null(input$smiles_file)){
-    "Data upload complete. Please move onto Run Options."
+  values$smi_file <- input$smiles_file
+  ext <- tools::file_ext(values$smi_file$datapath)
+  req(values$smi_file)
+  
+  # check file
+  filecheck <- try(read.csv(values$smi_file$datapath,header=F,sep="\t")[1,1])
+  if(inherits(filecheck,"try-error")){
+    output$smiles_uploaded_checker <- renderText({
+      "There seems to be an issue with your file. Please check the help button or documentation to ensure that it is formatted correctly."
+      values$smie_error = T
+    })
   }else{
-    "Please upload the required information before moving on to target prediction, or move to the Analysis tab to skip target prediction."
+    values$smi_string <- read.csv(values$smi_file$datapath, header = F,sep="\t")[1,1] # read the SMILES 
+    
+    # Check they're ok
+    smicheck = try(chemdoodle_viewer(values$smi_string))
+    if(inherits(smicheck,"try-error")){
+      values$smile_error = T # USE THIS FLAG TO GREY OUT THE PREDICTION BUTTON
+      output$smiles_uploaded_checker <- renderText({
+        "There seems to be an issue with your SMILES string. Please check your file and re-upload."
+      })
+    }else{
+      values$smile_error = F
+      output$chemdoodle = renderChemdoodle(
+        chemdoodle_viewer(values$smi_string,width=200,height=200)
+      )
+      output$smiles_uploaded_checker <- renderText({
+        "SMILES uploaded successfully. Please continue to the Run Options tab."
+      })
+    }
   }
 })
 
+
+# If nothing uploaded, display "please upload"
+observe({
+  if(is.null(values$smile_error)){
+    output$smiles_uploaded_checker <- renderText({
+      "Please upload the required information before moving on to target prediction, or move to the Analysis tab to skip target prediction."
+   })
+  }
+})
 
 # Get pidgin parameters
 observeEvent(input$ba, {
@@ -61,11 +81,11 @@ observeEvent(input$button, {
     # define output name and args
     output_name <- paste0("output/","PIDGIN_",pidginBa,"_",pidginAd,"_",pidginCores,"_",time_now)
     output_name_pidgin <<- paste0(output_name,"_out_predictions.txt")
-    args <- paste0("-f ",smi_file$datapath, " -d '\t' --organism 'Homo' -b ",pidginBa, " --ad ",pidginAd," -n ",pidginCores," -o ",output_name_pidgin)
+    args <- paste0("-f ",values$smi_file$datapath, " -d '\t' --organism 'Homo' -b ",pidginBa, " --ad ",pidginAd," -n ",pidginCores," -o ",output_name_pidgin)
     runline <- paste0("python ",predictpy," ",args) # command line input
     # define sim to train - doesnt work currently
     output_name2 <<- paste0("output/","PIDGIN_",pidginBa,"_",pidginAd,"_",pidginCores,"_",time_now)
-    args2 <- paste0("-f",smi_file$datapath, " --organism 'Homo' -b ",pidginBa, " -n ",pidginCores," -o ",output_name2)
+    args2 <- paste0("-f",values$smi_file$datapath, " --organism 'Homo' -b ",pidginBa, " -n ",pidginCores," -o ",output_name2)
     runline2 <- paste0("python ",sim2train," ",args2)
     bash_file <- data.frame(c(bin_bash,conda_activate,runline,runline2))
     write.table(bash_file,"./run_pidgin.sh",quote=F,row.names=F,col.names=F)
