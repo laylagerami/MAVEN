@@ -23,7 +23,6 @@ library(piano)
 library(HGNChelper)
 library(shinyalert)
 library(shinyWidgets)
-library(rcdk)
 
 # Define global vars
 values <- reactiveValues(

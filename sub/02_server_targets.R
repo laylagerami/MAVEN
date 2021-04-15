@@ -3,50 +3,69 @@ observeEvent(input$launch_app, {
   rstudioapi::jobRunScript(path = "gadget_script.R")
 })
 
-# Get smiles, check they're OK and render image
-observeEvent(input$smiles_file, {
-  values$smi_file <- input$smiles_file
-  ext <- tools::file_ext(values$smi_file$datapath)
-  req(values$smi_file)
-  
-  # check file
-  filecheck <- try(read.csv(values$smi_file$datapath,header=F,sep="\t")[1,1])
-  if(inherits(filecheck,"try-error")){
-    output$smiles_uploaded_checker <- renderText({
-      "There seems to be an issue with your file. Please check the help button or documentation to ensure that it is formatted correctly."
-      values$smie_error = T
-    })
-  }else{
-    values$smi_string <- read.csv(values$smi_file$datapath, header = F,sep="\t")[1,1] # read the SMILES 
-    
-    # Check they're ok
-    smicheck = try(chemdoodle_viewer(values$smi_string))
-    if(inherits(smicheck,"try-error")){
-      values$smile_error = T # USE THIS FLAG TO GREY OUT THE PREDICTION BUTTON
-      output$smiles_uploaded_checker <- renderText({
-        "There seems to be an issue with your SMILES string. Please check your file and re-upload."
-      })
-    }else{
-      values$smile_error = F
-      output$chemdoodle = renderChemdoodle(
-        chemdoodle_viewer(values$smi_string,width=200,height=200)
-      )
-      output$smiles_uploaded_checker <- renderText({
-        "SMILES uploaded successfully. Please continue to the Run Options tab."
-      })
-    }
-  }
-})
-
-
-# If nothing uploaded, display "please upload"
+# Example SMILES?
 observe({
-  if(is.null(values$smile_error)){
+  if (input$example_smiles){ # Example toggled ON
+    values$smi_error=F
+    shinyjs::disable(id = "smiles_file") # Disable file upload
+    values$smiles_file = "Example_Data/DCLK1IN1.txt"
+    values$smi_string <- read.csv(values$smiles_file, header = F,sep="\t")[1,1] # read the SMILES 
     output$smiles_uploaded_checker <- renderText({
-      "Please upload the required information before moving on to target prediction, or move to the Analysis tab to skip target prediction."
-   })
+      "SMILES uploaded successfully. Please continue to the Run Options tab."
+    })
+    output$chemdoodle = renderChemdoodle(
+      chemdoodle_viewer(values$smi_string,width=200,height=200)
+    )
+  }else{
+    shinyjs::enable(id = "smiles_file") # Enable file upload
+    # Get smiles, check they're OK and render image
+    observeEvent(input$smiles_file, {
+      values$smi_file <- input$smiles_file
+      ext <- tools::file_ext(values$smi_file$datapath)
+      req(values$smi_file)
+      
+      # check file
+      filecheck <- try(read.csv(values$smi_file$datapath,header=F,sep="\t")[1,1])
+      if(inherits(filecheck,"try-error")){
+        output$smiles_uploaded_checker <- renderText({
+          "There seems to be an issue with your file. Please check the help button or documentation to ensure that it is formatted correctly."
+          values$smile_error = T
+        })
+      }else{
+        values$smi_string <- read.csv(values$smi_file$datapath, header = F,sep="\t")[1,1] # read the SMILES 
+        
+        # Check they're ok
+        smicheck = try(chemdoodle_viewer(values$smi_string))
+        if(inherits(smicheck,"try-error")){
+          values$smile_error = T # USE THIS FLAG TO GREY OUT THE PREDICTION BUTTON
+          output$smiles_uploaded_checker <- renderText({
+            "There seems to be an issue with your SMILES string. Please check your file and re-upload."
+          })
+        }else{
+          values$smile_error = F
+          output$chemdoodle = renderChemdoodle(
+            chemdoodle_viewer(values$smi_string,width=200,height=200)
+          )
+          output$smiles_uploaded_checker <- renderText({
+            "SMILES uploaded successfully. Please continue to the Run Options tab."
+          })
+        }
+      }
+    })
+    
+    
+    # If nothing uploaded, display "please upload"
+    observe({
+      if(is.null(values$smile_error)){
+        output$smiles_uploaded_checker <- renderText({
+          "Please upload the required information before moving on to target prediction, or move to the Analysis tab to skip target prediction."
+        })
+      }
+    })
   }
 })
+
+
 
 # Get pidgin parameters
 observeEvent(input$ba, {
