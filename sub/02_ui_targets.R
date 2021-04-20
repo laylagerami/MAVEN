@@ -3,7 +3,7 @@ tabPanel("Targets",
         "Step 2. Define Targets",
         tags$br(),
         tags$br(),
-        "Upload your SMILES and run target prediction, view results, upload previous results, and optionally add user-defined targets (with or without running target prediction)",
+        "Upload your SMILES (Upload Smiles tab), choose PIDGIN options and run target prediction (Run Options tab), view results or upload previous results (Results tab), and/or define targets, with or without running prediction models (User-Defined Targets tab).",
         tags$br(),
         tags$br(),
         "If you do not require any targets, please continue to the Analysis tab."
@@ -14,7 +14,6 @@ tabPanel("Targets",
    tabsetPanel(
      
      tabPanel("Upload SMILES",
-              
               fluidRow(
                 column(12,
                        tags$br(),
@@ -28,7 +27,7 @@ tabPanel("Targets",
                        tags$br(),
                        actionButton("launch_app", "Launch Sketcher"),
                        tags$br(),
-                       h6("-THEN-",align="center"),
+                       tags$hr(),
                        tags$br(),
                        fileInput(inputId = "smiles_file",
                                  label = h5("Upload SMILES (.txt or .smi)",
@@ -42,7 +41,7 @@ tabPanel("Targets",
                                  options = list(container = "body")),
                        materialSwitch(inputId = "example_smiles", label = "Use example SMILES (DCKL-1-IN)",inline=T),
                        tags$br(),
-                       "Compound structure will render here after SMILES upload:",
+                       "Compound structure will render here after successful SMILES upload...",
                        tags$br(),
                        chemdoodle_viewerOutput("chemdoodle",width='200',height='200'),
                        tags$br(),
@@ -131,7 +130,8 @@ tabPanel("Targets",
      tabPanel("Results",
               fluidRow(
                 column(12,
-                       h5("Select targets for Causal Reasoning - click to view UniProt link"),
+                       h5("PIDGIN results will appear here when finished. Select targets for Causal Reasoning - click to view UniProt link"),
+                       fileInput("pidgin_file","Or, upload previous PIDGIN results",multiple = F,accept=".txt"),
                        tags$hr(),
                        DTOutput("targettable"),
                        tags$br(),
@@ -139,20 +139,18 @@ tabPanel("Targets",
                        strong("Selected targets: "),
                        textOutput("selected_targets"),
                        tags$br(),
-                       textOutput("target_check"),
-                       tags$br(),
-                       "When you have finished selecting targets, please move to the Analysis tab. You can also add additional targets in the Additional Targets tab.",
+                       "When you have finished selecting targets, please move to the Analysis tab. You can also add additional targets in the User-Defined Targets tab.",
                        tags$br(),
                        tags$br()
                 )
               )
      ),
-     tabPanel("Additional Targets",
+     tabPanel("User-Defined Targets",
               fluidRow(
                       column(12,
                 h5("Add user-defined targets if required, line-separated (HGNC)"),
                 textAreaInput("udtargets", "Input targets", rows = 5),
-                textOutput("testudtargets")
+                textOutput("all_targets")
                              
                       )
                       

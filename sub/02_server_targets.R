@@ -6,7 +6,7 @@ observeEvent(input$launch_app, {
 # Example SMILES?
 observe({
   if (input$example_smiles){ # Example toggled ON
-    values$smi_error=F
+    values$smiles_error=F
     shinyjs::disable(id = "smiles_file") # Disable file upload
     values$smiles_file = "Example_Data/DCLK1IN1.txt"
     values$smi_string <- read.csv(values$smiles_file, header = F,sep="\t")[1,1] # read the SMILES 
@@ -17,6 +17,9 @@ observe({
       chemdoodle_viewer(values$smi_string,width=200,height=200)
     )
   }else{
+    values$smi_string=NULL # remove smiles if toggled off
+    values$smiles_error=NULL
+    values$smiles_file =NULL
     shinyjs::enable(id = "smiles_file") # Enable file upload
     # Get smiles, check they're OK and render image
     observeEvent(input$smiles_file, {
@@ -29,7 +32,7 @@ observe({
       if(inherits(filecheck,"try-error")){
         output$smiles_uploaded_checker <- renderText({
           "There seems to be an issue with your file. Please check the help button or documentation to ensure that it is formatted correctly."
-          values$smile_error = T
+          values$smiles_error = T
         })
       }else{
         values$smi_string <- read.csv(values$smi_file$datapath, header = F,sep="\t")[1,1] # read the SMILES 
@@ -37,12 +40,12 @@ observe({
         # Check they're ok
         smicheck = try(chemdoodle_viewer(values$smi_string))
         if(inherits(smicheck,"try-error")){
-          values$smile_error = T # USE THIS FLAG TO GREY OUT THE PREDICTION BUTTON
+          values$smiles_error = T # USE THIS FLAG TO GREY OUT THE PREDICTION BUTTON
           output$smiles_uploaded_checker <- renderText({
             "There seems to be an issue with your SMILES string. Please check your file and re-upload."
           })
         }else{
-          values$smile_error = F
+          values$smiles_error = F
           output$chemdoodle = renderChemdoodle(
             chemdoodle_viewer(values$smi_string,width=200,height=200)
           )
@@ -56,7 +59,7 @@ observe({
     
     # If nothing uploaded, display "please upload"
     observe({
-      if(is.null(values$smile_error)){
+      if(is.null(values$smiles_error)){
         output$smiles_uploaded_checker <- renderText({
           "Please upload the required information before moving on to target prediction, or move to the Analysis tab to skip target prediction."
         })
@@ -65,27 +68,35 @@ observe({
   }
 })
 
-
+# Only enable PIDGIN button if SMILES are ok
+observe({
+  if(is.null(values$smiles_error) || values$smiles_error == T){
+    disable("button")
+  }
+  else{
+    enable("button")
+  }
+})
 
 # Get pidgin parameters
 observeEvent(input$ba, {
-  pidginBa <<- input$ba
+  values$pidginBa <- input$ba
 })
 observeEvent(input$ad, {
-  pidginAd <<- input$ad
+  values$pidginAd <- input$ad
 })
 observeEvent(input$ncores, {
-  pidginCores <<- input$ncores
+  values$pidginCores <- input$ncores
 })
 
 # Select PIDGINv4 dir
 volumes <- getVolumes()()
 shinyDirChoose(input, 'pidginfolder', roots=volumes, filetypes=c('', 'py'),allowDirCreate=T)
 observe({
-  pidginfolder <<- input$pidginfolder
-  pidgindir <<- paste(unlist(unname(pidginfolder[1])),collapse="/")
-  predictpy <<- paste0(pidgindir,"/predict.py")
-  sim2train <<- paste0(pidgindir,"/sim_to_train.py")
+  values$pidginfolder = input$pidginfolder
+  values$pidgindir = paste(unlist(unname(values$pidginfolder[1])),collapse="/")
+  values$predictpy = paste0(values$pidgindir,"/predict.py")
+  values$sim2train = paste0(values$pidgindir,"/sim_to_train.py")
 })
 
 # Run PIDGIN
@@ -98,14 +109,14 @@ observeEvent(input$button, {
     bin_bash <- "#!/bin/bash"
     conda_activate <- "source activate pidgin3_env" # activate conda
     # define output name and args
-    output_name <- paste0("output/","PIDGIN_",pidginBa,"_",pidginAd,"_",pidginCores,"_",time_now)
-    output_name_pidgin <<- paste0(output_name,"_out_predictions.txt")
-    args <- paste0("-f ",values$smi_file$datapath, " -d '\t' --organism 'Homo' -b ",pidginBa, " --ad ",pidginAd," -n ",pidginCores," -o ",output_name_pidgin)
-    runline <- paste0("python ",predictpy," ",args) # command line input
+    output_name <- paste0("output/","PIDGIN_",values$pidginBa,"_",values$pidginAd,"_",values$pidginCores,"_",time_now)
+    values$output_name_pidgin <- paste0(output_name,"_out_predictions.txt")
+    args <- paste0("-f ",values$smi_file$datapath, " -d '\t' --organism 'Homo' -b ",values$pidginBa, " --ad ",values$pidginAd," -n ",values$pidginCores," -o ",values$output_name_pidgin)
+    runline <- paste0("python ",values$predictpy," ",args) # command line input
     # define sim to train - doesnt work currently
-    output_name2 <<- paste0("output/","PIDGIN_",pidginBa,"_",pidginAd,"_",pidginCores,"_",time_now)
-    args2 <- paste0("-f",values$smi_file$datapath, " --organism 'Homo' -b ",pidginBa, " -n ",pidginCores," -o ",output_name2)
-    runline2 <- paste0("python ",sim2train," ",args2)
+    values$output_name2 = paste0("output/","PIDGIN_",values$pidginBa,"_",values$pidginAd,"_",values$pidginCores,"_",time_now)
+    args2 <- paste0("-f",values$smi_file$datapath, " --organism 'Homo' -b ",values$pidginBa, " -n ",values$pidginCores," -o ",values$output_name2)
+    runline2 <- paste0("python ",values$sim2train," ",args2)
     bash_file <- data.frame(c(bin_bash,conda_activate,runline,runline2))
     write.table(bash_file,"./run_pidgin.sh",quote=F,row.names=F,col.names=F)
     write.table(bash_file,paste0("logs/pidgin_command_",time_now,".sh"),quote=F,row.names=F,col.names=F)
@@ -117,9 +128,9 @@ observeEvent(input$button, {
 # Check if PIDGIN has finished running
 observe({
   req(started())
-  if(file.exists(output_name2)){
-    preds <<- read.csv(output_name_pidgin,sep="\t",header=T)
-    simtrain <<- read.csv(output_name2,sep="\t",header=T)
+  if(file.exists(values$output_name2)){
+    values$preds = read.csv(values$output_name_pidgin,sep="\t",header=T)
+    values$simtrain = read.csv(values$output_name2,sep="\t",header=T)
     output$pidgindone <- renderText({
       paste0("PIDGIN run completed. Full results saved to 'output' folder. Please move onto Results tab to view the results.")
     })
@@ -128,6 +139,11 @@ observe({
 
 # Render table with link to uniprotdb
 output$targettable <- renderDT({
+  if(!is.null(input$pidgin_file)){
+    preds = read.csv(input$pidgin_file$datapath, header = T,sep="\t")
+  }else{
+    preds = values$preds
+  }
   preds = preds[order(-preds[,17]),]
   colnames(preds)[17] = "Probability"
   conversion = AnnotationDbi::select(org.Hs.eg.db,
@@ -135,7 +151,7 @@ output$targettable <- renderDT({
                                      columns=c("ENTREZID","SYMBOL"),
                                      ketype="ENTREZID")
   preds$Gene_ID <- conversion$SYMBOL
-  preds_converted <<- preds
+  values$preds_converted = preds
   preds$url <- paste0("https://www.uniprot.org/uniprot/",preds$Uniprot)
   preds$Gene_ID <- paste0("<a href='",preds$url,"' target='_blank'>",preds$Gene_ID,"</a>")
   preds = preds[,c(3,2,4,17)]
@@ -152,31 +168,42 @@ output$targettable <- renderDT({
 })
 
 # List selected targets for user-friendliness
-output$selected_targets <- renderText({
+observe({
   selected = input$targettable_rows_selected
   if (length(selected)){
-    targets <<- as.character(preds_converted[selected,]$Gene_ID)
-    paste(targets,collapse=", ")
-  }
-})
-
-# Check if targets are in network
-output$target_check <-renderText({
-  selected = input$targettable_rows_selected
-  if (length(selected)){
-    targets <<- as.character(preds_converted[selected,]$Gene_ID)
-    all_nodes = unique(c(as.character(networkdf$source),as.character(networkdf$target)))
-    target_not_in_net = setdiff(targets,all_nodes)
-    target_in_net <<- intersect(targets,all_nodes)
-    if(length(target_not_in_net)>0){
-      target_not_in_net_flat = paste(target_not_in_net,collapse=", ")
-      paste0("WARNING: your target(s): ",target_not_in_net_flat," are not in your input network. These will not be used in the MoA analysis pipeline. Alternatively, go back and upload a different network (target results will be saved).")
-    }
+    values$targets = as.character(values$preds_converted[selected,]$Gene_ID)
+    output$selected_targets <- renderText({
+      paste(values$targets,collapse=", ")
+    })
   }
 })
 
 # User-defined
-output$testudtargets <- renderText({
-  testthetargets <<- unlist(strsplit(input$udtargets,"\n"))
-  unlist(strsplit(input$udtargets,"\n"))
+output$all_targets <- renderText({
+  if(input$udtargets==""){
+    prev_targets <- paste(values$targets,collapse=", ")
+    values$all_targets = values$targets
+    updatePickerInput(session, "carnival_targets",
+                      choices = values$all_targets,
+                      selected=values$all_targets)
+    paste0("Selected targets (predicted and user-defined): ",prev_targets)
+  }else if(input$udtargets!="" & is.null(values$targets)){
+    user_targets <- unlist(strsplit(input$udtargets,"\n"))
+    values$all_targets <- user_targets
+    updatePickerInput(session, "carnival_targets",
+                      choices = values$all_targets,
+                      selected=values$all_targets)
+    paste0("Selected targets (predicted and user-defined): ",paste(user_targets,collapse=", "))
+  }else if(input$udtargets!="" & !is.null(values$targets)){
+    user_targets <- unlist(strsplit(input$udtargets,"\n"))
+    union_targets <- unique(c(user_targets,values$targets))
+    values$all_targets = union_targets
+    updatePickerInput(session, "carnival_targets",
+                      choices = values$all_targets,
+                      selected= values$all_targets)
+    paste0("Selected targets (predicted and user-defined): ",paste(union_targets,collapse=", "))
+  }
 })
+
+
+

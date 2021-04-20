@@ -19,6 +19,9 @@ observe({
              "Number of Edges: ",round(edgecount,0))
     })
   }else{ # Otherwise upload as normal...
+    # clear toggles
+    values$network_uploaded=F
+    values$networkdf=NULL
     shinyjs::enable(id = "network")
     observeEvent({
       # Check network has been uploaded
@@ -133,6 +136,10 @@ observe({
     })
     values$gex_uploaded=TRUE
   }else{
+    # Remove toggles
+    values$gex_uploaded=F
+    values$datadf = F
+    
     shinyjs::enable(id = "gex")
     observeEvent({
       # Check gex has been uploaded
