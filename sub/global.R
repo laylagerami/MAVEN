@@ -1,5 +1,4 @@
-# Functions and libraries
-
+# libraries
 library(shiny)
 library(shinyjs)
 library(igraph)
@@ -24,7 +23,7 @@ library(HGNChelper)
 library(shinyalert)
 library(shinyWidgets)
 
-# Define global vars
+# define global vars
 values <- reactiveValues(
   gex_uploaded=F,
   network_uploaded=F,
@@ -33,10 +32,30 @@ values <- reactiveValues(
   output_name_pidgin=NULL,
   smi_string=NULL,
   smi_file=NULL,
-  smiles_error=NULL
+  smiles_error=NULL,
+  pidginBa = NULL,
+  pidginAd = NULL,
+  pidginCores = NULL,
+  pidginfolder =NULL,
+  pidgindir= NULL,
+  predictpy = NULL,
+  sim2train =NULL,
+  output_name_pidgin=NULL,
+  output_name_2=NULL,
+  preds=NULL,
+  simtrain=NULL,
+  preds_converted=NULL,
+  targets=NULL,
+  targets_in_net=NULL,
+  all_targets=NULL,
+  tf_activities_carnival=NULL,
+  tf_activities_topn = NULL
 )
 
+# set seed 
+set.seed(42)
 
+# functions
 generateTFList <- function (df = df, top = 50, access_idx = 1) 
 {
   if (top == "all") {
