@@ -49,7 +49,10 @@ values <- reactiveValues(
   targets_in_net=NULL,
   all_targets=NULL,
   tf_activities_carnival=NULL,
-  tf_activities_topn = NULL
+  tf_activities_topn = NULL,
+  progenylist = NULL,
+  progenydf = NULL
+  
 )
 
 # set seed 

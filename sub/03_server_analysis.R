@@ -3,10 +3,13 @@ observe({
   if(values$gex_uploaded == F){
     disable("run_dorothea")
     disable("download_dorothea")
+    disable("run_progeny")
+    disable("download_progeny")
     # disable others too
   }
   else{
     enable("run_dorothea")
+    enable("run_progeny")
   }
 })
 
@@ -124,61 +127,99 @@ observeEvent(input$download_dorothea, {
 })
 
 # run PROGEny
-#   
-#   # Progeny
-#   observeEvent(input$no_genes_progeny, {
-#     # run
-#     rownames(datadf) = datadf[,1]
-#     datadf[,1] = NULL
-#     datadf = as.matrix(datadf)
-#     PathwayActivity_counts <<- progeny(datadf, scale=TRUE, 
-#                                        organism="Human", perm=10000, z_scores=F,
-#                                        top = as.numeric(input$no_genes_progeny))
-#     PA_render <<- PathwayActivity_counts %>%
-#       t() %>%
-#       as.data.frame() %>%
-#       tibble::rownames_to_column(var="Pathway")
-#     
-#     # get progeny scores for carnival
-#     load(file=system.file("progenyMembers.RData",package="CARNIVAL"))
-#     PathwayActivity_carnival <- data.frame(PA_render, stringsAsFactors = F)
-#     rownames(PathwayActivity_carnival) <- PathwayActivity_carnival$Pathway
-#     PathwayActivity_carnival$Pathway <- NULL
-#     progenylist <<- assignPROGENyScores(progeny = t(PathwayActivity_carnival), 
-#                                         progenyMembers = progenyMembers, 
-#                                         id = "gene", 
-#                                         access_idx = 1)
-#     # output df
-#     output$progeny_df <- renderDT({
-#       colnames(PA_render)[2] <- "score"
-#       PA_render$score = as.numeric(as.character(PA_render$score))
-#       PA_render %>%
-#         arrange(desc(abs(score)))
-#       datatable(PA_render,options=list("pageLength"=14))
-#     })
-#     
-#     # output plot
-#     output$progeny_plot <- renderPlot({
-#       PA_render <- PathwayActivity_counts %>%
-#         t() %>%
-#         as.data.frame() %>%
-#         tibble::rownames_to_column(var="Pathway")
-#       colnames(PA_render)[2] <- "score"
-#       ggplot(PA_render,aes(x = reorder(Pathway, score), y = score)) + 
-#         geom_bar(aes(fill = score), stat = "identity") +
-#         scale_fill_gradient2(low = "darkblue", high = "indianred", 
-#                              mid = "whitesmoke", midpoint = 0) + 
-#         theme_minimal() +
-#         theme(axis.title = element_text(face = "bold", size = 12),
-#               axis.text.x = 
-#                 element_text(angle = 45, hjust = 1, size =10, face= "bold"),
-#               axis.text.y = element_text(size =10, face= "bold"),
-#               panel.grid.major = element_blank(), 
-#               panel.grid.minor = element_blank()) +
-#         xlab("Pathways")
-#     })
-#   })
-#   
+observeEvent(input$run_progeny, {
+  enable("download_progeny") # allow download button after running
+  observeEvent(input$no_genes_progeny, {
+    datadf = values$datadf
+    rownames(datadf) = datadf[,1]
+    datadf[,1] = NULL
+    datadf = as.matrix(datadf)
+    PathwayActivity_counts <- progeny(datadf, scale=TRUE, 
+                                            organism="Human", perm=10000, z_scores=F,
+                                            top = as.numeric(input$no_genes_progeny))
+    
+    PA_render <- PathwayActivity_counts %>%
+             t() %>%
+             as.data.frame() %>%
+             tibble::rownames_to_column(var="Pathway")
+    
+    # get progeny scores for carnival
+    load(file=system.file("progenyMembers.RData",package="CARNIVAL"))
+    PathwayActivity_carnival <- data.frame(PA_render, stringsAsFactors = F)
+    rownames(PathwayActivity_carnival) <- PathwayActivity_carnival$Pathway
+    PathwayActivity_carnival$Pathway <- NULL
+    values$progenylist <- assignPROGENyScores(progeny = t(PathwayActivity_carnival), 
+                                             progenyMembers = progenyMembers, 
+                                             id = "gene", 
+                                             access_idx = 1)
+    
+    # output df
+    PA_df = PA_render
+    colnames(PA_df)[2] <- "score"
+    PA_df$score = as.numeric(as.character(PA_df$score))
+    PA_df = PA_df %>%
+      dplyr::arrange(desc(abs(score)))
+    values$progenydf = PA_df
+    output$progeny_df <- renderDT({
+       datatable(PA_df,options=list("pageLength"=14))
+     })
+    
+    output$progeny_plot <- renderPlot({
+       PA_render <- PathwayActivity_counts %>%
+         t() %>%
+         as.data.frame() %>%
+         tibble::rownames_to_column(var="Pathway")
+       colnames(PA_render)[2] <- "score"
+       ggplot(PA_render,aes(x = reorder(Pathway, score), y = score)) + 
+         geom_bar(aes(fill = score), stat = "identity") +
+         scale_fill_gradient2(low = "darkblue", high = "indianred", 
+                              mid = "whitesmoke", midpoint = 0) + 
+         theme_minimal() +
+         theme(axis.title = element_text(face = "bold", size = 12),
+               axis.text.x = 
+                 element_text(angle = 45, hjust = 1, size =10, face= "bold"),
+               axis.text.y = element_text(size =10, face= "bold"),
+               panel.grid.major = element_blank(), 
+               panel.grid.minor = element_blank()) +
+         xlab("Pathways")
+     })
+  })
+})
+
+# download
+observeEvent(input$download_progeny, {
+  withProgress(message="Saving PROGENy results to output folder...",value=1, {
+    Sys.sleep(2)
+    # Get current time
+    time_now = gsub(" ","_",Sys.time())
+    time_now = gsub(":","-",time_now)
+    
+    # Get comp name
+    datadf = values$datadf
+    cname = colnames(datadf)[2]
+    
+    # Isolate reactive vals
+    responsivegenes = isolate(input$no_genes_progeny)
+    progenydf <- isolate(values$progenydf)
+    
+    # Get dir
+    fdir = paste0("output/progeny_results_",cname,"_",time_now)
+    dir.create(fdir)
+    
+    plotfname = paste0(fdir,"/progeny_barplot.png")
+    ggsave(plotfname,width=10,height=7)
+    
+    tablefname = paste0(fdir,"/progeny_table.csv")
+    write.csv(progenydf,tablefname,quote=F,row.names = F)
+    
+    logfname = paste0(fdir,"/settings.txt")
+    logdf = data.frame(responsivegenes)
+    rownames(logdf) = c("No. Responsive Genes")
+    colnames(logdf) = NULL
+    write.table(logdf,logfname,quote = F,col.names = F,row.names = T,sep = ": ")
+  })
+})
+
 #   # CARNIVAL run
 #   started <- reactiveVal(Sys.time()[NA])
 #   observeEvent(input$run_carnival, {
