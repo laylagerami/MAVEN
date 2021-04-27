@@ -4,8 +4,8 @@ tabPanel("Visualisation",
            selectInput(
              inputId = "msigdb",
              label= h5("Choose MSigDB set",
-                              tags$style(type = "text/css", "#q13 {vertical-align: top;}"),
-                              bsButton("q13", label = "", icon = icon("question"), style = "info", size = "extra-small")
+                       tags$style(type = "text/css", "#q13 {vertical-align: top;}"),
+                       bsButton("q13", label = "", icon = icon("question"), style = "info", size = "extra-small")
              ),
              choices = c("Hallmark" = "Hallmark",
                          "Biocarta" = "Biocarta",
@@ -33,11 +33,19 @@ tabPanel("Visualisation",
          ),
          
          mainPanel(
-           "CARNIVAL network is displayed below. Following enrichment you can select pathways of interest.",
+           "CARNIVAL network will be displayed below (you can pan and zoom). Following enrichment you can select pathways of interest.",
+           tags$br(),
+           tags$br(),
+           fileInput("upload_carnival","Upload previous CARNIVAL .RDS file"),
+           tags$hr(),
            visNetwork::visNetworkOutput("carnival_network",width = "700px", height = "500px"),
+           downloadButton("download_carnival","Download network as a .sif file"),
+           tags$hr(),
            "Network nodes in selected pathway: ",
            textOutput("pway_nodes"),
-           DTOutput("pwayres")
+           DTOutput("pwayres"),
+           downloadButton("download_pathway", label = "Download enrichment results as as a .csv file")
+           
          )
          
 )

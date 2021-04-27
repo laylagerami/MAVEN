@@ -1,15 +1,67 @@
-# Run chemical sketcher on launch
-observeEvent(input$launch_app, {
-  rstudioapi::jobRunScript(path = "gadget_script.R")
+# Chemical sketcher
+#set a dummy reactive variable
+mol <- reactiveValues(moleculedata = NULL,smiles=NULL,molname=NULL,df=NULL)
+
+#function to update the value based on changes on the shiny side
+observeEvent(input$moleculedata, {
+  moljson <- input$moleculedata
+  mol$moleculedata <- processChemDoodleJson(moljson)
+  
 })
+
+# output function renders SMILES
+output$smiles_out <- renderText({
+  if (is.null(mol$moleculedata)){
+    return("No SMILES? Draw a molecule and click Done to retrieve SMILES file")
+  } else {
+    mol$smiles <- toSmiles(mol$moleculedata)
+    return(paste("Smiles:", mol$smiles))
+  }
+})
+
+# Render table
+output$smiles_table <- renderTable({
+  if(!is.null(mol$moleculedata)){
+    if(input$comp_name==""){
+      mol$molname = "Compound"
+      df = t(data.frame(c(mol$smiles,"Compound 1")))
+      row.names(df) = NULL
+      colnames(df) = c("SMILES","Compound Name")
+      mol$df = df
+    }else{
+      mol$molname = input$comp_name
+      df = t(data.frame(c(mol$smiles,input$comp_name)))
+      row.names(df) = NULL
+      colnames(df) = c("SMILES","Compound Name")
+      mol$df = df
+    }
+    df
+  }
+})
+
+output$downloadsmi <- renderUI({
+  if(!is.null(mol$smiles)){
+    downloadButton("downloadSmiles", "Download .smi file")
+  }
+})
+
+# Downloader
+output$downloadSmiles <- downloadHandler(
+  filename = function() {
+    paste0(mol$molname, ".smi")
+  },
+  content = function(con) {
+    write.table(mol$df, con, row.names = FALSE, col.names=FALSE,sep="\t",quote=F)
+  }
+)
 
 # Example SMILES?
 observe({
   if (input$example_smiles){ # Example toggled ON
     values$smiles_error=F
     shinyjs::disable(id = "smiles_file") # Disable file upload
-    values$smiles_file = "Example_Data/DCLK1IN1.txt"
-    values$smi_string <- read.csv(values$smiles_file, header = F,sep="\t")[1,1] # read the SMILES 
+    values$smi_file$datapath <- "Example_Data/DCLK1IN1.txt"
+    values$smi_string <- read.csv(values$smi_file$datapath, header = F,sep="\t")[1,1] # read the SMILES 
     output$smiles_uploaded_checker <- renderText({
       "SMILES uploaded successfully. Please continue to the Run Options tab."
     })
@@ -17,9 +69,7 @@ observe({
       chemdoodle_viewer(values$smi_string,width=200,height=200)
     )
   }else{
-    values$smi_string=NULL # remove smiles if toggled off
     values$smiles_error=NULL
-    values$smiles_file =NULL
     shinyjs::enable(id = "smiles_file") # Enable file upload
     # Get smiles, check they're OK and render image
     observeEvent(input$smiles_file, {
@@ -36,10 +86,10 @@ observe({
         })
       }else{
         values$smi_string <- read.csv(values$smi_file$datapath, header = F,sep="\t")[1,1] # read the SMILES 
-        
-        # Check they're ok
-        smicheck = try(chemdoodle_viewer(values$smi_string))
-        if(inherits(smicheck,"try-error")){
+        smi_string <- as.character(values$smi_string)
+        #Check they're ok
+        smicheck = tryCatch(chemdoodle_viewer(smi_string), error=function(e) e, warning=function(w) w)
+        if(is(smicheck,"warning")){
           values$smiles_error = T # USE THIS FLAG TO GREY OUT THE PREDICTION BUTTON
           output$smiles_uploaded_checker <- renderText({
             "There seems to be an issue with your SMILES string. Please check your file and re-upload."
@@ -47,7 +97,7 @@ observe({
         }else{
           values$smiles_error = F
           output$chemdoodle = renderChemdoodle(
-            chemdoodle_viewer(values$smi_string,width=200,height=200)
+            chemdoodle_viewer(smi_string,width=200,height=200)
           )
           output$smiles_uploaded_checker <- renderText({
             "SMILES uploaded successfully. Please continue to the Run Options tab."
@@ -111,11 +161,12 @@ observeEvent(input$button, {
     # define output name and args
     output_name <- paste0("output/","PIDGIN_",values$pidginBa,"_",values$pidginAd,"_",values$pidginCores,"_",time_now)
     values$output_name_pidgin <- paste0(output_name,"_out_predictions.txt")
-    args <- paste0("-f ",values$smi_file$datapath, " -d '\t' --organism 'Homo' -b ",values$pidginBa, " --ad ",values$pidginAd," -n ",values$pidginCores," -o ",values$output_name_pidgin)
+    args <- paste0("-f ",values$smi_file$datapath, " -d '\t' --organism 'Homo sapiens' -b ",values$pidginBa, " --ad ",values$pidginAd," -n ",values$pidginCores," -o ",values$output_name_pidgin)
     runline <- paste0("python ",values$predictpy," ",args) # command line input
-    # define sim to train - doesnt work currently
-    values$output_name2 = paste0("output/","PIDGIN_",values$pidginBa,"_",values$pidginAd,"_",values$pidginCores,"_",time_now)
-    args2 <- paste0("-f",values$smi_file$datapath, " --organism 'Homo' -b ",values$pidginBa, " -n ",values$pidginCores," -o ",values$output_name2)
+    # define sim to train 
+    output_name2 = paste0("output/","PIDGIN_",values$pidginBa,"_",values$pidginAd,"_",values$pidginCores,"_",time_now)
+    args2 <- paste0("-f",values$smi_file$datapath, " --organism 'Homo sapiens' -b ",values$pidginBa, " -n ",values$pidginCores," -o ",output_name2)
+    values$output_name2 = paste0(output_name2,"_similarity_details.txt")
     runline2 <- paste0("python ",values$sim2train," ",args2)
     bash_file <- data.frame(c(bin_bash,conda_activate,runline,runline2))
     write.table(bash_file,"./run_pidgin.sh",quote=F,row.names=F,col.names=F)
@@ -132,7 +183,7 @@ observe({
     values$preds = read.csv(values$output_name_pidgin,sep="\t",header=T)
     values$simtrain = read.csv(values$output_name2,sep="\t",header=T)
     output$pidgindone <- renderText({
-      paste0("PIDGIN run completed. Full results saved to 'output' folder. Please move onto Results tab to view the results.")
+      paste0("Target prediction complete. Predictions saved to ",values$output_name_pidgin,", similarity details saved to ",values$output_name2,". Please move onto Results tab to view the results.")
     })
   }
 })
@@ -140,22 +191,43 @@ observe({
 # Render table with link to uniprotdb
 output$targettable <- renderDT({
   if(!is.null(input$pidgin_file)){
-    preds = read.csv(input$pidgin_file$datapath, header = T,sep="\t")
+    f1 = read.csv(input$pidgin_file[[1,'datapath']],sep="\t")
+    f2 = read.csv(input$pidgin_file[[2, 'datapath']],sep="\t")
+    if(c("NN_activity") %in% colnames(f1) & c("Activity_Threshold") %in% colnames(f2)){
+      preds = f2
+      sims = f1
+      output$pidgin_input_error = renderText({""})
+    }else if(c("NN_activity") %in% colnames(f2) & c("Activity_Threshold") %in% colnames(f1)){
+      preds = f1
+      sims = f2
+      output$pidgin_input_error = renderText({""})
+    }else{
+      output$pidgin_input_error = renderText({"Please ensure you upload the correct files!"})
+    }
   }else{
-    preds = values$preds
+    preds <- values$preds
+    sims <- values$simtrain
   }
-  preds = preds[order(-preds[,17]),]
-  colnames(preds)[17] = "Probability"
+  preds_and_sims = merge(preds,sims,by="Uniprot")
+  preds_and_sims = preds_and_sims[order(-preds_and_sims[,17]),]
+  colnames(preds_and_sims)[17] = "Probability"
+  preds_and_sims$Probability = signif(preds_and_sims$Probability,digits=3)
+  preds_and_sims$Similarity = signif(preds_and_sims$Similarity,digits=3)
+  
   conversion = AnnotationDbi::select(org.Hs.eg.db,
-                                     as.character(preds$Gene_ID),
+                                     as.character(preds_and_sims$Gene_ID),
                                      columns=c("ENTREZID","SYMBOL"),
                                      ketype="ENTREZID")
-  preds$Gene_ID <- conversion$SYMBOL
-  values$preds_converted = preds
-  preds$url <- paste0("https://www.uniprot.org/uniprot/",preds$Uniprot)
-  preds$Gene_ID <- paste0("<a href='",preds$url,"' target='_blank'>",preds$Gene_ID,"</a>")
-  preds = preds[,c(3,2,4,17)]
-  datatable(preds,options=list("pageLength"=5),escape=1)
+  preds_and_sims$Gene_ID <- conversion$SYMBOL
+  values$preds_converted = preds_and_sims
+  preds_and_sims$url <- paste0("https://www.uniprot.org/uniprot/",preds_and_sims$Uniprot)
+  preds_and_sims$Gene_ID <- paste0("<a href='",preds_and_sims$url,"' target='_blank'>",preds_and_sims$Gene_ID,"</a>")
+  preds_and_sims = preds_and_sims[,c(3,2,17,22,29,26)]
+  preds_and_sims$chembl_url <- paste0("https://www.ebi.ac.uk/chembl/compound_report_card/",preds_and_sims$Near_Neighbor_ChEMBLID)
+  preds_and_sims$Near_Neighbor_ChEMBLID <- paste0("<a href='",preds_and_sims$chembl_url,"' target='_blank'>",preds_and_sims$Near_Neighbor_ChEMBLID,"</a>")
+  preds_and_sims$chembl_url = NULL
+  colnames(preds_and_sims) = c("Gene ID","Name","Predicted Probability","Nearest Neighbour","NN Tanimoto Sim","NN pChEMBL")
+  datatable(preds_and_sims,options=list("pageLength"=10),escape=1)
 
   ### OLD- ADD CHEMBL LINK TO DF
   #url_df = readRDS("sub/hgnc_chembl_url.rds")

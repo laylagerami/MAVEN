@@ -91,7 +91,18 @@ tabPanel("Analysis",
             trigger = "click", 
             options = list(container = "body")
   ),
-  shinyDirButton('ibmfolder', 'Select IBM folder', 'Please select the folder containing cplex file', FALSE),
+  radioButtons("solver", label=h5("Solver",
+                                      tags$style(type="text/css","#q13 {vertical-align: top;}"),
+                                      bsButton("q13",label="",icon=icon("question"),style="info",size="extra-small")
+                                  ), c("IBM ILOG"="ibm",
+                                       "Cbc" = "cbc",
+                                       "lpSolve" = "lpSolve"),inline=T),
+  bsPopover(id = "q13", title = "Solver",
+            content = paste0("Solver to use for CARNIVAL. Please see https://github.com/saezlab/CARNIVAL for more information."),
+            placement = "right", 
+            trigger = "click", 
+            options = list(container = "body")
+  )
   
   
     ),
@@ -155,10 +166,13 @@ tabPanel("Analysis",
         tabPanel("CARNIVAL",
                  fluidRow(
                    column(10,
-                          h5("CARNIVAL"),
-                          tags$hr(),
+                          tags$br(),
+                          strong("CARNIVAL network optimisation"),
+                          tags$br(),
                           textOutput("carnival_check"),
                           tags$br(),
+                          textOutput("choose_solver"),
+                          shinyDirButton('solver_folder', 'Select solver folder', 'Please select the folder containing solver file', FALSE),
                           actionButton("run_carnival","Run CARNIVAL"),
                           tags$br(),
                           tags$br(),

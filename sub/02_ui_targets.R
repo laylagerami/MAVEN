@@ -22,18 +22,12 @@ tabPanel("Targets",
                        "Please note that only the first compound SMILES will be used, and any additional SMILES will be discarded. Batch upload coming soon.",
                        tags$br(),
                        tags$br(),
-                       "No SMILES? Use the sketcher applet to draw your compound and retrieve a .smi file",
-                       tags$br(),
-                       tags$br(),
-                       actionButton("launch_app", "Launch Sketcher"),
-                       tags$br(),
-                       tags$hr(),
                        tags$br(),
                        fileInput(inputId = "smiles_file",
                                  label = h5("Upload SMILES (.txt or .smi)",
                                             tags$style(type = "text/css", "#q3 {vertical-align: top;}"),
                                             bsButton("q3", label = "", icon = icon("question"), style = "info", size = "extra-small")
-                                 ),multiple=F, accept=c(".txt")),
+                                 ),multiple=F, accept=c(".txt",".smi")),
                        bsPopover(id = "q3", title = "Upload SMILES",
                                  content = paste0("Tab-separated file in the format SMILES, Name/ID (Optional). No header."),
                                  placement = "right", 
@@ -46,6 +40,23 @@ tabPanel("Targets",
                        chemdoodle_viewerOutput("chemdoodle",width='200',height='200'),
                        tags$br(),
                        textOutput("smiles_uploaded_checker"),
+                       tags$hr(),
+                       textOutput("smiles_out"),
+                       textInput("comp_name", "Compound ID (Optional)"),
+                       chemdoodle_sketcher(mol=NULL),
+                       shiny::actionButton("donesmi", "Get SMILES"),
+                       tags$script('
+              document.getElementById("donesmi").onclick = function() {
+              var mol = sketcher.getMolecule();
+              var jsonmol = new ChemDoodle.io.JSONInterpreter().molTo(mol);
+              Shiny.onInputChange("moleculedata", jsonmol);};'
+                       ),
+                       
+                       # Render table
+                       tableOutput("smiles_table"),
+                       
+                       # Download
+                       uiOutput("downloadsmi"),
                        tags$br(),
                        tags$br() 
                 )
@@ -131,7 +142,8 @@ tabPanel("Targets",
               fluidRow(
                 column(12,
                        h5("PIDGIN results will appear here when finished. Select targets for Causal Reasoning - click to view UniProt link"),
-                       fileInput("pidgin_file","Or, upload previous PIDGIN results",multiple = F,accept=".txt"),
+                       fileInput("pidgin_file","Or, upload previous PIDGIN result files (ending in out_predictions.txt AND similarity_details.txt)",multiple = T,accept=".txt"),
+                       textOutput("pidgin_input_error"),
                        tags$hr(),
                        DTOutput("targettable"),
                        tags$br(),
