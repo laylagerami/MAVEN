@@ -94,7 +94,7 @@ tabPanel("Analysis",
   radioButtons("solver", label=h5("Solver",
                                       tags$style(type="text/css","#q13 {vertical-align: top;}"),
                                       bsButton("q13",label="",icon=icon("question"),style="info",size="extra-small")
-                                  ), c("IBM ILOG"="ibm",
+                                  ), c("IBM ILOG CPLEX"="cplex",
                                        "Cbc" = "cbc",
                                        "lpSolve" = "lpSolve"),inline=T),
   bsPopover(id = "q13", title = "Solver",

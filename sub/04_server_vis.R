@@ -1,11 +1,11 @@
 # disable downloader by default
 disable("download_carnival")
+values$carnival_result=NULL
 
 # get uploaded result
 observe({
   infilecarnival <- input$upload_carnival
   if(!is.null(infilecarnival)){
-    values$carnival_result=NULL
     values$carnival_result = readRDS(input$upload_carnival$datapath)
   }
 })

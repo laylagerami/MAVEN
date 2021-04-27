@@ -4,8 +4,8 @@ tabPanel("Visualisation",
            selectInput(
              inputId = "msigdb",
              label= h5("Choose MSigDB set",
-                       tags$style(type = "text/css", "#q13 {vertical-align: top;}"),
-                       bsButton("q13", label = "", icon = icon("question"), style = "info", size = "extra-small")
+                       tags$style(type = "text/css", "#q14 {vertical-align: top;}"),
+                       bsButton("q14", label = "", icon = icon("question"), style = "info", size = "extra-small")
              ),
              choices = c("Hallmark" = "Hallmark",
                          "Biocarta" = "Biocarta",
