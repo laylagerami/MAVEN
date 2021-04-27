@@ -1,0 +1,1 @@
+Uniprot	Pref_Name	Gene ID	Target_Class	Organism	PDB_ID	DisGeNET_Diseases_0.06	O=C1N(CC(F)(F)F)C2=CN=C(NC3=CC=C(N4CCN(C)CC4)C=C3OC)N=C2N(C)C5=CC=CC=C15
