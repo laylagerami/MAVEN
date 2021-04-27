@@ -220,35 +220,88 @@ observeEvent(input$download_progeny, {
   })
 })
 
-#   # CARNIVAL run
-#   started <- reactiveVal(Sys.time()[NA])
-#   observeEvent(input$run_carnival, {
-#     started(Sys.time())
-#     # cplex
-#     #  volumes <- getVolumes()()
-#     #  shinyDirChoose(input, 'ibmfolder', roots=volumes, filetypes=c(),allowDirCreate=T)
-#     #  observe({
-#     #    ibmfolder <<- input$ibmfolder
-#     #    ibmdir <<- paste(unlist(unname(ibmfolder[1])),collapse="/")
-#     #  })
-#     
-#     ibmdir = "../../ibm/"
-#     targetdf = data.frame(t(target_in_net))
-#     colnames(targetdf) = targetdf[1,]
-#     targetdf[1,] = rep(1,ncol(targetdf))
-#     # withProgress(message="Running CARNIVAL...",value=1, {
-#     #  carnival_result <<- runCARNIVAL(inputObj=targetdf,
-#     #                                measObj = tf_activities_carnival[[1]],
-#     #                                netObj = networkdf,
-#     #                                weightObj = progenylist[[1]],
-#     #                                solverPath = paste0(ibmdir,"ILOG/CPLEX_Studio1210/cplex/bin/x86-64_linux/cplex"),
-#     #                                solver="cplex",
-#     #                                timelimit=as.numeric(input$carnival_time_limit),
-#     #                                mipGAP=0,
-#     #                                poolrelGAP=0,
-#     #                                threads=as.numeric(input$carnival_ncores))
-#     #})
-#   })
+# Check for targets
+observe({
+  if(length(input$carnival_targets)>0 & values$network_uploaded == T){
+    # Get targets
+    targets_to_use = input$carnival_targets
+    
+    # Overlap
+    network = values$networkdf
+    all_net_nodes = unique(c(network[,1],network[,2]))
+    in_net = intersect(all_net_nodes,targets_to_use)
+    not_in_net = setdiff(targets_to_use,all_net_nodes)
+    not_in_net_flat = paste(not_in_net,collapse=", ")
+    
+    # The targets we eventually use
+    values$carnival_targets = in_net
+    
+    # Warning messages
+    if(length(not_in_net)>0 & length(not_in_net)<length(targets_to_use)){
+      output$carnival_check = renderText({
+        paste0("WARNING: Your target(s) ",not_in_net_flat," are not present in your network and will not be used as input for CARNIVAL. You can go back to Targets and choose additional targets if required.")
+      })
+    }else if(length(not_in_net)==length(targets_to_use)){
+      output$carnival_check = renderText({
+        paste0("WARNING: None of your targets are present in your network. No targets will be used as input for CARNIVAL. You can go back to Targets to choose additional targets, or upload a different network.")
+      })
+    }else if(length(not_in_net)==0){
+      targets_to_use_flat = paste(targets_to_use,sep=", ")
+      output$carnival_check = renderText({
+        paste0(paste(targets_to_use,collapse=", ")," will be used as input targets in CARNIVAL.")
+      })
+    }
+  }else if(length(input$carnival_targets)==0 & values$network_uploaded==T){
+    output$carnival_check = renderText({
+      paste0("CARNIVAL will be run with no input targets.")
+    })
+  }
+})
+
+# Get solver
+observe({
+  solver = input$solver
+  if(solver=="ibm"){
+    enable("solver_folder")
+    output$choose_solver = renderText({"Please select root directory containing the ILOG solver (usually named ibm)"})
+  }
+  if(solver=="cbc"){
+    enable("solver_folder")
+    output$choose_solver = renderText({"cbc"})
+  }
+  if(solver=="lpSolve"){
+    disable("solver_folder")
+    output$choose_solver = renderText({"Using lpSolve package to run CARNIVAL"})
+  }
+})
+   # CARNIVAL run
+   started <- reactiveVal(Sys.time()[NA])
+   observeEvent(input$run_carnival, {
+     started(Sys.time())
+     # cplex
+       
+       observe({
+         ibmfolder <<- input$ibmfolder
+         ibmdir <<- paste(unlist(unname(ibmfolder[1])),collapse="/")
+       })
+     
+     ibmdir = "../../ibm/"
+     targetdf = data.frame(t(target_in_net))
+     colnames(targetdf) = targetdf[1,]
+     targetdf[1,] = rep(1,ncol(targetdf))
+     # withProgress(message="Running CARNIVAL...",value=1, {
+     #  carnival_result <<- runCARNIVAL(inputObj=targetdf,
+     #                                measObj = tf_activities_carnival[[1]],
+     #                                netObj = networkdf,
+     #                                weightObj = progenylist[[1]],
+     #                                solverPath = paste0(ibmdir,"ILOG/CPLEX_Studio1210/cplex/bin/x86-64_linux/cplex"),
+     #                                solver="cplex",
+     #                                timelimit=as.numeric(input$carnival_time_limit),
+     #                                mipGAP=0,
+     #                                poolrelGAP=0,
+     #                                threads=as.numeric(input$carnival_ncores))
+     #})
+   })
 #   
 #   # Check if CARNIVAL has finished
 #   observe({

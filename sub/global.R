@@ -22,7 +22,7 @@ library(piano)
 library(HGNChelper)
 library(shinyalert)
 library(shinyWidgets)
-
+library(lpSolve)
 # define global vars
 values <- reactiveValues(
   gex_uploaded=F,

@@ -6,7 +6,7 @@ observe({
     values$networkdf=read.csv("Example_Data/omnipath_full_carnival.sif",sep="\t")
     # render
     output$networkrender <- renderDT({
-      datatable(values$networkdf,options=list("pageLength" = 5))
+      datatable(values$networkdf,options=list("pageLength" = 10))
     })
     # stats
     output$networkstats <- renderText({
@@ -33,7 +33,7 @@ observe({
         
         # Render the table for user-side sanity check
         output$networkrender <- renderDT({
-          datatable(values$networkdf,options=list("pageLength" = 5))
+          datatable(values$networkdf,options=list("pageLength" = 10))
         })
         
         # Output network stats, also functions as a checker
@@ -132,7 +132,7 @@ observe({
     })
     values$datadf <- read.csv("Example_Data/T2.txt",header=T,sep="\t")
     output$gextable <- renderDT({
-      datatable(values$datadf,options=list("pageLength"=5))
+      datatable(values$datadf,options=list("pageLength"=10))
     })
     values$gex_uploaded=TRUE
   }else{
@@ -166,7 +166,7 @@ observe({
             values$gex_uploaded=TRUE
             values$datadf <<- datadf1[,c(1,2)] # only keep first two cols
             output$gextable <- renderDT({
-              datatable(values$datadf,options=list("pageLength"=5))
+              datatable(values$datadf,options=list("pageLength"=10))
             })
             
             # Shiny alert for incorrect symbols
