@@ -51,9 +51,15 @@ values <- reactiveValues(
   tf_activities_carnival=NULL,
   tf_activities_topn = NULL,
   progenylist = NULL,
-  progenydf = NULL
-  
+  progenydf = NULL,
+  carnival_targets = NULL,
+  carnival_result = NULL,
+  enrichment_result=F,
+  sig_pathways_df_full=NULL,
+  sig_values_df=NULL,
+  pathway=NULL
 )
+
 
 # set seed 
 set.seed(42)

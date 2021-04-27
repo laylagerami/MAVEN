@@ -13,6 +13,16 @@ observe({
   }
 })
 
+# CARNIVAL can only run if we have a network
+observe({
+  if(values$gex_uploaded == F & values$network_uploaded == F){
+    disable("run_carnival")
+  }
+  else{
+    enable("run_carnival")
+  }
+})
+
 # Run DoRoThEA
 observeEvent(input$run_dorothea, {
   # Enable download of files once dorothea is run
@@ -259,22 +269,24 @@ observe({
 })
 
 # Get solver
+# NEED TO PUT SOLVER BUTTON IN!!!
 observe({
   solver = input$solver
-  if(solver=="ibm"){
+  if(solver=="cplex"){
     enable("solver_folder")
-    output$choose_solver = renderText({"Please select root directory containing the ILOG solver (usually named ibm)"})
+    output$choose_solver = renderText({"Please select root-level directory containing the IBM ILOG CPLEX solver (usually named ibm)"})
   }
   if(solver=="cbc"){
     enable("solver_folder")
-    output$choose_solver = renderText({"cbc"})
+    output$choose_solver = renderText({"Please select directory containing the cbc solver (usually usr/bin)"})
   }
   if(solver=="lpSolve"){
     disable("solver_folder")
     output$choose_solver = renderText({"Using lpSolve package to run CARNIVAL"})
   }
 })
-   # CARNIVAL run
+   
+# CARNIVAL run
    started <- reactiveVal(Sys.time()[NA])
    observeEvent(input$run_carnival, {
      started(Sys.time())
