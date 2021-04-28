@@ -23,6 +23,8 @@ library(HGNChelper)
 library(shinyalert)
 library(shinyWidgets)
 library(lpSolve)
+library(sortable)
+
 # define global vars
 values <- reactiveValues(
   gex_uploaded=F,
@@ -57,7 +59,12 @@ values <- reactiveValues(
   enrichment_result=F,
   sig_pathways_df_full=NULL,
   sig_values_df=NULL,
-  pathway=NULL
+  pathway=NULL,
+  solver_file=NULL,
+  solver=NULL,
+  carnival_result=NULL,
+  inh_targets=NULL,
+  act_targets=NULL
 )
 
 

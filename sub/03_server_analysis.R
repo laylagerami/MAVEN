@@ -13,9 +13,9 @@ observe({
   }
 })
 
-# CARNIVAL can only run if we have a network
+# CARNIVAL can only run if we have a network and the dorothea+progeny scores
 observe({
-  if(values$gex_uploaded == F & values$network_uploaded == F){
+  if(values$gex_uploaded == F | values$network_uploaded == F | is.null(values$tf_activities_carnival) | is.null(values$progenylist)){
     disable("run_carnival")
   }
   else{
@@ -268,39 +268,138 @@ observe({
   }
 })
 
-# Get solver
-# NEED TO PUT SOLVER BUTTON IN!!!
+# Targets activated or inhibited? (render bucket list)
+output$sortable <- renderUI({
+  bucket_list(
+    header = "Choose whether to treat your targets as activated or inhibited",
+    group_name = "bucket_list_group",
+    orientation = "horizontal",
+    add_rank_list(
+      text = "Inhibited",
+      labels = values$carnival_targets,
+      input_id = "rank_list_inhibited"
+    ),
+    add_rank_list(
+      text = "Activated",
+      labels = NULL,
+      input_id = "rank_list_activated"
+    )
+  )
+})
+
+# Retrieve results from bucket list
+observe({
+  values$inh_targets <- input$rank_list_inhibited
+  values$act_targets <- input$rank_list_activated  
+})
+
+
+# Get solver name
 observe({
   solver = input$solver
+  values$solver = solver
   if(solver=="cplex"){
-    enable("solver_folder")
-    output$choose_solver = renderText({"Please select root-level directory containing the IBM ILOG CPLEX solver (usually named ibm)"})
+    enable("interactive_solver")
+    output$choose_solver = renderText({"Please use the 'Select Solver' button to select the interactive IBM ILOG CPLEX solver before running CARNIVAL (usually in ibm/ILOG/CPLEX_StudioXXXX/cplex/bin/XXXX)"})
   }
   if(solver=="cbc"){
-    enable("solver_folder")
-    output$choose_solver = renderText({"Please select directory containing the cbc solver (usually usr/bin)"})
+    enable("interactive_solver")
+    output$choose_solver = renderText({"Please use the 'Select Solver' button to select the interactive cbc solver before running CARNIVAL (usually in usr/bin)"})
   }
   if(solver=="lpSolve"){
-    disable("solver_folder")
-    output$choose_solver = renderText({"Using lpSolve package to run CARNIVAL"})
+    disable("interactive_solver")
+    output$choose_solver = renderText({"Using lpSolve R package to run CARNIVAL, no interactive solver required."})
   }
 })
-   
-# CARNIVAL run
-   started <- reactiveVal(Sys.time()[NA])
-   observeEvent(input$run_carnival, {
-     started(Sys.time())
-     # cplex
-       
-       observe({
-         ibmfolder <<- input$ibmfolder
-         ibmdir <<- paste(unlist(unname(ibmfolder[1])),collapse="/")
-       })
-     
-     ibmdir = "../../ibm/"
-     targetdf = data.frame(t(target_in_net))
-     colnames(targetdf) = targetdf[1,]
-     targetdf[1,] = rep(1,ncol(targetdf))
+
+# Get solver path
+volumes <- getVolumes()()
+shinyFileChoose(input, 'interactive_solver', roots=volumes)
+observe({
+  values$solver_file = input$interactive_solver
+})
+
+# CARNIVAL run (include checker)
+started_carnival <- reactiveVal(Sys.time()[NA])
+observeEvent(input$run_carnival, {
+  started_carnival(Sys.time())
+  
+  # Create target df
+  if(length(values$carnival_targets)>0 | !is.null(values$carnival_targets)){
+    # activated
+    act_targets_df = data.frame(t(values$act_targets))
+    colnames(act_targets_df) = act_targets_df[1,]
+    act_targets_df[1,] = rep(1,ncol(act_targets_df)) 
+    # inhibited
+    inh_targets_df = data.frame(t(values$inh_targets))
+    colnames(inh_targets_df) = inh_targets_df[1,]
+    inh_targets_df[1,] = rep(-1,ncol(inh_targets_df))
+    # put together
+    targets_df <- cbind(act_targets_df,inh_targets_df)
+    message <- "Running CARNIVAL with input targets..."
+  }else{
+    targets_df <- NULL
+    message <- "Running CARNIVAL with no input targets (Inverse CARNIVAL)..."
+  }
+  
+  # Check solver
+  if(values$solver=="cplex"){
+    if(paste(unlist(unname(values$solver_file[1])),collapse="/")==0){
+      solver_check=F
+    }else{
+      solver_check=T
+      solver_path = paste(unlist(unname(values$solver_file[1])),collapse="/")
+    }
+  }else if(values$solver=="cbc"){
+    if(paste(unlist(unname(values$solver_file[1])),collapse="/")==0){
+      solver_check=F
+    }else{
+      solver_check=T
+      solver_path = paste(unlist(unname(values$solver_file[1])),collapse="/")
+    }
+  }else if(values$solver=="lpSolve"){
+    solver_check=T
+    solver_path=NULL
+  }
+  
+  if(solver_check==T){
+    output$carnival_warning = renderText({"You can check CARNIVAL progress in your R Console"})
+    withProgress(message=message,value=1, {
+      values$carnival_result <- runCARNIVAL(inputObj=targets_df,
+                                            netObj = values$networkdf,
+                                            measObj = values$tf_activities_carnival[[1]],
+                                            weightObj = values$progenylist[[1]],
+                                            solverPath = solver_path,
+                                            solver=values$solver,
+                                            timelimit=as.numeric(input$carnival_time_limit),
+                                            threads=as.numeric(input$carnival_ncores))
+    })
+  }else{
+    output$carnival_warning = renderText({"ERROR: No interactive solver path chosen. Please use the Select Solver button, or change option to lpSolve. CARNIVAL terminating..."})
+  }
+  
+   # withProgress(message="Running CARNIVAL...",value=1, {
+  #    values$carnival_result <- runCARNIVAL(inputObj=targetdf,
+  #                                          netObj = networkdf,
+  ##                                          measObj = tf_activities_carnival[[1]],
+   #                                         weightObj = progenylist[[1]],
+    #                                        solverPath = paste0(ibmdir,"ILOG/CPLEX_Studio1210/cplex/bin/x86-64_linux/cplex"),
+     #                                       solver="cplex",
+      #                                      timelimit=as.numeric(input$carnival_time_limit),
+       #                                     threads=as.numeric(input$carnival_ncores))
+  #  })
+  #}else{ # or inverse carnival
+   # values$carnival_result <- runCARNIVAL(inputObj=targetdf,
+    #                                      measObj = tf_activities_carnival[[1]],
+     #                                     netObj = networkdf,
+      #                                    weightObj = progenylist[[1]],
+       #                                   solverPath = paste0(ibmdir,"ILOG/CPLEX_Studio1210/cplex/bin/x86-64_linux/cplex"),
+   #                                       solver="cplex",
+  #                                        timelimit=as.numeric(input$carnival_time_limit),
+ #                                         threads=as.numeric(input$carnival_ncores))
+#  }
+  
+    
      # withProgress(message="Running CARNIVAL...",value=1, {
      #  carnival_result <<- runCARNIVAL(inputObj=targetdf,
      #                                measObj = tf_activities_carnival[[1]],
@@ -315,7 +414,7 @@ observe({
      #})
    })
 #   
-#   # Check if CARNIVAL has finished
+#   # Check if CARNIVAL has finished and save results/params
 #   observe({
 #     req(started())
 #     if(exists("carnival_result")){
