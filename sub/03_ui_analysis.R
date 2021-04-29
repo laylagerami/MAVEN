@@ -35,7 +35,7 @@ tabPanel("Analysis",
               min = 5, max = 100,
               value = 10),
     bsPopover(id = "q8", title = "Number of TFs to include",
-              content = paste0("Number of top enriched TFs to include as input to CARNIVAL."),
+              content = paste0("Number of top enriched TFs to include as input to CARNIVAL. This number can be increased to increase coverage, but increasing too much may introduce noise. We recommend to check the output NES scores before deciding on the final number of TFs to you."),
               placement = "right", 
               trigger = "click", 
               options = list(container = "body")
@@ -75,7 +75,7 @@ tabPanel("Analysis",
                                            bsButton("q11", label = "", icon = icon("question"), style = "info", size = "extra-small")
   ), value = "7200", width = NULL, placeholder = NULL),
   bsPopover(id = "q11", title = "Time limit for CARNIVAL run.",
-            content = paste0("Time limit (in seconds) for CARNIVAL run"),
+            content = paste0("Time limit (in seconds) for CARNIVAL run. We recommend to increase this value if no/few solutions are found."),
             placement = "right", 
             trigger = "click", 
             options = list(container = "body")
@@ -86,7 +86,7 @@ tabPanel("Analysis",
                                               bsButton("q12", label = "", icon = icon("question"), style = "info", size = "extra-small")
   ), value = "20", width = NULL, placeholder = NULL),
   bsPopover(id = "q12", title = "Number of cores.",
-            content = paste0("Number of cores for ILP solver"),
+            content = paste0("Number of cores for ILP solver to use"),
             placement = "right", 
             trigger = "click", 
             options = list(container = "body")

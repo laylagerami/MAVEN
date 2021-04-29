@@ -123,9 +123,6 @@ observe({
   if(is.null(values$smiles_error) || values$smiles_error == T){
     disable("button")
   }
-  else{
-    enable("button")
-  }
 })
 
 # Get pidgin parameters
@@ -139,12 +136,28 @@ observeEvent(input$ncores, {
   values$pidginCores <- input$ncores
 })
 
-# Select PIDGINv4 dir
+# Select PIDGINv4 dir and get .py scripts
 volumes <- getVolumes()()
 shinyDirChoose(input, 'pidginfolder', roots=volumes, filetypes=c('', 'py'),allowDirCreate=T)
 observe({
   values$pidginfolder = input$pidginfolder
+  skksks <<- values$pidginfolder
+  
   values$pidgindir = paste(unlist(unname(values$pidginfolder[1])),collapse="/")
+ 
+  #Check they have selected the (correct) folder
+  if(paste(unlist(unname(values$pidginfolder[1])),collapse="/")==0){
+    disable("button")
+    output$pidgin_folder_warning = renderText({"Please select the PIDGINv4 directory, which should contain the model .py files"})
+  }else{
+    if(!file.exists(paste0(values$pidgindir,"/predict.py"))){
+      output$pidgin_folder_warning = renderText({"The directory you selected does not contain the 'predict.py' script required to run PIDGIN. Please ensure you have selected the root directory, and have not modified any file or folder names."})
+      disable("button")
+    }else{
+      enable("button")
+      output$pidgin_folder_warning = renderText({""})
+    }
+  }
   values$predictpy = paste0(values$pidgindir,"/predict.py")
   values$sim2train = paste0(values$pidgindir,"/sim_to_train.py")
 })
@@ -152,10 +165,11 @@ observe({
 # Run PIDGIN
 started <- reactiveVal(Sys.time()[NA])
 observeEvent(input$button, {
-  withProgress(message="Running PIDGIN...settings saved to logs folder...",value=1, {
+  withProgress(message="Running PIDGIN...you can check progress in your R console",value=1, {
     started(Sys.time())
     time_now = gsub(" ","_",Sys.time())
     time_now = gsub(":","-",time_now)
+    values$pidgin_time_now = time_now
     bin_bash <- "#!/bin/bash"
     conda_activate <- "source activate pidgin3_env" # activate conda
     # define output name and args
@@ -167,6 +181,7 @@ observeEvent(input$button, {
     output_name2 = paste0("output/","PIDGIN_",values$pidginBa,"_",values$pidginAd,"_",values$pidginCores,"_",time_now)
     args2 <- paste0("-f",values$smi_file$datapath, " --organism 'Homo sapiens' -b ",values$pidginBa, " -n ",values$pidginCores," -o ",output_name2)
     values$output_name2 = paste0(output_name2,"_similarity_details.txt")
+    values$output_namemat = paste0(output_name2,"_similarity_matrix.txt")
     runline2 <- paste0("python ",values$sim2train," ",args2)
     bash_file <- data.frame(c(bin_bash,conda_activate,runline,runline2))
     write.table(bash_file,"./run_pidgin.sh",quote=F,row.names=F,col.names=F)
@@ -182,8 +197,17 @@ observe({
   if(file.exists(values$output_name2)){
     values$preds = read.csv(values$output_name_pidgin,sep="\t",header=T)
     values$simtrain = read.csv(values$output_name2,sep="\t",header=T)
+    
+    # move output files + command to a folder, remove similarity matrix
+    output_pidgin_dir = paste0("output/pidgin_",values$pidgin_time_now)
+    dir.create(output_pidgin_dir)
+    file.rename(from = values$output_name_pidgin, to=paste0(output_pidgin_dir,"/",gsub("output/","",values$output_name_pidgin)))
+    file.rename(from = values$output_name2, to=paste0(output_pidgin_dir,"/",gsub("output/","",values$output_name2)))
+    file.remove(values$output_namemat)
+    file.copy(from = paste0("logs/pidgin_command_",values$pidgin_time_now,".sh"), to=paste0(output_pidgin_dir,"/pidgin_command_",values$pidgin_time_now))
+    
     output$pidgindone <- renderText({
-      paste0("Target prediction complete. Predictions saved to ",values$output_name_pidgin,", similarity details saved to ",values$output_name2,". Please move onto Results tab to view the results.")
+      paste0("Target prediction complete. Predictions, training data similarity details and command-line entry saved to ",output_pidgin_dir,". Please move onto Results tab to view the results.")
     })
   }
 })
