@@ -24,6 +24,7 @@ library(shinyalert)
 library(shinyWidgets)
 library(lpSolve)
 library(sortable)
+library(colorspace)
 
 # define global vars
 values <- reactiveValues(
@@ -56,6 +57,7 @@ values <- reactiveValues(
   progenydf = NULL,
   carnival_targets = NULL,
   carnival_result = NULL,
+  carnival_done=F,
   enrichment_result=F,
   sig_pathways_df_full=NULL,
   sig_values_df=NULL,
@@ -64,9 +66,11 @@ values <- reactiveValues(
   solver=NULL,
   carnival_result=NULL,
   inh_targets=NULL,
-  act_targets=NULL
+  act_targets=NULL,
+  pidgin_time_now=NULL,
+  output_namemat = NULL,
+  carnival_targets_df = NULL
 )
-
 
 # set seed 
 set.seed(42)

@@ -1,4 +1,6 @@
 # Disable buttons if data not available
+shinyjs::hide("sortable") # hide target sorter by default
+
 observe({
   if(values$gex_uploaded == F){
     disable("run_dorothea")
@@ -233,6 +235,8 @@ observeEvent(input$download_progeny, {
 # Check for targets
 observe({
   if(length(input$carnival_targets)>0 & values$network_uploaded == T){
+    shinyjs::show("sortable") # show target sorter
+    
     # Get targets
     targets_to_use = input$carnival_targets
     
@@ -252,6 +256,7 @@ observe({
         paste0("WARNING: Your target(s) ",not_in_net_flat," are not present in your network and will not be used as input for CARNIVAL. You can go back to Targets and choose additional targets if required.")
       })
     }else if(length(not_in_net)==length(targets_to_use)){
+      hinyjs::hide("sortable") # hide target sorter
       output$carnival_check = renderText({
         paste0("WARNING: None of your targets are present in your network. No targets will be used as input for CARNIVAL. You can go back to Targets to choose additional targets, or upload a different network.")
       })
@@ -262,6 +267,7 @@ observe({
       })
     }
   }else if(length(input$carnival_targets)==0 & values$network_uploaded==T){
+    shinyjs::hide("sortable") # hide target sorter
     output$carnival_check = renderText({
       paste0("CARNIVAL will be run with no input targets.")
     })
@@ -308,7 +314,7 @@ observe({
   }
   if(solver=="lpSolve"){
     disable("interactive_solver")
-    output$choose_solver = renderText({"Using lpSolve R package to run CARNIVAL, no interactive solver required."})
+    output$choose_solver = renderText({"[WARNING: lpSolve should only be used for small/toy examples, and will generally not be useful for real-life studies. Please consider installing the freely available cbc solver, or the free for academic use IBM CPLEX solver.] Using lpSolve R package to run CARNIVAL, no interactive solver required."})
   }
 })
 
@@ -326,6 +332,7 @@ observeEvent(input$run_carnival, {
   
   # Create target df
   if(length(values$carnival_targets)>0 | !is.null(values$carnival_targets)){
+    #shinyjs::show("sortable",asis=T)
     # activated
     act_targets_df = data.frame(t(values$act_targets))
     colnames(act_targets_df) = act_targets_df[1,]
@@ -336,10 +343,12 @@ observeEvent(input$run_carnival, {
     inh_targets_df[1,] = rep(-1,ncol(inh_targets_df))
     # put together
     targets_df <- cbind(act_targets_df,inh_targets_df)
-    message <- "Running CARNIVAL with input targets..."
+    values$carnival_targets_df = targets_df
+    message <- "Running CARNIVAL with input targets...you can check progress in your R console"
   }else{
+   # shinyjs::hide("sortable",asis=T) # hide target sortable
     targets_df <- NULL
-    message <- "Running CARNIVAL with no input targets (Inverse CARNIVAL)..."
+    message <- "Running CARNIVAL with no input targets (Inverse CARNIVAL)...you can check progress in your R console"
   }
   
   # Check solver
@@ -363,7 +372,6 @@ observeEvent(input$run_carnival, {
   }
   
   if(solver_check==T){
-    output$carnival_warning = renderText({"You can check CARNIVAL progress in your R Console"})
     withProgress(message=message,value=1, {
       values$carnival_result <- runCARNIVAL(inputObj=targets_df,
                                             netObj = values$networkdf,
@@ -377,51 +385,61 @@ observeEvent(input$run_carnival, {
   }else{
     output$carnival_warning = renderText({"ERROR: No interactive solver path chosen. Please use the Select Solver button, or change option to lpSolve. CARNIVAL terminating..."})
   }
+})
+
+   
+# Check if CARNIVAL has finished and save results/params
+observe({
+ req(started_carnival())
+ if(!is.null(values$carnival_result)){ # and include condition that it hasnt yet been uploaded
+   # Create log file
+   # CARNIVAL LOG
+   if(!is.null(values$carnival_targets_df)){
+     carnival_targets_df = values$carnival_targets_df
+     up_targets_cols = (carnival_targets_df[1,] == 1)
+     down_targets_cols = (carnival_targets_df[1,] == -1)
+     up_targets = paste0("up_targets = ",paste(colnames(carnival_targets_df)[up_targets_cols],collapse=", "))
+     down_targets = paste0("down_targets = ",paste(colnames(carnival_targets_df)[down_targets_cols],collapse=", "))
+   }else{
+     up_targets = paste0("up_targets = None")
+     down_targets = paste0("down_targets = None")
+   }
+   solver = paste0("solver = ",values$solver)
+   timelimit = paste0("timelimit = ",input$carnival_time_limit)
+   solverPath = paste0("solverPath = ",paste(unlist(unname(values$solver_file[1])),collapse="/"))
+   threads = paste0("threads = ",input$carnival_ncores)
+   # default settings in case these change btwn versions
+   mipGAP = "mipGAP = 0.05"
+   poolrelGAP = "poolrelGAP = 0.0001"
+   limitPop = "limitPop = 500"
+   poolCap = "poolCap = 100"
+   poolIntensity = "poolIntensity = 4"
+   poolReplace = "poolReplace = 2"
+   alphaWeight = "alphaWeight = 1"
+   betaWeight = "betaWeight = 0.2"
+   
+   # DOROTHEA LOG
+   top = paste0("top = ",input$no_tfs)
+   conf = paste0("confidence levels = ",paste(input$dorothea_conf,sep=", "))
+   minsize = "minsize = 5"
+   esetfilter = "eset.filter = F"
+   nes = "nes = T"
+   
+   # PROGENY LOG
+   scale = "scale = T"
+   perm = "perm = 10000"
+   z_scores = "z_scores = F"
+   top = paste0("top = ",input$no_genes_progeny)
+   get_nulldist = "get_nulldist = F"
+   
+   # Put into file!
   
-   # withProgress(message="Running CARNIVAL...",value=1, {
-  #    values$carnival_result <- runCARNIVAL(inputObj=targetdf,
-  #                                          netObj = networkdf,
-  ##                                          measObj = tf_activities_carnival[[1]],
-   #                                         weightObj = progenylist[[1]],
-    #                                        solverPath = paste0(ibmdir,"ILOG/CPLEX_Studio1210/cplex/bin/x86-64_linux/cplex"),
-     #                                       solver="cplex",
-      #                                      timelimit=as.numeric(input$carnival_time_limit),
-       #                                     threads=as.numeric(input$carnival_ncores))
-  #  })
-  #}else{ # or inverse carnival
-   # values$carnival_result <- runCARNIVAL(inputObj=targetdf,
-    #                                      measObj = tf_activities_carnival[[1]],
-     #                                     netObj = networkdf,
-      #                                    weightObj = progenylist[[1]],
-       #                                   solverPath = paste0(ibmdir,"ILOG/CPLEX_Studio1210/cplex/bin/x86-64_linux/cplex"),
-   #                                       solver="cplex",
-  #                                        timelimit=as.numeric(input$carnival_time_limit),
- #                                         threads=as.numeric(input$carnival_ncores))
-#  }
-  
-    
-     # withProgress(message="Running CARNIVAL...",value=1, {
-     #  carnival_result <<- runCARNIVAL(inputObj=targetdf,
-     #                                measObj = tf_activities_carnival[[1]],
-     #                                netObj = networkdf,
-     #                                weightObj = progenylist[[1]],
-     #                                solverPath = paste0(ibmdir,"ILOG/CPLEX_Studio1210/cplex/bin/x86-64_linux/cplex"),
-     #                                solver="cplex",
-     #                                timelimit=as.numeric(input$carnival_time_limit),
-     #                                mipGAP=0,
-     #                                poolrelGAP=0,
-     #                                threads=as.numeric(input$carnival_ncores))
-     #})
+   # Save log file, RDS and .sif
+   
+   output$carnivaldone <- renderText({
+     paste0("CARNIVAL run completed! Output and log file saved to xxx, Please move onto Visualisation tab.")
    })
-#   
-#   # Check if CARNIVAL has finished and save results/params
-#   observe({
-#     req(started())
-#     if(exists("carnival_result")){
-#       output$carnivaldone <- renderText({
-#         paste0("CARNIVAL run completed. Please move onto Visualisation tab.")
-#       })
-#     }
-#   })
+ }
+})
 
 

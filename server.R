@@ -12,20 +12,20 @@ server = function(input, output, session) {
 
 # *DATA* = done!
 
-# *TARGETS*
-# sim to train  pending
-# display filename to user to check (file written to...)
+# *TARGETS*  = done!
 
 # *ANALYSIS*
-# Fix IBM link
-# Add options for other solvers
+# Check contents of solver files
 ## Put settings in log files for future reference (PIDGIN done, need to do the same for when run CARNIVAL is clicked including all vars)
+# include all settings including non-default in the log files, as well as .RDS and .sif
+# create separate log file for carnival then copy it to output, like with PIDGIN
 
 # *VISUALISATION*
 # lightn edges too
 # fix downloader disable button
-# deselect pathway
+# allow deselect pathways 
 # choose specific nodes to be enriched instead of all of them, lighten them in the network when deselcted
+# zoom into nodes?
 
 # *OTHER*
 # bookmarking?
