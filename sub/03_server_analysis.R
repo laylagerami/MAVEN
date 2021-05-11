@@ -256,7 +256,7 @@ observe({
         paste0("WARNING: Your target(s) ",not_in_net_flat," are not present in your network and will not be used as input for CARNIVAL. You can go back to Targets and choose additional targets if required.")
       })
     }else if(length(not_in_net)==length(targets_to_use)){
-      hinyjs::hide("sortable") # hide target sorter
+      shinyjs::hide("sortable") # hide target sorter
       output$carnival_check = renderText({
         paste0("WARNING: None of your targets are present in your network. No targets will be used as input for CARNIVAL. You can go back to Targets to choose additional targets, or upload a different network.")
       })
@@ -329,10 +329,12 @@ observe({
 started_carnival <- reactiveVal(Sys.time()[NA])
 observeEvent(input$run_carnival, {
   started_carnival(Sys.time())
+  time_now = gsub(" ","_",Sys.time())
+  time_now = gsub(":","-",time_now)
+  values$carnival_time_now = time_now
   
   # Create target df
   if(length(values$carnival_targets)>0 | !is.null(values$carnival_targets)){
-    #shinyjs::show("sortable",asis=T)
     # activated
     act_targets_df = data.frame(t(values$act_targets))
     colnames(act_targets_df) = act_targets_df[1,]
@@ -346,7 +348,6 @@ observeEvent(input$run_carnival, {
     values$carnival_targets_df = targets_df
     message <- "Running CARNIVAL with input targets...you can check progress in your R console"
   }else{
-   # shinyjs::hide("sortable",asis=T) # hide target sortable
     targets_df <- NULL
     message <- "Running CARNIVAL with no input targets (Inverse CARNIVAL)...you can check progress in your R console"
   }
@@ -372,6 +373,37 @@ observeEvent(input$run_carnival, {
   }
   
   if(solver_check==T){
+    # Create log file
+    # CARNIVAL LOG
+    if(!is.null(values$carnival_targets_df)){
+      carnival_targets_df = values$carnival_targets_df
+      up_targets_cols = (carnival_targets_df[1,] == 1)
+      down_targets_cols = (carnival_targets_df[1,] == -1)
+      up_targets = paste0("up_targets = ",paste(colnames(carnival_targets_df)[up_targets_cols],collapse=", "))
+      down_targets = paste0("down_targets = ",paste(colnames(carnival_targets_df)[down_targets_cols],collapse=", "))
+    }else{
+      up_targets = paste0("up_targets = None")
+      down_targets = paste0("down_targets = None")
+    }
+    solver = paste0("solver = ",values$solver)
+    timelimit = paste0("timelimit = ",input$carnival_time_limit)
+    solverPath = paste0("solverPath = ",paste(unlist(unname(values$solver_file[1])),collapse="/"))
+    threads = paste0("threads = ",input$carnival_ncores)
+    # default settings in case these change btwn versions
+    mipGAP = "mipGAP = 0.05"
+    poolrelGAP = "poolrelGAP = 0.0001"
+    limitPop = "limitPop = 500"
+    poolCap = "poolCap = 100"
+    poolIntensity = "poolIntensity = 4"
+    poolReplace = "poolReplace = 2"
+    alphaWeight = "alphaWeight = 1"
+    betaWeight = "betaWeight = 0.2"
+    
+    carnival_log = data.frame(c("-CARNIVAL LOG-",up_targets,down_targets,solver,timelimit,solverPath,threads,mipGAP,poolrelGAP,limitPop,poolCap,poolIntensity,poolReplace,alphaWeight,betaWeight))
+    colnames(carnival_log)=NULL
+    carnival_log_file = paste0("logs/CARNIVAL_",values$carnival_time_now,".txt")
+    write.table(carnival_log,carnival_log_file,sep="\t",quote=F,row.names=F,col.names=F)
+    # run CARNIVAL
     withProgress(message=message,value=1, {
       values$carnival_result <- runCARNIVAL(inputObj=targets_df,
                                             netObj = values$networkdf,
@@ -391,7 +423,7 @@ observeEvent(input$run_carnival, {
 # Check if CARNIVAL has finished and save results/params
 observe({
  req(started_carnival())
- if(!is.null(values$carnival_result)){ # and include condition that it hasnt yet been uploaded
+ if(!is.null(values$carnival_result)&is.null(input$upload_carnival)){ # and include condition that it hasnt yet been uploaded
    # Create log file
    # CARNIVAL LOG
    if(!is.null(values$carnival_targets_df)){
@@ -418,6 +450,8 @@ observe({
    alphaWeight = "alphaWeight = 1"
    betaWeight = "betaWeight = 0.2"
    
+   carnival_log <- data.frame(c("-CARNIVAL-",up_targets,down_targets,solver,timelimit,solverPath,threads,mipGAP,poolrelGAP,limitPop,poolCap,poolIntensity,poolReplace,alphaWeight,betaWeight,""))
+   colnames(carnival_log)=c("")
    # DOROTHEA LOG
    top = paste0("top = ",input$no_tfs)
    conf = paste0("confidence levels = ",paste(input$dorothea_conf,sep=", "))
@@ -425,6 +459,8 @@ observe({
    esetfilter = "eset.filter = F"
    nes = "nes = T"
    
+   dorothea_log <- data.frame(c("-DOROTHEA-",top,conf,minsize,esetfilter,nes,""))
+   colnames(dorothea_log)=c("")
    # PROGENY LOG
    scale = "scale = T"
    perm = "perm = 10000"
@@ -432,12 +468,21 @@ observe({
    top = paste0("top = ",input$no_genes_progeny)
    get_nulldist = "get_nulldist = F"
    
+   progeny_log <- data.frame(c("-PROGENY-",scale,perm,z_scores,top,get_nulldist,""))
+   colnames(progeny_log)=c("")
    # Put into file!
+   full_log <- do.call("rbind",list(carnival_log,dorothea_log,progeny_log))
   
    # Save log file, RDS and .sif
+   carnival_path = paste0("output/CARNIVAL_results_",values$carnival_time_now)
+   dir.create(carnival_path)
+   write.table(full_log,paste0(carnival_path,"/log.txt"),sep="\t",quote=F,row.names = F,col.names = F)
+   saveRDS(values$carnival_result,paste0(carnival_path,"/carnival_result.RDS"))
+   sif = data.frame(values$carnival_result$weightedSIF)
+   write.table(sif,paste0(carnival_path,"/network.sif"),sep="\t",quote=F,row.names = F)
    
    output$carnivaldone <- renderText({
-     paste0("CARNIVAL run completed! Output and log file saved to xxx, Please move onto Visualisation tab.")
+     paste0("CARNIVAL run completed! Output and log file saved to ",carnival_path,", please move onto Visualisation tab.")
    })
  }
 })

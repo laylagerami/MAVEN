@@ -69,7 +69,10 @@ values <- reactiveValues(
   act_targets=NULL,
   pidgin_time_now=NULL,
   output_namemat = NULL,
-  carnival_targets_df = NULL
+  carnival_targets_df = NULL,
+  carnival_time_now=NULL,
+  all_nodes=NULL,
+  carnival_result_format = NULL
 )
 
 # set seed 

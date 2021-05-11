@@ -73,7 +73,7 @@ tabPanel("Analysis",
   textInput("carnival_time_limit", label = h5("Time limit for CARNIVAL run",
                                            tags$style(type = "text/css", "#q11 {vertical-align: top;}"),
                                            bsButton("q11", label = "", icon = icon("question"), style = "info", size = "extra-small")
-  ), value = "7200", width = NULL, placeholder = NULL),
+  ), value = "300", width = NULL, placeholder = NULL),
   bsPopover(id = "q11", title = "Time limit for CARNIVAL run.",
             content = paste0("Time limit (in seconds) for CARNIVAL run. We recommend to increase this value if no/few solutions are found."),
             placement = "right", 
