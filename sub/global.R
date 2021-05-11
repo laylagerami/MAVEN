@@ -72,7 +72,8 @@ values <- reactiveValues(
   carnival_targets_df = NULL,
   carnival_time_now=NULL,
   all_nodes=NULL,
-  carnival_result_format = NULL
+  carnival_result_format = NULL,
+  selected_enrichment_nodes = NULL
 )
 
 # set seed 
