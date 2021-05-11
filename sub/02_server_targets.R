@@ -266,12 +266,14 @@ output$targettable <- renderDT({
 # List selected targets for user-friendliness
 observe({
   selected = input$targettable_rows_selected
-  if (length(selected)){
+  if(length(selected)>0){
     values$targets = as.character(values$preds_converted[selected,]$Gene_ID)
-    output$selected_targets <- renderText({
-      paste(values$targets,collapse=", ")
-    })
+  }else{
+    values$targets = NULL
   }
+  output$selected_targets <- renderText({
+    paste(values$targets,collapse=", ")
+  })
 })
 
 # User-defined

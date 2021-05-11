@@ -28,18 +28,27 @@ tabPanel("Visualisation",
                      options = list(container = "body")
            ),
            fileInput("custom_msigdb","Upload custom .gmt file"),
-           actionButton("run_enrich","Run enrichment analysis")
-           
+          # pickerInput(inputId="enrichment_nodes",
+          #             label="Selected nodes for enrichment analysis",choices=c(),
+          #             multiple = T,options = list(`actions-box` = TRUE) ),
+           actionButton("run_enrich","Run enrichment analysis"),
+           tags$br()#,
+          # pickerInput(inputId = "focus_node",
+          #             choices = c(),
+          #             label = "Focus on node:",
+          #             options = list(`live-search` = TRUE),
+          #             selected = NULL) 
+  
          ),
          
          mainPanel(
            "CARNIVAL network will be displayed below (you can pan and zoom). Following enrichment you can select pathways of interest.",
            tags$br(),
            tags$br(),
+           uiOutput("pick_enrichment_nodes"),
            fileInput("upload_carnival","Upload previous CARNIVAL .RDS file"),
            tags$hr(),
            visNetwork::visNetworkOutput("carnival_network",width = "700px", height = "500px"),
-           downloadButton("download_carnival","Download network as a .sif file"),
            tags$hr(),
            "Network nodes in selected pathway: ",
            textOutput("pway_nodes"),
