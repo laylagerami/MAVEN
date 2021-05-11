@@ -6,34 +6,23 @@ observe({
   }
 })
 
-# update picker to select only nodes of interest if required
-output$pick_enrichment_nodes = renderUI({
-  tagList(
-    pickerInput(inputId="eegrgdrg",
-                lable="fsdfk",
-                choices=c("hello","there"))  
-  )
-  
-})
+# update picker to select only nodes of interest if required - only works in browser
+observe(
+  if(!is.null(values$carnival_result)){
+    carnival_result = values$carnival_result_format
+    choices <- as.character(as.data.frame(carnival_result$weightedSIF)[,1])
+    updatePickerInput(session = session,
+                      inputId = "pick_enrichment_nodes",
+                      choices=choices,
+                      selected=choices,
+                      clearOptions=T)
+  }
+)
 
-#  observe({
-#    if(!is.null(values$carnival_result)){
-#      carnival_result = values$carnival_result_format
-#      choices <- as.character(as.data.frame(carnival_result$weightedSIF)[,1])
-#      output$pick_enrichment_nodes = renderUI({
-#        tagList(
-#          pickerInput(inputId = "enrichment_node",
-#                      label = "etretrt:",
-#                      choices = choices,
-#                      #options = list("live-search" = TRUE),
-#                      selected = choices)
-#        )
-#      })
-# #     #updatePickerInput(session, "enrichment_nodes",
-# #     #    choices = choices,
-# #     #    selected=choices)
-#    }
-#  })
+# save picked values in var
+observe({
+  values$selected_enrichment_nodes <- input$pick_enrichment_nodes
+})
 
 # Network rendering function
 generateNetwork = function(){
