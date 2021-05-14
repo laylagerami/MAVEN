@@ -28,6 +28,7 @@ tabPanel("Visualisation",
                      options = list(container = "body")
            ),
            fileInput("custom_msigdb","Upload custom .gmt file"),
+           checkboxInput("include_tfs", "Include TFs in enrichment analysis?", value = T, width = NULL),
            actionButton("run_enrich","Run enrichment analysis"),
            tags$br()
          ),

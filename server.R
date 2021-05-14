@@ -9,17 +9,22 @@ server = function(input, output, session) {
   source("sub/support_networks.R")
 }
 
+#APAP
+#https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE104601
+#https://www.sciencedirect.com/science/article/abs/pii/S0024320520300783
+#https://pubmed.ncbi.nlm.nih.gov/12153990/
 
 # *DATA* = done!
 
 # *TARGETS*  = done!
 
 # *ANALYSIS* = done!
-# null the results when its clicked
-# fix targets should be removed when they are removed
+# null the results when its clicked - done?
+# fix targets, they should be removed from the analysis when they are removed
 
 # *VISUALISATION*?
-# all curate d doesnt work
+
+
 
 # *OTHER*
 # bookmarking?

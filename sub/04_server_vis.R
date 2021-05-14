@@ -53,7 +53,7 @@ enrich_results <- eventReactive(input$run_enrich, {
   if(input$msigdb=="Wikipathways"){
     gmt_set="msigdb/c2.cp.wikipathways.v7.2.symbols.gmt"
   }
-  if(input$msigdb=="All Curated"){
+  if(input$msigdb=="All"){
     gmt_set="msigdb/c2.all.v7.2.symbols.gmt"
   }
   if(input$msigdb=="CP"){
@@ -80,12 +80,20 @@ enrich_results <- eventReactive(input$run_enrich, {
   
   # Extract nodes and bg
   values$nodes_carnival = extractCARNIVALnodes(carnival_result)
-  nodes_carnival = values$nodes_carnival
+  nodes_carnival = values$nodes_carnival$sucesses
+  nodes_carnival_bg = values$nodes_carnival$bg
+  
+  if(input$include_tfs==F){
+    nodesAttributes = data.frame(carnival_result$nodesAttributes)
+    tfs = subset(nodesAttributes,NodeType=="T")$Node
+    nodes_carnival = nodes_carnival[!nodes_carnival %in% tfs]
+    nodes_carnival_bg = nodes_carnival_bg[!nodes_carnival_bg %in% tfs]
+  }
   
   # GSA
   withProgress(message="Running Enrichment...",value=1, {
-    sig_pathways = runGSAhyper(genes=nodes_carnival$sucesses,
-                               universe = nodes_carnival$bg,
+    sig_pathways = runGSAhyper(genes=nodes_carnival,
+                               universe = nodes_carnival_bg,
                                gsc = loadGSC(pathways))
   })
   
@@ -95,8 +103,13 @@ enrich_results <- eventReactive(input$run_enrich, {
   sig_pathways_df = sig_pathways_df[,c(1,3)]
   sig_pathways_df[,2] = as.numeric(as.character(sig_pathways_df[,2]))
   sig_pathways_df = sig_pathways_df[order(sig_pathways_df[,2]),]
+  sig_pathways_df$url = paste0("https://www.gsea-msigdb.org/gsea/msigdb/cards/",sig_pathways_df$pathway)
+  if(input$msigdb!="Custom"){ # create link
+    sig_pathways_df$pathway <- paste0("<a href='",sig_pathways_df$url,"' target='_blank'>",sig_pathways_df$pathway,"</a>")
+  }
+  sig_pathways_df$url = NULL
   values$sig_pathways_df = sig_pathways_df
-  datatable(sig_pathways_df[order(sig_pathways_df[,2]),],selection="single")
+  datatable(sig_pathways_df[order(sig_pathways_df[,2]),],selection="single",escape=1)
 })
 
 output$download_pathway <- downloadHandler(
