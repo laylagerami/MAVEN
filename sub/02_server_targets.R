@@ -166,6 +166,9 @@ observe({
 started <- reactiveVal(Sys.time()[NA])
 observeEvent(input$button, {
   withProgress(message="Running PIDGIN...you can check progress in your R console",value=1, {
+    values$output_name2 = NULL # remove previous results
+    values$output_name_pidgin = NULL
+    
     started(Sys.time())
     time_now = gsub(" ","_",Sys.time())
     time_now = gsub(":","-",time_now)

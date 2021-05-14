@@ -14,24 +14,24 @@ server = function(input, output, session) {
 
 # *TARGETS*  = done!
 
-# *ANALYSIS*
-# Check contents of solver files
-## Put settings in log files for future reference (PIDGIN done, need to do the same for when run CARNIVAL is clicked including all vars)
-# include all settings including non-default in the log files, as well as .RDS and .sif
-# create separate log file for carnival then copy it to output, like with PIDGIN
+# *ANALYSIS* = done!
+# null the results when its clicked
+# fix targets should be removed when they are removed
 
-# *VISUALISATION*
-# lightn edges too
-# fix downloader disable button
-# allow deselect pathways 
-# choose specific nodes to be enriched instead of all of them, lighten them in the network when deselcted
-# zoom into nodes?
+# *VISUALISATION*?
+# all curate d doesnt work
 
 # *OTHER*
 # bookmarking?
 ## welcome page explaining each step (in progress, need to fill it in, do at the end)
 # more guidance for question marks
 # default 10 entries 
+# push PIDGIN
+
+# *TROUBLESHOOTING IN DOCUMENTATION*
+# PIDGIN AD - reduce to get more predictons
+# No network results - increase time limit and re-run
+# rstudio server time out
 
 # *DO LATER*
 # batch upload tab (upload multiple CARNIVAL networks)
