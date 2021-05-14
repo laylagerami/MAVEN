@@ -28,11 +28,6 @@ tabPanel("Visualisation",
                      options = list(container = "body")
            ),
            fileInput("custom_msigdb","Upload custom .gmt file"),
-           pickerInput(inputId="pick_enrichment_nodes",
-                       label="Network nodes to be included in enrichment analysis (default all)",
-                       choices=c(),
-                       selected=character(0),
-                       multiple=T),
            actionButton("run_enrich","Run enrichment analysis"),
            tags$br()
          ),

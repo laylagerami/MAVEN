@@ -6,28 +6,9 @@ observe({
   }
 })
 
-# update picker to select only nodes of interest if required - only works in browser
-observe(
-  if(!is.null(values$carnival_result)){
-    carnival_result = values$carnival_result_format
-    choices <- as.character(as.data.frame(carnival_result$weightedSIF)[,1])
-    updatePickerInput(session = session,
-                      inputId = "pick_enrichment_nodes",
-                      choices=choices,
-                      selected=choices,
-                      clearOptions=T)
-  }
-)
-
-# save picked values in var
-observe({
-  values$selected_enrichment_nodes <- input$pick_enrichment_nodes
-})
 
 # Network rendering function
-generateNetwork = function(){
-  carnival_result = values$carnival_result
-  
+generateNetwork = function(carnival_result){
   #transoform to data.frame
   carnival_result$weightedSIF <- data.frame(carnival_result$weightedSIF, stringsAsFactors = F)
   carnival_result$weightedSIF$Sign <- as.numeric(carnival_result$weightedSIF$Sign)
@@ -37,7 +18,6 @@ generateNetwork = function(){
   carnival_result$nodesAttributes$UpAct <- as.numeric(carnival_result$nodesAttributes$UpAct)
   carnival_result$nodesAttributes$DownAct <- as.numeric(carnival_result$nodesAttributes$DownAct)
   carnival_result$nodesAttributes$AvgAct <- as.numeric(carnival_result$nodesAttributes$AvgAct)
-  values$carnival_result_format = carnival_result
   carnival_visNet(evis = carnival_result$weightedSIF,
                   nvis = carnival_result$nodesAttributes)[1]
 }
@@ -45,23 +25,9 @@ generateNetwork = function(){
 # Render if result is present
 observe({
   if(!is.null(values$carnival_result)){
-    output$carnival_network <- renderVisNetwork(generateNetwork())
+    output$carnival_network <- renderVisNetwork(generateNetwork(values$carnival_result))
   }
 })
-
-#observe({
-#  if(!is.null(values$carnival_result)){
-#    choices <<- as.data.frame(values$carnival_result$weightedSIF)[,1]
-#    updatePickerInput(session, "focus_node",
-#                      choices = choices)
-#    }
-#})
-
-# select and focus on nodes
-#observeEvent(input$focus_node, {
-#  visNetworkProxy("carnival_network") %>%
-#    visFocus(id = input$focus_node, scale = 4)
-#})
 
 # Enrichment
 # Load pathways
@@ -155,43 +121,54 @@ output$pwayres = renderDT({
 })
 
 observe({
-  selected = input$pwayres_rows_selected
-  if(length(selected)>0){
-    pathways = values$pathways
-    nodes_carnival = values$nodes_carnival
-    
-    carnival_result = values$carnival_result_format
-    # Get original colours to populate new df for visUpdate
-    get_colours <- carnival_visNet(evis = carnival_result$weightedSIF,
-                                   nvis = carnival_result$nodesAttributes)
-    get_colours_df <- data.frame(cbind(get_colours$id,get_colours$color))
-    colnames(get_colours_df) = c("id","color")
-    
-    # Pathway selector, get nodes
-    sig_pathways_df = values$sig_pathways_df
-    selectedPathway = sig_pathways_df[input$pwayres_rows_selected,]$pathway
-    #selectedPathway = sig_pathways_df[1,]$pathway
-    subsetGMT = subset(pathways,term==selectedPathway)$gene
-    overlap_nodes = intersect(subsetGMT,nodes_carnival$sucesses)
-    non_overlap_nodes = setdiff(nodes_carnival$sucesses,overlap_nodes)
-    overlap_nodes_df <- data.frame(id=overlap_nodes,color=rep("green",length(overlap_nodes)))
-    
-    # Set colour for non-overlapping nodes
-    non_overlap_nodes_df = subset(get_colours_df,id%in%non_overlap_nodes)
-    # Lighten them
-    non_overlap_nodes_df$color = lighten(non_overlap_nodes_df$color,amount=0.8)
-    
-    # Get final colour df
-    all_nodes_df = rbind(overlap_nodes_df,non_overlap_nodes_df)
-    
-    visNetworkProxy("carnival_network") %>%
-      visUpdateNodes(nodes=all_nodes_df)
-    
-    # Print nodes
-    output$pway_nodes = renderText(paste0(overlap_nodes,collapse=", "))
-  }else if(length(selected)==0){ # deselect
-    output$carnival_network <- renderVisNetwork(generateNetwork())
-    output$pway_nodes = renderText("")
+  if(values$enrichment_result==T){
+    selected = input$pwayres_rows_selected
+    if(length(selected)>0){
+      pathways = values$pathways
+      nodes_carnival = values$nodes_carnival
+      
+      carnival_result = values$carnival_result
+      carnival_result$weightedSIF <- data.frame(carnival_result$weightedSIF, stringsAsFactors = F)
+      carnival_result$weightedSIF$Sign <- as.numeric(carnival_result$weightedSIF$Sign)
+      carnival_result$weightedSIF$Weight <- as.numeric(carnival_result$weightedSIF$Weight)
+      carnival_result$nodesAttributes <- data.frame(carnival_result$nodesAttributes, stringsAsFactors = F)
+      carnival_result$nodesAttributes$ZeroAct <- as.numeric(carnival_result$nodesAttributes$ZeroAct)
+      carnival_result$nodesAttributes$UpAct <- as.numeric(carnival_result$nodesAttributes$UpAct)
+      carnival_result$nodesAttributes$DownAct <- as.numeric(carnival_result$nodesAttributes$DownAct)
+      carnival_result$nodesAttributes$AvgAct <- as.numeric(carnival_result$nodesAttributes$AvgAct)
+      
+      # Get original colours to populate new df for visUpdate
+      get_colours <- carnival_visNet(evis = carnival_result$weightedSIF,
+                                     nvis = carnival_result$nodesAttributes)
+      get_colours_df <- data.frame(cbind(get_colours$id,get_colours$color))
+      colnames(get_colours_df) = c("id","color")
+      
+      # Pathway selector, get nodes
+      sig_pathways_df = values$sig_pathways_df
+      selectedPathway = sig_pathways_df[input$pwayres_rows_selected,]$pathway
+      #selectedPathway = sig_pathways_df[1,]$pathway
+      subsetGMT = subset(pathways,term==selectedPathway)$gene
+      overlap_nodes = intersect(subsetGMT,nodes_carnival$sucesses)
+      non_overlap_nodes = setdiff(nodes_carnival$sucesses,overlap_nodes)
+      overlap_nodes_df <- data.frame(id=overlap_nodes,color=rep("green",length(overlap_nodes)))
+      
+      # Set colour for non-overlapping nodes
+      non_overlap_nodes_df = subset(get_colours_df,id%in%non_overlap_nodes)
+      # Lighten them
+      non_overlap_nodes_df$color = lighten(non_overlap_nodes_df$color,amount=0.8)
+      
+      # Get final colour df
+      all_nodes_df = rbind(overlap_nodes_df,non_overlap_nodes_df)
+      
+      visNetworkProxy("carnival_network") %>%
+        visUpdateNodes(nodes=all_nodes_df)
+      
+      # Print nodes
+      output$pway_nodes = renderText(paste0(overlap_nodes,collapse=", "))
+    }else if(length(selected)==0){ # deselect
+      output$carnival_network <- renderVisNetwork(generateNetwork(values$carnival_result))
+      output$pway_nodes = renderText("")
+    }
   }
 })
 
