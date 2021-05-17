@@ -103,12 +103,12 @@ enrich_results <- eventReactive(input$run_enrich, {
   sig_pathways_df = sig_pathways_df[,c(1,3)]
   sig_pathways_df[,2] = as.numeric(as.character(sig_pathways_df[,2]))
   sig_pathways_df = sig_pathways_df[order(sig_pathways_df[,2]),]
+  values$sig_pathways_df = sig_pathways_df
   sig_pathways_df$url = paste0("https://www.gsea-msigdb.org/gsea/msigdb/cards/",sig_pathways_df$pathway)
   if(input$msigdb!="Custom"){ # create link
     sig_pathways_df$pathway <- paste0("<a href='",sig_pathways_df$url,"' target='_blank'>",sig_pathways_df$pathway,"</a>")
   }
   sig_pathways_df$url = NULL
-  values$sig_pathways_df = sig_pathways_df
   datatable(sig_pathways_df[order(sig_pathways_df[,2]),],selection="single",escape=1)
 })
 
@@ -137,7 +137,7 @@ observe({
   if(values$enrichment_result==T){
     selected = input$pwayres_rows_selected
     if(length(selected)>0){
-      pathways = values$pathways
+      pathways <<- values$pathways
       nodes_carnival = values$nodes_carnival
       
       carnival_result = values$carnival_result
@@ -158,12 +158,12 @@ observe({
       
       # Pathway selector, get nodes
       sig_pathways_df = values$sig_pathways_df
-      selectedPathway = sig_pathways_df[input$pwayres_rows_selected,]$pathway
+      selectedPathway <<- sig_pathways_df[input$pwayres_rows_selected,]$pathway
       #selectedPathway = sig_pathways_df[1,]$pathway
-      subsetGMT = subset(pathways,term==selectedPathway)$gene
-      overlap_nodes = intersect(subsetGMT,nodes_carnival$sucesses)
+      subsetGMT <<- subset(pathways,term==selectedPathway)$gene
+      overlap_nodes <<- intersect(subsetGMT,nodes_carnival$sucesses)
       non_overlap_nodes = setdiff(nodes_carnival$sucesses,overlap_nodes)
-      overlap_nodes_df <- data.frame(id=overlap_nodes,color=rep("green",length(overlap_nodes)))
+      overlap_nodes_df <<- data.frame(id=overlap_nodes,color=rep("green",length(overlap_nodes)))
       
       # Set colour for non-overlapping nodes
       non_overlap_nodes_df = subset(get_colours_df,id%in%non_overlap_nodes)
@@ -171,7 +171,7 @@ observe({
       non_overlap_nodes_df$color = lighten(non_overlap_nodes_df$color,amount=0.8)
       
       # Get final colour df
-      all_nodes_df = rbind(overlap_nodes_df,non_overlap_nodes_df)
+      all_nodes_df <<- rbind(overlap_nodes_df,non_overlap_nodes_df)
       
       visNetworkProxy("carnival_network") %>%
         visUpdateNodes(nodes=all_nodes_df)
