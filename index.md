@@ -13,8 +13,8 @@ MAVEN, or **M**echanism of **A**ction **V**isualisation and **EN**richment, is a
 
 MAVEN was written to enable those without prior bioinformatics expertise to be able to use the different tools integrated within the software. The tools are [DoRoThEA](https://github.com/saezlab/dorothea) [[2]](#2), [PROGENy](https://github.com/saezlab/progeny) [[3]](#3), [CARNIVAL](https://github.com/saezlab/CARNIVAL) [[4]](#4) and [PIDGIN](https://github.com/BenderGroup/PIDGINv4) [[5]](#5). An overview of the tools and how they are integrated together in MAVEN is displayed below.
 
-Insert figure
-
+<img src='https://raw.githubusercontent.com/laylagerami/MAVEN/main/Slide1.png'>
+Workflow unfinished, testing image insertion for now
 Explain figure
 
 #### What can I do with MAVEN?
