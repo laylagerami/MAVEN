@@ -1,4 +1,4 @@
-## Index
+### Index
 
 Welcome to the documentation for MAVEN (https://github.com/laylagerami/MAVEN).
 
@@ -20,7 +20,7 @@ Explain figure
 #### What can I do with MAVEN?
 MAVEN can be used to generate hypotheses for compound mechanism of action (or off-target effects/toxicity) which are both detailed and directly testable in the lab.  Please see the Tutorial to learn more.
 
-## References
+### References
 <a id="1">[1]</a> 
 D Turei, T Korcsmaros and J Saez-Rodriguez  (2016). 
 OmniPath: guidelines and gateway for literature-curated signaling pathway resources. 
