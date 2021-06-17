@@ -4,6 +4,9 @@ This page will be updated as we receieve question and queries about the software
 
 ### General troubleshooting
 
+#### I have multiple compounds which I would like to analyse. Can I perform a batch analysis?
+Currently we do not support batch upload. However, we hope to add the option to upload multiple CARNIVAL results to analyse similarity between different networks.
+
 ### Data
 
 #### I get a warning saying that some of my genes in the network/data are not valid gene symbols. What does this mean?
