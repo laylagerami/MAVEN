@@ -17,6 +17,8 @@ MAVEN was written to enable those without prior bioinformatics expertise to be a
 Workflow unfinished, testing image insertion for now
 Explain figure
 
+If you are unfamiliar with the tools used in MAVEN, we recommend you begin by following the tutorial.
+
 #### What can I do with MAVEN?
 MAVEN can be used to generate hypotheses for compound mechanism of action (or off-target effects/toxicity) which are both detailed and directly testable in the lab.  Please see the Tutorial to learn more.
 
