@@ -63,12 +63,17 @@ observe({
               time_now = gsub(":","-",time_now)
               write.csv(na_symbols,paste0("logs/network_error_HGNC_",time_now,".csv"))
               # Alert
-              na_symbols_flat = paste(na_symbols,collapse=", ")
+              if(length(na_symbols)>10){
+                na_symbols_flat = paste(na_symbols[1:10],collapse=", ")
+              }
+              else{
+                na_symbols_flat = paste(na_symbols,collapse=", ")
+              }
               if(length(na_symbols)>0){
                 #Sys.sleep(1) # pause
                 shinyalert(
                   title = "Warning",
-                  text = paste0("Some of the genes in your network (",na_symbols_flat,") are not valid HGNC symbols. This may disrupt downstream analysis. Writing erroneous symbols to logs folder..."),
+                  text = paste0(length(na_symbols)," genes in your network (including: ",na_symbols_flat,") are not valid HGNC symbols. This may disrupt downstream analysis. Writing erroneous symbols to logs folder..."),
                   size = "s",
                   closeOnEsc = TRUE,
                   closeOnClickOutside = T,
@@ -176,12 +181,17 @@ observe({
             time_now = gsub(" ","_",Sys.time())
             time_now = gsub(":","-",time_now)
             write.csv(na_symbols,paste0("logs/gex_data_error_HGNC_",time_now,".csv"))
-            na_symbols_flat = paste(na_symbols,collapse=", ")
+            if(length(na_symbols)>10){
+              na_symbols_flat = paste(na_symbols[1:10],collapse=", ")
+            }
+            else{
+              na_symbols_flat = paste(na_symbols,collapse=", ")
+            }
             if(length(na_symbols)>0){
               #Sys.sleep(1) # pause
               shinyalert(
                 title = "Warning",
-                text = paste0("Some of the genes in your data (",na_symbols_flat,") are not valid HGNC symbols. This may disrupt downstream analysis. Writing erroneous symbols to logs folder..."),
+                text = paste0(length(na_symbols)," genes in your data (including ",na_symbols_flat,") are not valid HGNC symbols. This may disrupt downstream analysis. Writing erroneous symbols to logs folder..."),
                 size = "s",
                 closeOnEsc = TRUE,
                 closeOnClickOutside = T,

@@ -98,6 +98,8 @@ observeEvent(input$run_dorothea, {
               panel.grid.major = element_blank(), 
               panel.grid.minor = element_blank()) +
         xlab("Transcription Factors")
+      
+    
     })
   })
 })
@@ -332,8 +334,7 @@ observeEvent(input$run_carnival, {
   time_now = gsub(" ","_",Sys.time())
   time_now = gsub(":","-",time_now)
   values$carnival_time_now = time_now
-  
-  # Create target df
+  # Create target obj
   if(length(values$carnival_targets)>0 | !is.null(values$carnival_targets)){
     # activated
     act_targets_df = data.frame(t(values$act_targets))
@@ -352,13 +353,19 @@ observeEvent(input$run_carnival, {
     message <- "Running CARNIVAL with no input targets (Inverse CARNIVAL)...you can check progress in your R console"
   }
   
-  # Check solver
+  # Check solver and apply options
   if(values$solver=="cplex"){
     if(paste(unlist(unname(values$solver_file[1])),collapse="/")==0){
       solver_check=F
     }else{
       solver_check=T
       solver_path = paste(unlist(unname(values$solver_file[1])),collapse="/")
+      carnival_options = defaultCplexCarnivalOptions()
+      carnival_options$solverPath = solver_path
+      carnival_options$timelimit = as.numeric(input$carnival_time_limit)
+      carnival_options$threads = as.numeric(input$carnival_ncores)
+      carnival_options$workdir = "output/"
+      carnival_options$outputFolder = "output/"
     }
   }else if(values$solver=="cbc"){
     if(paste(unlist(unname(values$solver_file[1])),collapse="/")==0){
@@ -366,10 +373,23 @@ observeEvent(input$run_carnival, {
     }else{
       solver_check=T
       solver_path = paste(unlist(unname(values$solver_file[1])),collapse="/")
+      carnival_options = list(
+        solverPath = solver_path,
+        timelimit = as.numeric(input$carnival_time_limit),
+        threads = as.numeric(input$carnival_ncores),
+        solver = "cbc",
+        betaWeight = 0.2,
+        poolrelGap = 1e-04,
+        lpFilename = "",
+        outputFolder = "",
+        cleanTmpFiles = T,
+        keepLPFiles = T
+      )
     }
   }else if(values$solver=="lpSolve"){
     solver_check=T
     solver_path=NULL
+    carnival_options = defaultLpSolveCarnivalOptions()
   }
   
   if(solver_check==T){
@@ -389,31 +409,33 @@ observeEvent(input$run_carnival, {
     timelimit = paste0("timelimit = ",input$carnival_time_limit)
     solverPath = paste0("solverPath = ",paste(unlist(unname(values$solver_file[1])),collapse="/"))
     threads = paste0("threads = ",input$carnival_ncores)
-    # default settings in case these change btwn versions
-    mipGAP = "mipGAP = 0.05"
-    poolrelGAP = "poolrelGAP = 0.0001"
-    limitPop = "limitPop = 500"
-    poolCap = "poolCap = 100"
-    poolIntensity = "poolIntensity = 4"
-    poolReplace = "poolReplace = 2"
-    alphaWeight = "alphaWeight = 1"
-    betaWeight = "betaWeight = 0.2"
     
-    carnival_log = data.frame(c("-CARNIVAL LOG-",up_targets,down_targets,solver,timelimit,solverPath,threads,mipGAP,poolrelGAP,limitPop,poolCap,poolIntensity,poolReplace,alphaWeight,betaWeight))
+    carnival_log = data.frame(c("-CARNIVAL LOG-",up_targets,down_targets,solver,timelimit,solverPath,threads))
     colnames(carnival_log)=NULL
     carnival_log_file = paste0("logs/CARNIVAL_",values$carnival_time_now,".txt")
     write.table(carnival_log,carnival_log_file,sep="\t",quote=F,row.names=F,col.names=F)
+    
     # run CARNIVAL
-    withProgress(message=message,value=1, {
-      values$carnival_result <- runCARNIVAL(inputObj=targets_df,
-                                            netObj = values$networkdf,
-                                            measObj = values$tf_activities_carnival[[1]],
-                                            weightObj = values$progenylist[[1]],
-                                            solverPath = solver_path,
-                                            solver=values$solver,
-                                            timelimit=as.numeric(input$carnival_time_limit),
-                                            threads=as.numeric(input$carnival_ncores))
-    })
+    if(!is.null(targets_df)){
+      withProgress(message=message,value=1, {
+        values$carnival_result <- runVanillaCarnival(
+          perturbations=to_carnival_obj(values$carnival_targets_df),
+          priorKnowledgeNetwork = values$networkdf,
+          measurements = to_carnival_obj(values$tf_activities_carnival[[1]]),
+          weights= to_carnival_obj(values$progenylist[[1]]),
+          carnivalOptions = carnival_options
+        )
+      })
+    }else{
+      withProgress(message=message,value=1, {
+        values$carnival_result <- runInverseCarnival(
+          priorKnowledgeNetwork = values$networkdf,
+          measurements = to_carnival_obj(values$tf_activities_carnival[[1]]),
+          weights = to_carnival_obj(values$progenylist[[1]]),
+          carnivalOptions = carnival_options
+          )
+      })
+    }
   }else{
     output$carnival_warning = renderText({"ERROR: No interactive solver path chosen. Please use the Select Solver button, or change option to lpSolve. CARNIVAL terminating..."})
   }
@@ -423,7 +445,7 @@ observeEvent(input$run_carnival, {
 # Check if CARNIVAL has finished and save results/params
 observe({
  req(started_carnival())
- if(!is.null(values$carnival_result)&is.null(input$upload_carnival)){ # and include condition that it hasnt yet been uploaded
+ if(!is.null(values$carnival_result)){ 
    # Create log file
    # CARNIVAL LOG
    if(!is.null(values$carnival_targets_df)){
@@ -440,17 +462,8 @@ observe({
    timelimit = paste0("timelimit = ",input$carnival_time_limit)
    solverPath = paste0("solverPath = ",paste(unlist(unname(values$solver_file[1])),collapse="/"))
    threads = paste0("threads = ",input$carnival_ncores)
-   # default settings in case these change btwn versions
-   mipGAP = "mipGAP = 0.05"
-   poolrelGAP = "poolrelGAP = 0.0001"
-   limitPop = "limitPop = 500"
-   poolCap = "poolCap = 100"
-   poolIntensity = "poolIntensity = 4"
-   poolReplace = "poolReplace = 2"
-   alphaWeight = "alphaWeight = 1"
-   betaWeight = "betaWeight = 0.2"
    
-   carnival_log <- data.frame(c("-CARNIVAL-",up_targets,down_targets,solver,timelimit,solverPath,threads,mipGAP,poolrelGAP,limitPop,poolCap,poolIntensity,poolReplace,alphaWeight,betaWeight,""))
+   carnival_log <- data.frame(c("-CARNIVAL-",up_targets,down_targets,solver,timelimit,solverPath,threads,""))
    colnames(carnival_log)=c("")
    # DOROTHEA LOG
    top = paste0("top = ",input$no_tfs)
