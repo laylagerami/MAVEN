@@ -80,6 +80,11 @@ values <- reactiveValues(
 set.seed(42)
 
 # functions
+to_carnival_obj <- function(df){ # function to turn df into named num for new CARNIVAL update
+  vec = as.numeric(df)
+  names(vec) = colnames(df)
+  return(vec)
+}
 generateTFList <- function (df = df, top = 50, access_idx = 1) 
 {
   if (top == "all") {

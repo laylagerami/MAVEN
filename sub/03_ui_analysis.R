@@ -73,9 +73,9 @@ tabPanel("Analysis",
   textInput("carnival_time_limit", label = h5("Time limit for CARNIVAL run",
                                            tags$style(type = "text/css", "#q11 {vertical-align: top;}"),
                                            bsButton("q11", label = "", icon = icon("question"), style = "info", size = "extra-small")
-  ), value = "300", width = NULL, placeholder = NULL),
+  ), value = "3600", width = NULL, placeholder = NULL),
   bsPopover(id = "q11", title = "Time limit for CARNIVAL run.",
-            content = paste0("Time limit (in seconds) for CARNIVAL run. We recommend to increase this value if no/few solutions are found."),
+            content = paste0("(cbc/cplex only) Time limit (in seconds) for CARNIVAL run. We recommend to increase this value if no/few solutions are found."),
             placement = "right", 
             trigger = "click", 
             options = list(container = "body")
@@ -86,7 +86,7 @@ tabPanel("Analysis",
                                               bsButton("q12", label = "", icon = icon("question"), style = "info", size = "extra-small")
   ), value = "20", width = NULL, placeholder = NULL),
   bsPopover(id = "q12", title = "Number of cores.",
-            content = paste0("Number of cores for ILP solver to use"),
+            content = paste0("Number of cores for ILP solver to use (cplex only)"),
             placement = "right", 
             trigger = "click", 
             options = list(container = "body")
