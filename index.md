@@ -11,7 +11,7 @@ MAVEN, or **M**echanism of **A**ction **V**isualisation and **EN**richment, is a
 
 #### How does MAVEN work?
 
-MAVEN was written to enable those without prior bioinformatics expertise to be able to use the different tools integrated within the software. The tools are DoRoThEA, PROGENy, CARNIVAL and PIDGIN. An overview of the tools and how they are integrated together in MAVEN is displayed below.
+MAVEN was written to enable those without prior bioinformatics expertise to be able to use the different tools integrated within the software. The tools are [DoRoThEA](https://github.com/saezlab/dorothea), [PROGENy](https://github.com/saezlab/progeny), [CARNIVAL](https://github.com/saezlab/CARNIVAL) and [PIDGIN](https://github.com/BenderGroup/PIDGINv4). An overview of the tools and how they are integrated together in MAVEN is displayed below.
 
 Insert figure
 
