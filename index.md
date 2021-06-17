@@ -6,4 +6,17 @@ Please use the navigation side-bar to access installation instructions, tutorial
 
 This page and the app itself are currently under construction...
 
+#### What is MAVEN?
+MAVEN, or **M**echanism of **A**ction **V**isualisation and **EN**richment, is an R Shiny app which is aimed at researchers wanting to understand the mechanism of action of a compound of interest. It requires 3 types of input from the user; a compound chemical structure, compound-induced gene expression data, and a prior knowledge network (we include the Omnipath network with the package).
+
+#### How does MAVEN work?
+
+MAVEN was written to enable those without prior bioinformatics expertise to be able to use the different tools integrated within the software. The tools are DoRoThEA, PROGENy, CARNIVAL and PIDGIN. An overview of the tools and how they are integrated together in MAVEN is displayed below.
+
+Insert figure
+
+Explain figure
+
+#### What can I do with MAVEN?
+MAVEN can be used to generate hypotheses for compound mechanism of action (or off-target effects/toxicity) which are both detailed and directly testable in the lab.  Please see the Tutorial to learn more.
 
