@@ -20,9 +20,19 @@ PIDGIN will output NaN for predictions which are outside of the defined applicab
 ### Analysis
 
 #### How do I decide on the thresholds for PROGENy and DoRoTHEA?
+There is no exact rule for this, but the following tips may help guide you to choosing the correct thresholds:
+
+PROGENy :- According to [guidance](https://github.com/saezlab/transcriptutorial/blob/master/scripts/03_Pathway_activity_with_Progeny.Rmd) from the authors, "It is worth noting that we are going to use the 100 most responsive genes per pathway. This number can be increased depending on the coverage of your experiments. For instance, the number of quantified genes for single-cell RNA-seq is smaller than for Bulk RNA-seq or microarray. In those cases, we suggest to increase the number of responsive genes to 200-500."
+
+DoRothEA :- According to [guidance](https://github.com/saezlab/transcriptutorial/blob/master/FAQ_CARNIVAL.md) from the authors, "What is the number of Dorothea scores to feed CARNIVAL? It feels that the smaller number you use, the better the results will be. However, this is not the general experience. The solver needs to check a lot more possible solutions when having few inputs for the prior knowledge network(PKN). This situation could lead to long processing times and big gap value in the ILP solution." Relaxing the confidence levels (i.e. including those with confidence D and E) can enable the enrichment of more TFs, if you find that you are obtaining too little. Also, you can look at the enriched TFs' UniProt entries by clicking directly on them in the results table, and see what makes sense with your compound. More information on the DoRothEA confidence levels can be found [here](https://github.com/saezlab/dorothea), or by clicking on the question mark in the MAVEN app.
+
+Generally, the default options should be appropriate for most inputs.
 
 #### How do I choose the activation or inhibition states of predicted targets?
-You can either review the literature to see whether target inhibition or activation would make more sense (for example, see which other compounds target the particular protein(s) and their phenotypic responses), or run CARNIVAL multiple times with activation and inhibition and decide based on the resulting network.
+You can either review the literature to see whether target inhibition or activation would make more sense (for example, see which other compounds target the particular protein(s) and their phenotypic responses), or run CARNIVAL multiple times with activation and inhibition and decide based on the resulting networks.
+
+#### What is a solver and why do I need to install it?
+CARNIVAL works with Integer Linear Programming (ILP) optimisation, which requires a special solver to do so. You can use the IBM ILOG CPLEX solver (free for academic use), or the cbc solver (free and open-source for all). The lpSolve R package is another option, but is only suitable for toy examples so we do not recommend using this option. Please see the [installation](https://laylagerami.github.io/MAVEN/installation.html) instruction for more details on how to install the solvers.
 
 ### Visualisation
 
