@@ -17,6 +17,9 @@ Most of the time, this should not be an issue. Issues arise when there are misma
 #### What is the PIDGINv4 directory?
 You need to install PIDGINv4 to be able to use the target prediction functionality. Please see [installation](https://laylagerami.github.io/MAVEN/installation.html) instruction for more details on how to install PIDGINv4. Then, you simply need to select the main directory when prompted.
 
+#### What is "similarity" in the results table?
+As well as running the target prediction, the [Tanimoto similarities](https://www.ccdc.cam.ac.uk/support-and-resources/support/case/?caseid=899a6a77-e379-4981-84f4-07de67f39016) to the nearest neighbours for each model (target) are also calculated and output, along with the ChEMBLID, in the table (ranges from 0-1). You can use this to investigate if structurally similar compounds are active against targets of interest.
+
 #### Why do I get no target predictions? (blank cells)
 PIDGIN will output NaN for predictions which are outside of the defined applicability domain (AD) threshold for a particular model - which is displayed as blank cells in the results table. Try to reduce this number to a less stringent threshold. Alternatively, turn off the AD filter (input 0 as the option).
 
