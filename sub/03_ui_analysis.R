@@ -1,14 +1,14 @@
 tabPanel("Analysis",
   # Sidebar
   sidebarPanel(width=4,
-  "Step 3: Carry out Analysis",
+  strong("Step 3: Carry out Analysis"),
   tags$br(),
   tags$br(),
-  "Perform TF enrichment, pathway inference and causal reasoning.",
+  strong("Perform TF enrichment, pathway activity inference and causal reasoning."),
   tags$br(),
   tags$br(),
   # Dorothea options
-  "DoRothEA Options:",
+  "DoRothEA Options (TF enrichment):",
   # Conf level
   checkboxGroupInput("dorothea_conf", label=h5("Confidence levels:",
      tags$style(type="text/css","#q7 {vertical-align: top}"),
@@ -41,7 +41,7 @@ tabPanel("Analysis",
               options = list(container = "body")
     ),
   tags$br(),
-  "PROGENy Options:",
+  "PROGENy Options (pathway activity inference):",
   # no. genes
   sliderInput("no_genes_progeny", label = h5("Number of top responsive genes to include",
                                    tags$style(type = "text/css", "#q9 {vertical-align: top;}"),
@@ -56,7 +56,7 @@ tabPanel("Analysis",
             options = list(container = "body")
   ),
   tags$br(),
-  "CARNIVAL Options:",
+  "CARNIVAL Options (causal reasoning):",
   # Use targets
   pickerInput(inputId="carnival_targets",
               label =h5("Selected targets for CARNIVAL",

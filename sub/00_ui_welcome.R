@@ -4,9 +4,11 @@ tabPanel("Index",
            p("For FAQ/Troubleshooting and tutorials, please check out our documentation",
               a('here',
                      href = 'https://laylagerami.github.io/MAVEN/',
-                     target='_blank')," or contact lh605[at]cam[dot]ac[dot]uk with any queries.")
+                     target='_blank')," or contact lh605[at]cam[dot]ac[dot]uk with any queries."),
+           p("We also include help buttons throughout the app, represented by a [?] symbol, which detail data formats, explanations for different parameters, and more.")
+           
          ),
-         
+
          mainPanel(
            h2("Welcome"),
            "MAVEN, or ",strong("M"),"echanism of ",strong("A"),"ction ",strong("V"),"isualisation and ",
