@@ -14,8 +14,14 @@ Most of the time, this should not be an issue. Issues arise when there are misma
 
 ### Targets
 
+#### What is the PIDGINv4 directory?
+You need to install PIDGINv4 to be able to use the target prediction functionality. Please see [installation](https://laylagerami.github.io/MAVEN/installation.html) instruction for more details on how to install PIDGINv4. Then, you simply need to select the main directory when prompted.
+
 #### Why do I get no target predictions? (blank cells)
 PIDGIN will output NaN for predictions which are outside of the defined applicability domain (AD) threshold for a particular model - which is displayed as blank cells in the results table. Try to reduce this number to a less stringent threshold. Alternatively, turn off the AD filter (input 0 as the option).
+
+#### Do I have to define targets?
+No. Your network will begin with a proxy "Perturbation" node, connecting to the input TFs _via_ the optimised network.
 
 ### Analysis
 
