@@ -5,17 +5,17 @@ tabPanel("Data",
                  useShinyalert(),
                  
                  # Text
-                 strong("Step 1. Data Input"),
+                 strong("Step 1. Data Input - Prior Knowledge Network and Compound-Perturbed Gene Expression Data"),
                  
                  # Upload Network
                  fileInput(inputId = "network", 
-                           label = h5("Upload network (.sif or .txt)",
+                           label = h5("Upload prior knowledge network (.sif or .txt) consisting of signed and directed protein-protein interactions (HGNC symbols)",
                                tags$style(type = "text/css", "#q1 {vertical-align: top;}"),
                                bsButton("q1", label = "", icon = icon("question"), style = "info", size = "extra-small")),
                            multiple=F,
                            accept = c(".sif",".txt")),
                   bsPopover(id = "q1", title = "Upload network",
-                    content = paste0("Tab-separated file with three headers; source, interaction, target."),
+                    content = paste0("Tab-separated file with three headers; source, interaction, target. Please upload a signed and directed network."),
                     placement = "right", 
                     trigger = "click", 
                     options = list(container = "body")),
@@ -34,7 +34,7 @@ tabPanel("Data",
                  
                  # Upload GEX
                  fileInput(inputId = "gex",
-                            label = h5("Upload gene expression data (.txt)",
+                            label = h5("Upload gene expression data (.txt) with HGNC symbols",
                                tags$style(type = "text/css", "#q2 {vertical-align: top;}"),
                                bsButton("q2", label = "", icon = icon("question"), style = "info", size = "extra-small")),
                            multiple=F,
