@@ -85,7 +85,7 @@ enrich_results <- eventReactive(input$run_enrich, {
   
   if(input$include_tfs==F){
     nodesAttributes = data.frame(carnival_result$nodesAttributes)
-    tfs = subset(nodesAttributes,NodeType=="T")$Node
+    tfs = subset(nodesAttributes,NodeType=="M")$Node
     nodes_carnival = nodes_carnival[!nodes_carnival %in% tfs]
     nodes_carnival_bg = nodes_carnival_bg[!nodes_carnival_bg %in% tfs]
   }

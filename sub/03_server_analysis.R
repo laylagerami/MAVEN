@@ -257,22 +257,26 @@ observe({
       output$carnival_check = renderText({
         paste0("WARNING: Your target(s) ",not_in_net_flat," are not present in your network and will not be used as input for CARNIVAL. You can go back to Targets and choose additional targets if required.")
       })
+      values$remove_targets = F
     }else if(length(not_in_net)==length(targets_to_use)){
       shinyjs::hide("sortable") # hide target sorter
       output$carnival_check = renderText({
         paste0("WARNING: None of your targets are present in your network. No targets will be used as input for CARNIVAL. You can go back to Targets to choose additional targets, or upload a different network.")
       })
+      values$remove_targets = T # flag to remove targets when clicking run
     }else if(length(not_in_net)==0){
       targets_to_use_flat = paste(targets_to_use,sep=", ")
       output$carnival_check = renderText({
         paste0(paste(targets_to_use,collapse=", ")," will be used as input targets in CARNIVAL.")
       })
+      values$remove_targets = F
     }
   }else if(length(input$carnival_targets)==0 & values$network_uploaded==T){
     shinyjs::hide("sortable") # hide target sorter
     output$carnival_check = renderText({
       paste0("CARNIVAL will be run with no input targets.")
     })
+    values$remove_targets = F
   }
 })
 
@@ -334,6 +338,12 @@ observeEvent(input$run_carnival, {
   time_now = gsub(" ","_",Sys.time())
   time_now = gsub(":","-",time_now)
   values$carnival_time_now = time_now
+  
+  # check if we need to remove targets as none in network
+  if(values$remove_targets == T){
+    values$carnival_targets = NULL
+  }
+  
   # Create target obj
   if(length(values$carnival_targets)>0 | !is.null(values$carnival_targets)){
     # activated
@@ -365,7 +375,8 @@ observeEvent(input$run_carnival, {
       carnival_options$timelimit = as.numeric(input$carnival_time_limit)
       carnival_options$threads = as.numeric(input$carnival_ncores)
       carnival_options$workdir = "output/"
-      carnival_options$outputFolder = "output/"
+      carnival_options$outputFolder = "temp_carnival"
+      carnival_options$keepLPFiles = F
     }
   }else if(values$solver=="cbc"){
     if(paste(unlist(unname(values$solver_file[1])),collapse="/")==0){
@@ -381,15 +392,18 @@ observeEvent(input$run_carnival, {
         betaWeight = 0.2,
         poolrelGap = 1e-04,
         lpFilename = "",
-        outputFolder = "",
+        workdir = "output/",
+        outputFolder = "temp_carnival",
         cleanTmpFiles = T,
-        keepLPFiles = T
+        keepLPFiles = F
       )
     }
   }else if(values$solver=="lpSolve"){
     solver_check=T
     solver_path=NULL
     carnival_options = defaultLpSolveCarnivalOptions()
+    carnival_options$outputFolder = "temp_carnival"
+    carnival_options$keepLPFiles = F
   }
   
   if(solver_check==T){
@@ -418,6 +432,7 @@ observeEvent(input$run_carnival, {
     # run CARNIVAL
     if(!is.null(targets_df)){
       withProgress(message=message,value=1, {
+        dir.create("temp_carnival") # create temp folder for some un-needed files
         values$carnival_result <- runVanillaCarnival(
           perturbations=to_carnival_obj(values$carnival_targets_df),
           priorKnowledgeNetwork = values$networkdf,
@@ -425,15 +440,26 @@ observeEvent(input$run_carnival, {
           weights= to_carnival_obj(values$progenylist[[1]]),
           carnivalOptions = carnival_options
         )
+        # Remove temp files
+        file.remove(list.files("temp_carnival",full.names=T))
+        file.remove("temp_carnival")
       })
     }else{
       withProgress(message=message,value=1, {
+        dir.create("temp_carnival")
+        # pkn <<- values$networkdf
+        # meas <<- to_carnival_obj(values$tf_activities_carnival[[1]])
+        # cweights <<- to_carnival_obj(values$progenylist[[1]])
+        # carnivalOptions <<- carnival_options
         values$carnival_result <- runInverseCarnival(
-          priorKnowledgeNetwork = values$networkdf,
-          measurements = to_carnival_obj(values$tf_activities_carnival[[1]]),
-          weights = to_carnival_obj(values$progenylist[[1]]),
-          carnivalOptions = carnival_options
-          )
+         priorKnowledgeNetwork = values$networkdf,
+         measurements = to_carnival_obj(values$tf_activities_carnival[[1]]),
+         weights = to_carnival_obj(values$progenylist[[1]]),
+         carnivalOptions = carnival_options
+         )
+        # Remove temp files
+        file.remove(list.files("temp_carnival",full.names=T))
+        file.remove("temp_carnival")
       })
     }
   }else{
@@ -441,11 +467,11 @@ observeEvent(input$run_carnival, {
   }
 })
 
-   
+
 # Check if CARNIVAL has finished and save results/params
 observe({
  req(started_carnival())
- if(!is.null(values$carnival_result)){ 
+ if(!is.null(values$carnival_result)){
    # Create log file
    # CARNIVAL LOG
    if(!is.null(values$carnival_targets_df)){
@@ -462,7 +488,7 @@ observe({
    timelimit = paste0("timelimit = ",input$carnival_time_limit)
    solverPath = paste0("solverPath = ",paste(unlist(unname(values$solver_file[1])),collapse="/"))
    threads = paste0("threads = ",input$carnival_ncores)
-   
+
    carnival_log <- data.frame(c("-CARNIVAL-",up_targets,down_targets,solver,timelimit,solverPath,threads,""))
    colnames(carnival_log)=c("")
    # DOROTHEA LOG
@@ -471,7 +497,7 @@ observe({
    minsize = "minsize = 5"
    esetfilter = "eset.filter = F"
    nes = "nes = T"
-   
+
    dorothea_log <- data.frame(c("-DOROTHEA-",top,conf,minsize,esetfilter,nes,""))
    colnames(dorothea_log)=c("")
    # PROGENY LOG
@@ -480,12 +506,12 @@ observe({
    z_scores = "z_scores = F"
    top = paste0("top = ",input$no_genes_progeny)
    get_nulldist = "get_nulldist = F"
-   
+
    progeny_log <- data.frame(c("-PROGENY-",scale,perm,z_scores,top,get_nulldist,""))
    colnames(progeny_log)=c("")
    # Put into file!
    full_log <- do.call("rbind",list(carnival_log,dorothea_log,progeny_log))
-  
+
    # Save log file, RDS and .sif
    carnival_path = paste0("output/CARNIVAL_results_",values$carnival_time_now)
    dir.create(carnival_path)
@@ -493,7 +519,7 @@ observe({
    saveRDS(values$carnival_result,paste0(carnival_path,"/carnival_result.RDS"))
    sif = data.frame(values$carnival_result$weightedSIF)
    write.table(sif,paste0(carnival_path,"/network.sif"),sep="\t",quote=F,row.names = F)
-   
+
    output$carnivaldone <- renderText({
      paste0("CARNIVAL run completed! Output and log file saved to ",carnival_path,", please move onto Visualisation tab.")
    })

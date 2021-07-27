@@ -19,11 +19,9 @@ server = function(input, output, session) {
 # *TARGETS*  = done!
 
 # *ANALYSIS* = done!
-# null the results when its clicked - done?
-# fix targets, they should be removed from the analysis when they are removed
 
-# *VISUALISATION*?
-
+# *VISUALISATION*
+# proteins are in a line 
 
 
 # *OTHER*
