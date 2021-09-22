@@ -21,15 +21,11 @@ server = function(input, output, session) {
 # *ANALYSIS* = done!
 
 # *VISUALISATION*
-# proteins are in a line 
+# colour of nodes and up/down?
 
 
 # *OTHER*
-# bookmarking?
-## welcome page explaining each step (in progress, need to fill it in, do at the end)
-# more guidance for question marks
-# default 10 entries 
-# push PIDGIN
+
 
 # *TROUBLESHOOTING IN DOCUMENTATION*
 # PIDGIN AD - reduce to get more predictons
