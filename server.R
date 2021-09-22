@@ -9,6 +9,12 @@ server = function(input, output, session) {
   source("sub/support_networks.R")
 }
 
+# carnival version instructions
+# restore readme and other improvements
+# check every feature and fix errors
+# add more improvements eg plots, pidgin filtering
+
+
 #APAP
 #https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE104601
 #https://www.sciencedirect.com/science/article/abs/pii/S0024320520300783
