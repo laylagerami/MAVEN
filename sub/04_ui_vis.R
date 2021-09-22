@@ -1,6 +1,5 @@
 tabPanel("Visualisation",
          sidebarPanel(
-           strong("Step 4: Network Visualisation and Pathway Enrichment"),
            "Choose MSigDB set or upload your own:",
            selectInput(
              inputId = "msigdb",

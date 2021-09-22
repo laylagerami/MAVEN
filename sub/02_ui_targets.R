@@ -1,6 +1,6 @@
 tabPanel("Targets",
          sidebarPanel(width=4,
-        strong("Step 2. Define Compound Targets with Structure-Based Target Prediction or Manual Input (this stage is optional)"),
+        "Step 2. Define Targets",
         tags$br(),
         tags$br(),
         "Upload your SMILES (Upload Smiles tab), choose PIDGIN options and run target prediction (Run Options tab), view results or upload previous results (Results tab), and/or define targets, with or without running prediction models (User-Defined Targets tab).",

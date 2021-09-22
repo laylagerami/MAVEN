@@ -19,13 +19,19 @@ server = function(input, output, session) {
 # *TARGETS*  = done!
 
 # *ANALYSIS* = done!
+# null the results when its clicked - done?
+# fix targets, they should be removed from the analysis when they are removed
 
-# *VISUALISATION*
-# colour of nodes and up/down?
+# *VISUALISATION*?
+
 
 
 # *OTHER*
-
+# bookmarking?
+## welcome page explaining each step (in progress, need to fill it in, do at the end)
+# more guidance for question marks
+# default 10 entries 
+# push PIDGIN
 
 # *TROUBLESHOOTING IN DOCUMENTATION*
 # PIDGIN AD - reduce to get more predictons
