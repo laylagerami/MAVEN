@@ -1,14 +1,14 @@
 tabPanel("Analysis",
   # Sidebar
   sidebarPanel(width=4,
-  strong("Step 3: Carry out Analysis"),
+  "Step 3: Carry out Analysis",
   tags$br(),
   tags$br(),
-  strong("Perform TF enrichment, pathway activity inference and causal reasoning."),
+  "Perform TF enrichment, pathway inference and causal reasoning.",
   tags$br(),
   tags$br(),
   # Dorothea options
-  "DoRothEA Options (TF enrichment):",
+  "DoRothEA Options:",
   # Conf level
   checkboxGroupInput("dorothea_conf", label=h5("Confidence levels:",
      tags$style(type="text/css","#q7 {vertical-align: top}"),
@@ -41,7 +41,7 @@ tabPanel("Analysis",
               options = list(container = "body")
     ),
   tags$br(),
-  "PROGENy Options (pathway activity inference):",
+  "PROGENy Options:",
   # no. genes
   sliderInput("no_genes_progeny", label = h5("Number of top responsive genes to include",
                                    tags$style(type = "text/css", "#q9 {vertical-align: top;}"),
@@ -56,7 +56,7 @@ tabPanel("Analysis",
             options = list(container = "body")
   ),
   tags$br(),
-  "CARNIVAL Options (causal reasoning):",
+  "CARNIVAL Options:",
   # Use targets
   pickerInput(inputId="carnival_targets",
               label =h5("Selected targets for CARNIVAL",
@@ -73,9 +73,9 @@ tabPanel("Analysis",
   textInput("carnival_time_limit", label = h5("Time limit for CARNIVAL run",
                                            tags$style(type = "text/css", "#q11 {vertical-align: top;}"),
                                            bsButton("q11", label = "", icon = icon("question"), style = "info", size = "extra-small")
-  ), value = "3600", width = NULL, placeholder = NULL),
+  ), value = "300", width = NULL, placeholder = NULL),
   bsPopover(id = "q11", title = "Time limit for CARNIVAL run.",
-            content = paste0("(cbc/cplex only) Time limit (in seconds) for CARNIVAL run. We recommend to increase this value if no/few solutions are found."),
+            content = paste0("Time limit (in seconds) for CARNIVAL run. We recommend to increase this value if no/few solutions are found."),
             placement = "right", 
             trigger = "click", 
             options = list(container = "body")
@@ -86,7 +86,7 @@ tabPanel("Analysis",
                                               bsButton("q12", label = "", icon = icon("question"), style = "info", size = "extra-small")
   ), value = "20", width = NULL, placeholder = NULL),
   bsPopover(id = "q12", title = "Number of cores.",
-            content = paste0("Number of cores for ILP solver to use (cplex only)"),
+            content = paste0("Number of cores for ILP solver to use"),
             placement = "right", 
             trigger = "click", 
             options = list(container = "body")
