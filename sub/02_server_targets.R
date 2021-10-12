@@ -60,7 +60,7 @@ observe({
   if (input$example_smiles){ # Example toggled ON
     values$smiles_error=F
     shinyjs::disable(id = "smiles_file") # Disable file upload
-    values$smi_file$datapath <- "Example_Data/DCLK1IN1.txt"
+    values$smi_file$datapath <- "Example_Data/lapatinib/lapatinib.txt"
     values$smi_string <- read.csv(values$smi_file$datapath, header = F,sep="\t")[1,1] # read the SMILES 
     output$smiles_uploaded_checker <- renderText({
       "SMILES uploaded successfully. Please continue to the Run Options tab."
@@ -214,6 +214,8 @@ observe({
     })
   }
 })
+
+
 
 # Render table with link to uniprotdb
 output$targettable <- renderDT({

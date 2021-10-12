@@ -1,7 +1,7 @@
-tabPanel("Analysis",
+tabPanel("3. Analysis",
   # Sidebar
   sidebarPanel(width=4,
-  "Step 3: Carry out Analysis",
+  strong("Step 3: Carry out Analysis"),
   tags$br(),
   tags$br(),
   "Perform TF enrichment, pathway inference and causal reasoning.",
@@ -110,7 +110,7 @@ tabPanel("Analysis",
     mainPanel(
       tabsetPanel(
         # DoRoThEA
-        tabPanel("DoRothEA",
+        tabPanel("(a) DoRothEA",
           fluidRow(column(10,
               tags$br(),
               strong("DoRothEA Transcription Factor Enrichment"),
@@ -136,7 +136,7 @@ tabPanel("Analysis",
                         )
                  )
         ),
-        tabPanel("Progeny",
+        tabPanel("(b) PROGENy",
                  fluidRow(column(10,
                  tags$br(),
                  strong("PROGENy pathway association scores"),
@@ -163,7 +163,7 @@ tabPanel("Analysis",
                     )
                  )
                  ),
-        tabPanel("CARNIVAL",
+        tabPanel("(c) CARNIVAL",
                  fluidRow(
                    column(10,
                           tags$br(),
