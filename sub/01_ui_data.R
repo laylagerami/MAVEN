@@ -1,11 +1,11 @@
-tabPanel("Data",
+tabPanel("1. Data",
          # SIDEBAR
          sidebarPanel(
                  # Enables warnings
                  useShinyalert(),
                  
                  # Text
-                 strong("Step 1. Data Input"),
+                 strong("Step 1: Data Input"),
                  
                  # Upload Network
                  fileInput(inputId = "network", 
@@ -49,6 +49,10 @@ tabPanel("Data",
                          inputId = "example_data",
                          label = "Load example data",
                  ),
+                 p("(Example data taken from",
+                   a("GSE129254 [Sun B, et al. Inhibition of the transcriptional kinase CDK7 overcomes therapeutic resistance in HER2-positive breast cancers. Oncogene 2020 Jan;39(1):50-63.])",
+                     href = "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE129254",
+                     target="_blank")),
         ),
         
         # MAIN PANEL
@@ -57,6 +61,9 @@ tabPanel("Data",
                      ".shiny-output-error { visibility: hidden; }",
                      ".shiny-output-error:before { visibility: hidden; }"),
           
+          "Uploaded gene expression and network data will be used in ",strong("3. Analysis")," for DoRothEA TF inference, PROGENy pathway inference, and CARNIVAL network analysis.",
+          tags$br(),
+          tags$br(),
           # Network info plus any warnings or errors
           strong("Uploaded Network:"),
           DTOutput("networkrender"),

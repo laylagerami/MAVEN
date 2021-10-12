@@ -1,5 +1,8 @@
-tabPanel("Visualisation",
+tabPanel("4. Visualisation",
          sidebarPanel(
+           strong("Step 4: Visualise CARNIVAL network and perform pathway enrichment"),
+           tags$br(),
+           tags$br(),
            "Choose MSigDB set or upload your own:",
            selectInput(
              inputId = "msigdb",

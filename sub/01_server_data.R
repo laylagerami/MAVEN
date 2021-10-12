@@ -1,3 +1,4 @@
+
 # NETWORK
 observe({
   if (input$example_network){ # Example toggled ON
@@ -63,12 +64,17 @@ observe({
               time_now = gsub(":","-",time_now)
               write.csv(na_symbols,paste0("logs/network_error_HGNC_",time_now,".csv"))
               # Alert
-              na_symbols_flat = paste(na_symbols,collapse=", ")
+              if(length(na_symbols)>10){
+                na_symbols_flat = paste(na_symbols[1:10],collapse=", ")
+              }
+              else{
+                na_symbols_flat = paste(na_symbols,collapse=", ")
+              }
               if(length(na_symbols)>0){
                 #Sys.sleep(1) # pause
                 shinyalert(
                   title = "Warning",
-                  text = paste0("Some of the genes in your network (",na_symbols_flat,") are not valid HGNC symbols. This may disrupt downstream analysis. Writing erroneous symbols to logs folder..."),
+                  text = paste0(length(na_symbols)," genes in your network (including: ",na_symbols_flat,") are not valid HGNC symbols. This may disrupt downstream analysis. Writing erroneous symbols to logs folder..."),
                   size = "s",
                   closeOnEsc = TRUE,
                   closeOnClickOutside = T,
@@ -130,7 +136,7 @@ observe({
     output$gexdata <- renderText({
       paste0("Example data loaded successfully")
     })
-    values$datadf <- read.csv("Example_Data/T2.txt",header=T,sep="\t")
+    values$datadf <- read.csv("Example_Data/lapatinib/GSE129254_lapatinib_BT474.txt",header=T,sep="\t")
     output$gextable <- renderDT({
       datatable(values$datadf,options=list("pageLength"=10))
     })
@@ -150,72 +156,77 @@ observe({
         datadf1 <- read.csv(gexfile$datapath, header = T,sep="\t") # read the chosen file 
         
         # Check the data is correct
-
-          if (ncol(datadf1)<2){
-            output$gexdata <- renderText({
-              paste0("ERROR: It appears that your gene expression data is not in the correct format. Please check the documentation or help button, and make sure that your file is correctly formatted.")
-            })
-          }else if (ncol(datadf1)>=2 & is.numeric(datadf1[,2])==F){
-            output$gexdata <- renderText({
-              paste0("ERROR: It appears that your gene expression data is not in the correct format. Please check the documentation or help button, and make sure that your file is correctly formatted.")
-            })
-          }else{ # When it works!
-            output$gexdata <- renderText({
-              paste0("Gene expression upload completed successfully.")
-            })
-            values$gex_uploaded=TRUE
-            values$datadf <<- datadf1[,c(1,2)] # only keep first two cols
-            output$gextable <- renderDT({
-              datatable(values$datadf,options=list("pageLength"=10))
-            })
-            
-            # Shiny alert for incorrect symbols
-            all_genes = as.character(values$datadf[,1])
-            check = checkGeneSymbols(all_genes, unmapped.as.na=TRUE)
-            na_symbols = subset(check,is.na(Suggested.Symbol))$x
-            time_now = gsub(" ","_",Sys.time())
-            time_now = gsub(":","-",time_now)
-            write.csv(na_symbols,paste0("logs/gex_data_error_HGNC_",time_now,".csv"))
-            na_symbols_flat = paste(na_symbols,collapse=", ")
-            if(length(na_symbols)>0){
-              #Sys.sleep(1) # pause
-              shinyalert(
-                title = "Warning",
-                text = paste0("Some of the genes in your data (",na_symbols_flat,") are not valid HGNC symbols. This may disrupt downstream analysis. Writing erroneous symbols to logs folder..."),
-                size = "s",
-                closeOnEsc = TRUE,
-                closeOnClickOutside = T,
-                html = FALSE,
-                type = "warning",
-                showConfirmButton = TRUE,
-                showCancelButton = FALSE,
-                confirmButtonText = "OK",
-                confirmButtonCol = "#AEDEF4",
-                timer = 0,
-                imageUrl = "",
-                animation = TRUE
-              )
-            }
-            if(length(na_symbols)==length(all_genes)){
-              Sys.sleep(1) # pause
-              shinyalert(
-                title = "Warning",
-                text = paste0("None of the genes in your data are HGNC symbols. Please convert your symbols to HGNC and reupload."),
-                size = "s", 
-                closeOnEsc = TRUE,
-                closeOnClickOutside = T,
-                html = FALSE,
-                type = "warning",
-                showConfirmButton = TRUE,
-                showCancelButton = FALSE,
-                confirmButtonText = "OK",
-                confirmButtonCol = "#AEDEF4",
-                timer = 0,
-                imageUrl = "",
-                animation = TRUE
-              )
-            }
+        
+        if (ncol(datadf1)<2){
+          output$gexdata <- renderText({
+            paste0("ERROR: It appears that your gene expression data is not in the correct format. Please check the documentation or help button, and make sure that your file is correctly formatted.")
+          })
+        }else if (ncol(datadf1)>=2 & is.numeric(datadf1[,2])==F){
+          output$gexdata <- renderText({
+            paste0("ERROR: It appears that your gene expression data is not in the correct format. Please check the documentation or help button, and make sure that your file is correctly formatted.")
+          })
+        }else{ # When it works!
+          output$gexdata <- renderText({
+            paste0("Gene expression upload completed successfully.")
+          })
+          values$gex_uploaded=TRUE
+          values$datadf <<- datadf1[,c(1,2)] # only keep first two cols
+          output$gextable <- renderDT({
+            datatable(values$datadf,options=list("pageLength"=10))
+          })
+          
+          # Shiny alert for incorrect symbols
+          all_genes = as.character(values$datadf[,1])
+          check = checkGeneSymbols(all_genes, unmapped.as.na=TRUE)
+          na_symbols = subset(check,is.na(Suggested.Symbol))$x
+          time_now = gsub(" ","_",Sys.time())
+          time_now = gsub(":","-",time_now)
+          write.csv(na_symbols,paste0("logs/gex_data_error_HGNC_",time_now,".csv"))
+          if(length(na_symbols)>10){
+            na_symbols_flat = paste(na_symbols[1:10],collapse=", ")
           }
+          else{
+            na_symbols_flat = paste(na_symbols,collapse=", ")
+          }
+          if(length(na_symbols)>0){
+            #Sys.sleep(1) # pause
+            shinyalert(
+              title = "Warning",
+              text = paste0(length(na_symbols)," genes in your data (including ",na_symbols_flat,") are not valid HGNC symbols. This may disrupt downstream analysis. Writing erroneous symbols to logs folder..."),
+              size = "s",
+              closeOnEsc = TRUE,
+              closeOnClickOutside = T,
+              html = FALSE,
+              type = "warning",
+              showConfirmButton = TRUE,
+              showCancelButton = FALSE,
+              confirmButtonText = "OK",
+              confirmButtonCol = "#AEDEF4",
+              timer = 0,
+              imageUrl = "",
+              animation = TRUE
+            )
+          }
+          if(length(na_symbols)==length(all_genes)){
+            Sys.sleep(1) # pause
+            shinyalert(
+              title = "Warning",
+              text = paste0("None of the genes in your data are HGNC symbols. Please convert your symbols to HGNC and reupload."),
+              size = "s", 
+              closeOnEsc = TRUE,
+              closeOnClickOutside = T,
+              html = FALSE,
+              type = "warning",
+              showConfirmButton = TRUE,
+              showCancelButton = FALSE,
+              confirmButtonText = "OK",
+              confirmButtonCol = "#AEDEF4",
+              timer = 0,
+              imageUrl = "",
+              animation = TRUE
+            )
+          }
+        }
       })
   }
 })
@@ -224,7 +235,7 @@ observe({
 observe({
   if(values$gex_uploaded & values$network_uploaded){
     output$nextstep1 <- renderText({
-      "Data upload complete. Please ensure that you have uploaded the correct data by checking the tables, then move onto Targets!"
+      "Data upload complete. Please ensure that you have uploaded the correct data by checking the tables, then move onto 2. Targets."
     })
   }else{
     output$nextstep1 <- renderText({
@@ -232,6 +243,3 @@ observe({
     })
   }
 })
-  
-
-

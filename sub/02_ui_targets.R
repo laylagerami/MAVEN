@@ -1,19 +1,21 @@
-tabPanel("Targets",
+tabPanel("2. Targets",
          sidebarPanel(width=4,
-        "Step 2. Define Targets",
+        strong("Step 2: Define Targets"),
+        tags$br(),
+        "CARNIVAL anlaysis will connect transcriptional changes to predicted or defined compound targets. CARNIVAL can also be run without targets.",
         tags$br(),
         tags$br(),
         "Upload your SMILES (Upload Smiles tab), choose PIDGIN options and run target prediction (Run Options tab), view results or upload previous results (Results tab), and/or define targets, with or without running prediction models (User-Defined Targets tab).",
         tags$br(),
         tags$br(),
-        "If you do not require any targets, please continue to the Analysis tab."
+        "If you do not require any targets, please continue to the ",strong("3. Analysis")," tab."
         ),
  
  mainPanel(
    
    tabsetPanel(
      
-     tabPanel("Upload SMILES",
+     tabPanel("(a) Upload SMILES",
               fluidRow(
                 column(12,
                        tags$br(),
@@ -33,7 +35,7 @@ tabPanel("Targets",
                                  placement = "right", 
                                  trigger = "click", 
                                  options = list(container = "body")),
-                       materialSwitch(inputId = "example_smiles", label = "Use example SMILES (DCKL-1-IN)",inline=T),
+                       materialSwitch(inputId = "example_smiles", label = "Use example SMILES (Lapatanib)",inline=T),
                        tags$br(),
                        "Compound structure will render here after successful SMILES upload...",
                        tags$br(),
@@ -65,7 +67,7 @@ tabPanel("Targets",
      
      
      
-     tabPanel("Run Options",
+     tabPanel("(b) Run Options",
               fluidRow(
                 column(12,
                        tags$head(tags$style(HTML("
@@ -138,7 +140,7 @@ tabPanel("Targets",
                 
               )
      ),
-     tabPanel("Results",
+     tabPanel("(c) Results",
               fluidRow(
                 column(12,
                        h5("PIDGIN results will appear here when finished. Select targets for Causal Reasoning - click to view UniProt link"),
@@ -157,7 +159,7 @@ tabPanel("Targets",
                 )
               )
      ),
-     tabPanel("User-Defined Targets",
+     tabPanel("(d) User-Defined Targets",
               fluidRow(
                       column(12,
                 h5("Add user-defined targets if required, line-separated (HGNC)"),
