@@ -125,7 +125,7 @@ You can also set a time limit for the CARNIVAL run, though decreasing this too m
 
 When using the IBM ILOG CPLEX solver it is possible to parallelise the calculations over a number of cores. Change this value to one appropriate for your machine. Note that for this tutorial, 20 cores were used.
 
-CARNIVAL can be run with the IBM ILOG CPLEX solver (free for academic use), the Cbc solver (free) and lpSolve (free). All solvers except for lpSolve must be pre-installed. For this tutorial, the IBM ILOG CPLEX solver was used.
+CARNIVAL can be run with the IBM ILOG CPLEX solver (free for academic use), the Cbc solver (free) and lpSolve (free). All solvers except for lpSolve must be pre-installed. We recommend that you use IBM or Cbc solvers for real-life cases, as lpSolve only works for smaller, toy examples. For this tutorial, the IBM ILOG CPLEX solver was used.
 
 <img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/11_carnival_options.png">
 
