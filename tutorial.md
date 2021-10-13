@@ -26,7 +26,7 @@ The gene expression data will be used in <b>3. Analysis</b> with DoRothEA to inf
 
 To load the example data, click on the "Load example network" and "Load example data" buttons. This will load the files <i>Example_Data/omnipath_full_carnival.sif</i> and <i>Example_Data/lapatinib/GSE129254_lapatinib_BT474.txt</i>.
 
-<img src=https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/1_data_input.png>
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/1_data_input.png">
 
 Alternatively, you can upload the two files manually. NB a check is performed to make sure all gene symbols are valid. Any invalid symbols will be written to a log file in the logs/ folder of the main MAVEN directory.
 
