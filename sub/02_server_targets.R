@@ -174,7 +174,8 @@ observeEvent(input$button, {
     time_now = gsub(":","-",time_now)
     values$pidgin_time_now = time_now
     bin_bash <- "#!/bin/bash"
-    conda_activate <- "source activate pidgin3_env" # activate conda
+    conda_activate <- "source activate pidgin4_env" # activate conda
+    conda_deactivate <- "source deactivate" # deactivate conda
     # define output name and args
     output_name <- paste0("output/","PIDGIN_",values$pidginBa,"_",values$pidginAd,"_",values$pidginCores,"_",time_now)
     values$output_name_pidgin <- paste0(output_name,"_out_predictions.txt")
@@ -186,7 +187,7 @@ observeEvent(input$button, {
     values$output_name2 = paste0(output_name2,"_similarity_details.txt")
     values$output_namemat = paste0(output_name2,"_similarity_matrix.txt")
     runline2 <- paste0("python ",values$sim2train," ",args2)
-    bash_file <- data.frame(c(bin_bash,conda_activate,runline,runline2))
+    bash_file <- data.frame(c(bin_bash,conda_activate,runline,runline2,conda_deactivate))
     write.table(bash_file,"./run_pidgin.sh",quote=F,row.names=F,col.names=F)
     write.table(bash_file,paste0("logs/pidgin_command_",time_now,".sh"),quote=F,row.names=F,col.names=F)
     system("bash -i run_pidgin.sh")
