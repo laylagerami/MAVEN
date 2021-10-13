@@ -74,7 +74,7 @@ It is also possible to upload the output from a previous run. In Example_Data/ t
 For the purpose of the tutorial, leave this blank. If you know your query compound's targets then it is possible to skip the target prediction altogether and click on this tab to directly input the target HGNC symbols.
 
 #### Step 3. Analysis
-Now we have all of the information we need to begin the analysis. The <b>3. Analysis</b> tab contains 3 sub-tabs - (A) DoRothEA (B) PROGENy (C) CARNIVAL.
+Now we have all of the information we need to begin the analysis. The <b>3. Analysis</b> tab contains 3 sub-tabs - (A) DoRothEA (B) PROGENy (C) CARNIVAL. Options for each of the steps can be modified in the side-panel.
 
 <b> (A) DoRothEA </b>  
 For DoRothEA transcription factor (TF) enrichment there are two options. The first, Confidence levels, defines which TF-gene regulons will be used to perform the enrichment (where A is most confident and E is least confident). For more information on confidence levels, refer to the [DoRothEA documentation](https://github.com/saezlab/dorothea). Keep the defaults (A, B and C).
@@ -87,16 +87,32 @@ The plot and table display the HGNC symbol for each enriched TF with its normali
 
 You can also save the results (plot image, results table and parameter log) to your machine with the Download button.
 
-<b> (B) PROGENy </b>
+<b> (B) PROGENy </b>  
 For PROGENy there is only one option; the number of top responsive genes to include in the pathway activity calculation. The default (100) should be suitable for most cases. 
 
 Press "RUN PROGENY" and the page will be shortly populated with a plot and results table.
 
-The plot and table display the pathway activity score for each of the 14 pathways contained in the PROGENy methodology, where again a negative score indicates downregulation and a positive score upregulation.
+The plot and table display the pathway activity score for each of the 14 pathways contained in the PROGENy methodology, where again a negative score indicates downregulation and a positive score upregulation. Though you may not deem these specific 14 pathways as relevant to your compound, the purpose of this step is to improve the CARNIVAL network optimisation results by pre-weighting a set of proteins in the prior knowledge network.
 
 Like with DoRothEA, you can save the results to your machine with the Download button.
 
-<b> (C) CARNIVAL </b>
+<b> (C) CARNIVAL </b>  
+For CARNIVAL there are four settings in the side-panel. The targets selected in <b>2. Targets</b> are displayed and can be unchecked or checked. Leave both EGFR and ERBB2 checked.
+
+You can also set a time limit for the CARNIVAL run, though decreasing this too much may mean that an optimal solution is not found. Leave this value as the default 3600 seconds.
+
+When using the IBM ILOG CPLEX solver it is possible to parallelise the calculations over a number of cores. Change this value to one appropriate for your machine. Note that for this tutorial, 20 cores were used.
+
+CARNIVAL can be run with the IBM ILOG CPLEX solver (free for academic use), the Cbc solver (free) and lpSolve (free). All solvers except for lpSolve must be pre-installed. For this tutorial, the IBM ILOG CPLEX solver was used.
+
+In the main panel, you can select the direction (activated/inhibited) of your chosen targets. Leave both as inhibited (default), as Lapatanib is known to inhibit EGFR and ERBB2.
+
+Finally, you must select the solver file - for the IBM ILOG CPLEX solver this is usually ibm/ILOG/CPLEX_StudioXXXX/cplex/bin/cplex where XXXX denotes the version of the software. 
+
+Click "RUN CARNIVAL", this may take a while. When CARNIVAL has finished running, the results (an .RDS file which can be loaded into the app on the next page, and a .sif file containing the network which can be opened in your favourite network visualisation software) will be saved in a folder along with a log file with all of the parameters used to generate the output. The resulting network will also be displayed on the <b> 4. Visualisation</b> page.
+
+#### Step 4. Visualisation
+
 
 
 
