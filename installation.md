@@ -19,7 +19,8 @@ Rscript install_packages.R
 
 **Install PIDGINv4**
 
-To run the target prediction you will need to install PIDGINv4. For detailed instructions, please refer to https://pidginv4.readthedocs.io/en/latest/.
+To run the target prediction you will need to install PIDGINv4. For detailed instructions, please refer to [the documentation](https://pidginv4.readthedocs.io/en/latest/install.html).
+
 First, navigate to the [GitHub repo](https://github.com/BenderGroup/PIDGINv4) and clone/download the entire repository.
 ```
 git clone https://github.com/BenderGroup/PIDGINv4.git
