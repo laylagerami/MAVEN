@@ -24,6 +24,8 @@ The gene expression data will be used in <b>3. Analysis</b> with DoRothEA to inf
 
 To load the example data, click on the "Load example network" and "Load example data" buttons. This will load the files <i>Example_Data/omnipath_full_carnival.sif</i> and <i>Example_Data/lapatinib/GSE129254_lapatinib_BT474.txt</i>.
 
+<img src=https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/1_data_input.png>
+
 Alternatively, you can upload the two files manually. NB a check is performed to make sure all gene symbols are valid. Any invalid symbols will be written to a log file in the logs/ folder of the main MAVEN directory.
 
 Now move on to <b>2. Targets</b>.
@@ -38,6 +40,8 @@ The Targets tab contains 4 sub-tabs - (A) Upload SMILES (B) Run options (C) Resu
 <b>(A) Upload SMILES</b>  
 In the (A) Upload SMILES tab, load the Lapatinib SMILES by clicking on the toggle. Check that the structure is correct by viewing the rendered compound image. You can also manually upload the SMILES file <i>Example_Data/lapatinib/lapatinib.txt</i>.
 
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/2_lapatinib_smiles.png">
+
 NB If you don't know your compound's SMILES, it is possible to generate a SMILES file by sketching the compond structure in the applet and clicking "Get SMILES".
 
 <b>(B) Run options</b>  
@@ -47,7 +51,11 @@ Predictions derived from machine learning models cannot be trusted if the query 
 
 It is possible to parallelise the target prediction over a number of cores. You can change this number to one that is appropriate for your machine.
 
-Finally, browse to select the PIDGIN installation directory (the folder containing the predict.py file). You can type in a filepath using the pen symbol on the file browser.
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/3_pidgin_settings.png">
+
+Finally, browse to select the PIDGIN installation directory (the folder containing the predict.py file). You can type in a filepath using the pencil symbol on the file browser.
+
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/4_input_filepath.png">
 
 To run the target prediction, press the RUN PIDGIN button. This may take a while depending on how many cores are being used, and you can check the progress by monitoring the console in R Studio. 
 
@@ -55,6 +63,8 @@ Once the predictions have finished running, the (C) Results page will be populat
 
 <b>(C) Results</b>  
 The (C) Results page will display the target prediction results when they are obtained. 
+
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/5_pidgin_results.png">
 
 By default, the results table is sorted by probability of activity (descending). The columns represent the following:-  
 Gene ID -> Target HGNC symbol - you can click to take you to the corresponding UniProt entry for more information on the protein's function.  
@@ -67,6 +77,8 @@ NN pChEMBL -> pChEMBL (bioactivity) value for the Nearest Neighbour for the part
 You will notice that many of the targets have a value of 1 for NN Tanimoto Sim. This means that Lapatinib itself was part of the training set - click on the ChEMBL link (ChEMBL554) to see for yourself. 
 
 For this tutorial, we are investigating the cellular response of HER2-positive BRT474 cell line to the modulation of EGFR and ERBB2 by Lapatinib. Select the corresponding rows, such that they are displayed under <b>Selected targets</b> below the table.
+
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/6_select_targets.png">
 
 It is also possible to upload the output from a previous run. In Example_Data/ there is a folder entitled target_prediction_results/. This contains the predictions (PIDGIN_out_predictions.txt) and the similarity analysis (PIDGIN_similarity_details.txt) from the Lapatinib results using the above parameters. When uploading results, please select <b>BOTH</b> files to populate the page.
 
@@ -81,9 +93,13 @@ For DoRothEA transcription factor (TF) enrichment there are two options. The fir
 
 The second option defines the number of TFs to be used as input for CARNIVAL. Keep the default (50).
 
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/7_dorothea_options.png">
+
 Click "RUN DOROTHEA" and the page will be shortly populated with a plot and results table. 
 
 The plot and table display the HGNC symbol for each enriched TF with its normalised enrichment score (NES). A positive NES indicates an upregulation of the TF, and negative indicates a downregulation. You can click on a symbol in the results table to take you to the corresponding UniProt page. Note that the top upregulated TF, FOXO3, is known to be activated by Lapatinib [ref](https://pubmed.ncbi.nlm.nih.gov/31727006/) and the top downregulated TF, ESRRA, is known to be degraded by Lapatinib [ref](https://www.nature.com/articles/ncomms12156).
+
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/8_dorothea_results.png">
 
 You can also save the results (plot image, results table and parameter log) to your machine with the Download button.
 
@@ -92,7 +108,11 @@ For PROGENy there is only one option; the number of top responsive genes to incl
 
 Press "RUN PROGENY" and the page will be shortly populated with a plot and results table.
 
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/9_progeny_options.png">
+
 The plot and table display the pathway activity score for each of the 14 pathways contained in the PROGENy methodology, where again a negative score indicates downregulation and a positive score upregulation. Though you may not deem these specific 14 pathways as relevant to your compound, the purpose of this step is to improve the CARNIVAL network optimisation results by pre-weighting a set of proteins in the prior knowledge network.
+
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/10_progeny_results.png">
 
 Like with DoRothEA, you can save the results to your machine with the Download button.
 
@@ -105,9 +125,15 @@ When using the IBM ILOG CPLEX solver it is possible to parallelise the calculati
 
 CARNIVAL can be run with the IBM ILOG CPLEX solver (free for academic use), the Cbc solver (free) and lpSolve (free). All solvers except for lpSolve must be pre-installed. For this tutorial, the IBM ILOG CPLEX solver was used.
 
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/11_carnival_options.png">
+
 In the main panel, you can select the direction (activated/inhibited) of your chosen targets. Leave both as inhibited (default), as Lapatinib is known to inhibit EGFR and ERBB2.
 
-Finally, you must select the solver file - for the IBM ILOG CPLEX solver this is usually ibm/ILOG/CPLEX_StudioXXXX/cplex/bin/cplex where XXXX denotes the version of the software. 
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/12_carnival_targets.png">
+
+Finally, you must select the solver file - for the IBM ILOG CPLEX solver this is usually ibm/ILOG/CPLEX_StudioXXXX/cplex/bin/OS_specific_folder (e.g. x86-64_linux)/cplex.
+
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/13_cplex.png">
 
 Click "RUN CARNIVAL", this may take a while. When CARNIVAL has finished running, the results (an .RDS file which can be loaded into the app on the next page, and a .sif file containing the network which can be opened in your favourite network visualisation software) will be saved in a folder along with a log file with all of the parameters used to generate the output (including DoRothEA and PROGENy settings). The resulting network will also be displayed on the <b> 4. Visualisation</b> page.
 
@@ -116,15 +142,24 @@ When CARNIVAL has finished running, the resulting network will be displayed in t
 
 Notice that the network has connected the input targets (square nodes) to the input TFs (triangular nodes) via signalling proteins from the prior knowledge network. Nodes are coloured red (down-regulated) or blue (up-regulated) depending on their pre-set (targets, TFs) or inferred (intermediate signalling proteins) regulation. Because multiple solutions are found and combined to produce the final result, some nodes may not be inferred as always up- or down-regulated in every solution. For example, hover over RET  - this node has a down-regulation of 66.6* because it was inferred as down-regulated in 2/3 of the total solution pool. 
 
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/14_ret.png">
+
 Because the network represents inferred signalling proteins modulated by Lapatinib, we can perform pathway enrichment to understand which specific pathways may be modulated by the compound (which could inform on which experimental assays to perform to validate the compound's MoA). 
 
 The side-panel allows you to choose from pre-defined [MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/) gene set collections, or use a custom .gmt file. You can choose to keep or discard the input TFs from the enrichment analysis - this is because including TFs can sometimes lead to an over-abundance of transcription-related pathways. Click "RUN ENRICHMENT ANALYSIS" with the default settings (Hallmark collection, include TFs) and a results table will shortly be displayed in the main page.
+
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/15_pathway_settings.png">
 
 The results table displays the pathway name (with a link to the corresponding gene set on MSigDB, if one of the built-in gene set collections are used) and the BH-adjusted p-value. You can download the full pathway enrichment results to your machine with the Download button.
 
 Note that HALLMARK_PI3K_AKT_MTOR_SIGNALLING is significantly enriched (adjusted p-value = 0.008), and was found to be modulated by Lapatinib in the dataset's [publication](https://pubmed.ncbi.nlm.nih.gov/31462705/). 
 
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/16_pathway_results.png">
+
 You can click on a row in the results table to output the specific network nodes in the gene set, and to light them up on the network.
+
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/gh-pages/tut_scs/17_pathway_light.png">
+
 
 #### Next Steps
 This is the end of the tutorial - if there were any issues, get in touch (lh605[at]cam[dot]ac[dot]uk). If you decide to use MAVEN to analyse your own data, please cite [COMING SOON].
