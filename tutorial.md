@@ -17,6 +17,8 @@ Example_Data/
 ```
 The gene expression data is contained in GSE12954_lapatinib_BT474.txt and was generated using the get_data.R script. The data represents the response of BT474 cells following treatment with Lapatinib in terms of the t-statistic compared to control (DMSO-treated BT474 cells). The compound SMILES are contained in lapatinib.txt.
 
+To start, set the MAVEN directory as the working directory in RStudio, call renv::restore(), and then shiny::runApp(). In a few seconds, the app should have loaded. Please ensure you carefully read the [installation](https://laylagerami.github.io/MAVEN/installation.html) instructions before completing the tutorial.
+
 #### Step 1. Data
 To begin the analysis, click on the <b>1. Data</b> button in the top toolbar. In this step, the prior knowledge network and gene expression data are uploaded. 
 
