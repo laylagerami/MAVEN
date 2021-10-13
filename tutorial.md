@@ -13,35 +13,35 @@ Example_Data/
 │  │  ├─ PIDGIN_similarity_details.txt
 │  ├─ get_data.R
 │  ├─ GSE129254_lapatinib_BT474.txt
-│  ├─ lapatanib.txt
+│  ├─ lapatinib.txt
 ```
-The gene expression data is contained in GSE12954_lapatanib_BT474.txt and was generated using the get_data.R script. The data represents the response of BT474 cells following treatment with Lapatanib in terms of the t-statistic compared to control (DMSO-treated BT474 cells). The compound SMILES are contained in lapatanib.txt.
+The gene expression data is contained in GSE12954_lapatinib_BT474.txt and was generated using the get_data.R script. The data represents the response of BT474 cells following treatment with Lapatinib in terms of the t-statistic compared to control (DMSO-treated BT474 cells). The compound SMILES are contained in lapatinib.txt.
 
 #### Step 1. Data
 To begin the analysis, click on the <b>1. Data</b> button in the top toolbar. In this step, the prior knowledge network and gene expression data are uploaded. 
 
 The gene expression data will be used in <b>3. Analysis</b> with DoRothEA to infer transcription factor activities, and with PROGENy to infer pathway activities. The transcription factors are used as input to CARNIVAL, along with the protein weights as defined by the pathway activities, and the prior knowledge network. 
 
-To load the example data, click on the "Load example network" and "Load example data" buttons. This will load the files <i>Example_Data/omnipath_full_carnival.sif</i> and <i>Example_Data/lapatanib/GSE129254_lapatinib_BT474.txt</i>.
+To load the example data, click on the "Load example network" and "Load example data" buttons. This will load the files <i>Example_Data/omnipath_full_carnival.sif</i> and <i>Example_Data/lapatinib/GSE129254_lapatinib_BT474.txt</i>.
 
 Alternatively, you can upload the two files manually. NB a check is performed to make sure all gene symbols are valid. Any invalid symbols will be written to a log file in the logs/ folder of the main MAVEN directory.
 
 Now move on to <b>2. Targets</b>.
 
 #### Step 2. Targets
-Targets are optional in MAVEN, and it is possible to perform the CARNIVAL analysis without defining targets. For this tutorial, we will be predicting the targets of Lapatanib using its chemical structure. It is also possible to skip the prediction step and define targets if they are known beforehand.
+Targets are optional in MAVEN, and it is possible to perform the CARNIVAL analysis without defining targets. For this tutorial, we will be predicting the targets of Lapatinib using its chemical structure. It is also possible to skip the prediction step and define targets if they are known beforehand.
 
 In MAVEN, target prediction is carried out with PIDGIN, which is essentially a collection of pre-trained models (one for each protein target contained in ChEMBL). Only human targets are predicted in MAVEN.
 
 The Targets tab contains 4 sub-tabs - (A) Upload SMILES (B) Run options (C) Results (D) User-defined targets.
 
 <b>(A) Upload SMILES</b>  
-In the (A) Upload SMILES tab, load the Lapatanib SMILES by clicking on the toggle. Check that the structure is correct by viewing the rendered compound image. You can also manually upload the SMILES file <i>Example_Data/lapatanib/lapatanib.txt</i>.
+In the (A) Upload SMILES tab, load the Lapatinib SMILES by clicking on the toggle. Check that the structure is correct by viewing the rendered compound image. You can also manually upload the SMILES file <i>Example_Data/lapatinib/lapatinib.txt</i>.
 
 NB If you don't know your compound's SMILES, it is possible to generate a SMILES file by sketching the compond structure in the applet and clicking "Get SMILES".
 
 <b>(B) Run options</b>  
-In the (B) Run options tab you can define several different options. For target prediction, compound bioactivities are binarised at different thresholds (0.1, 1, 10 and 100 uM). The default threshold used to generate predictions is 10 uM. Because the Lapatanib gene expression data were measured at 1 uM, change this option to 1.
+In the (B) Run options tab you can define several different options. For target prediction, compound bioactivities are binarised at different thresholds (0.1, 1, 10 and 100 uM). The default threshold used to generate predictions is 10 uM. Because the Lapatinib gene expression data were measured at 1 uM, change this option to 1.
 
 Predictions derived from machine learning models cannot be trusted if the query compound is very dissimilar to the componds used to train the models - known as being outside of the "Applicability Domain" or AD of the models. Hence, AD percentiles (0-100) are computed using the [Reliability Density Neighbourhood](https://jcheminf.biomedcentral.com/articles/10.1186/s13321-016-0182-y) methodology and used to filter the  predictions. For each model (target), if the computed AD percentile falls below the defined threshold (here 50), the prediction is not output. To obtain more prediction (but potentially less realible) decrease the AD filter and vice versa. To turn off the AD filter altogether, you can input 0 for this option. For this tutorial, keep the AD threshold to its default value.
 
@@ -64,11 +64,11 @@ Nearest Neighbour -> ChEMBL ID of the most structurally similar compound in the 
 NN Tanimoto Sim -> Tanimoto Similarity (between 0 and 1) of the Nearest Neighbour compound compared to the query compound.  
 NN pChEMBL -> pChEMBL (bioactivity) value for the Nearest Neighbour for the particular target. pChEMBL is defined as -log10(XC50).
 
-You will notice that many of the targets have a value of 1 for NN Tanimoto Sim. This means that Lapatanib itself was part of the training set - click on the ChEMBL link (ChEMBL554) to see for yourself. 
+You will notice that many of the targets have a value of 1 for NN Tanimoto Sim. This means that Lapatinib itself was part of the training set - click on the ChEMBL link (ChEMBL554) to see for yourself. 
 
-For this tutorial, we are investigating the cellular response of HER2-positive BRT474 cell line to the modulation of EGFR and ERBB2 by Lapatanib. Select the corresponding rows, such that they are displayed under <b>Selected targets</b> below the table.
+For this tutorial, we are investigating the cellular response of HER2-positive BRT474 cell line to the modulation of EGFR and ERBB2 by Lapatinib. Select the corresponding rows, such that they are displayed under <b>Selected targets</b> below the table.
 
-It is also possible to upload the output from a previous run. In Example_Data/ there is a folder entitled target_prediction_results/. This contains the predictions (PIDGIN_out_predictions.txt) and the similarity analysis (PIDGIN_similarity_details.txt) from the Lapatanib results using the above parameters. When uploading results, please select <b>BOTH</b> files to populate the page.
+It is also possible to upload the output from a previous run. In Example_Data/ there is a folder entitled target_prediction_results/. This contains the predictions (PIDGIN_out_predictions.txt) and the similarity analysis (PIDGIN_similarity_details.txt) from the Lapatinib results using the above parameters. When uploading results, please select <b>BOTH</b> files to populate the page.
 
 <b>(D) User-defined targets</b>  
 For the purpose of the tutorial, leave this blank. If you know your query compound's targets then it is possible to skip the target prediction altogether and click on this tab to directly input the target HGNC symbols.
@@ -83,7 +83,7 @@ The second option defines the number of TFs to be used as input for CARNIVAL. Ke
 
 Click "RUN DOROTHEA" and the page will be shortly populated with a plot and results table. 
 
-The plot and table display the HGNC symbol for each enriched TF with its normalised enrichment score (NES). A positive NES indicates an upregulation of the TF, and negative indicates a downregulation. You can click on a symbol in the results table to take you to the corresponding UniProt page. Note that the top upregulated TF, FOXO3, is known to be activated by Lapatanib [ref](https://pubmed.ncbi.nlm.nih.gov/31727006/) and the top downregulated TF, ESRRA, is known to be degraded by Lapatanib [ref](https://www.nature.com/articles/ncomms12156).
+The plot and table display the HGNC symbol for each enriched TF with its normalised enrichment score (NES). A positive NES indicates an upregulation of the TF, and negative indicates a downregulation. You can click on a symbol in the results table to take you to the corresponding UniProt page. Note that the top upregulated TF, FOXO3, is known to be activated by Lapatinib [ref](https://pubmed.ncbi.nlm.nih.gov/31727006/) and the top downregulated TF, ESRRA, is known to be degraded by Lapatinib [ref](https://www.nature.com/articles/ncomms12156).
 
 You can also save the results (plot image, results table and parameter log) to your machine with the Download button.
 
@@ -105,21 +105,29 @@ When using the IBM ILOG CPLEX solver it is possible to parallelise the calculati
 
 CARNIVAL can be run with the IBM ILOG CPLEX solver (free for academic use), the Cbc solver (free) and lpSolve (free). All solvers except for lpSolve must be pre-installed. For this tutorial, the IBM ILOG CPLEX solver was used.
 
-In the main panel, you can select the direction (activated/inhibited) of your chosen targets. Leave both as inhibited (default), as Lapatanib is known to inhibit EGFR and ERBB2.
+In the main panel, you can select the direction (activated/inhibited) of your chosen targets. Leave both as inhibited (default), as Lapatinib is known to inhibit EGFR and ERBB2.
 
 Finally, you must select the solver file - for the IBM ILOG CPLEX solver this is usually ibm/ILOG/CPLEX_StudioXXXX/cplex/bin/cplex where XXXX denotes the version of the software. 
 
-Click "RUN CARNIVAL", this may take a while. When CARNIVAL has finished running, the results (an .RDS file which can be loaded into the app on the next page, and a .sif file containing the network which can be opened in your favourite network visualisation software) will be saved in a folder along with a log file with all of the parameters used to generate the output. The resulting network will also be displayed on the <b> 4. Visualisation</b> page.
+Click "RUN CARNIVAL", this may take a while. When CARNIVAL has finished running, the results (an .RDS file which can be loaded into the app on the next page, and a .sif file containing the network which can be opened in your favourite network visualisation software) will be saved in a folder along with a log file with all of the parameters used to generate the output (including DoRothEA and PROGENy settings). The resulting network will also be displayed on the <b> 4. Visualisation</b> page.
 
 #### Step 4. Visualisation
+When CARNIVAL has finished running, the resulting network will be displayed in the main panel. You can also upload a previous result (the .RDS file saved in the relevant output/ folder after a CARNIVAL run). To upload the resulting Lapatinib network based on the tutorial settings, navigate to <i>Example_Data/lapatinib/CARNIVAL_results/carnival_results.RDS</i>. Note that your results may look slightly different depending on the solver, time-limit and number of cores used. The rest of this section assumes that you have loaded the results from the tutorial files.
 
+Notice that the network has connected the input targets (square nodes) to the input TFs (triangular nodes) via signalling proteins from the prior knowledge network. Nodes are coloured red (down-regulated) or blue (up-regulated) depending on their pre-set (targets, TFs) or inferred (intermediate signalling proteins) regulation. Because multiple solutions are found and combined to produce the final result, some nodes may not be inferred as always up- or down-regulated in every solution. For example, hover over RET  - this node has a down-regulation of 66.6* because it was inferred as down-regulated in 2/3 of the total solution pool. 
 
+Because the network represents inferred signalling proteins modulated by Lapatinib, we can perform pathway enrichment to understand which specific pathways may be modulated by the compound (which could inform on which experimental assays to perform to validate the compound's MoA). 
 
+The side-panel allows you to choose from pre-defined [MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/) gene set collections, or use a custom .gmt file. You can choose to keep or discard the input TFs from the enrichment analysis - this is because including TFs can sometimes lead to an over-abundance of transcription-related pathways. Click "RUN ENRICHMENT ANALYSIS" with the default settings (Hallmark collection, include TFs) and a results table will shortly be displayed in the main page.
 
+The results table displays the pathway name (with a link to the corresponding gene set on MSigDB, if one of the built-in gene set collections are used) and the BH-adjusted p-value. You can download the full pathway enrichment results to your machine with the Download button.
 
+Note that HALLMARK_PI3K_AKT_MTOR_SIGNALLING is significantly enriched (adjusted p-value = 0.008), and was found to be modulated by Lapatinib in the dataset's [publication](https://pubmed.ncbi.nlm.nih.gov/31462705/). 
 
+You can click on a row in the results table to output the specific network nodes in the gene set, and to light them up on the network.
 
-
+#### Next Steps
+This is the end of the tutorial - if there were any issues, get in touch (lh605[at]cam[dot]ac[dot]uk). If you decide to use MAVEN to analyse your own data, please cite [COMING SOON].
 
 
 
