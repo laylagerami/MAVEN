@@ -1,3 +1,0 @@
-
-Confidence Levels,A, B, C
-No. Top TFs,10

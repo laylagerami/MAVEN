@@ -1,1 +1,0 @@
-Uniprot	Pref_Name	Gene ID	Target_Class	Organism	Near_Neighbor_ChEMBLID	Near_Neighbor_Smiles	Near_Neighbor_Bioactive_organism	Near_Neighbor_conf_score	NN_activity	NN_Units	Input_Compound	Similarity

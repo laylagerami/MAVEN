@@ -1,0 +1,1 @@
+This folder will populate with logs generated from running CARNIVAL and PIDGIN, as well as capture any erroneous gene symbols upon data upload.
