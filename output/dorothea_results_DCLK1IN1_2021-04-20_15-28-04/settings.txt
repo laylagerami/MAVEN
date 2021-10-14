@@ -1,2 +1,0 @@
-Confidence Levels: A, B, C, D, E
-No. Top TFs: 68
