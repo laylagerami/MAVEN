@@ -12,5 +12,5 @@
  Target prediction provided by PIDGIN (BenderGroup/PIDGINv4) and causal reasoning provided by CARNIVAL (saezlab/CARNIVAL).
  
 WORKFLOW
-<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/main/workflow-1.jpeg"/>
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/main/www/workflow-1.jpeg"/>
  </p>
