@@ -3,7 +3,7 @@
 <p align="center">
 <img src="https://raw.githubusercontent.com/laylagerami/MAVEN/main/logo.jpg" alt="logo" width="200" align="centre">
 
- Under construction :construction:  
+ In Beta Testing :construction:  
  
  For installation instructions, FAQ and Tutorial please visit
  https://laylagerami.github.io/MAVEN/
