@@ -34,10 +34,16 @@ First, navigate to the [GitHub repo](https://github.com/BenderGroup/PIDGINv4) an
 git clone https://github.com/BenderGroup/PIDGINv4.git
 ```
 This directory will need to be selected when choosing target prediction settings in MAVEN.
-Then, install the conda directory:
+Then, install the conda environment:
 ```
 conda env create -f pidgin4_env.yml --name pidgin4_env
 ```
+
+You may encounter issues if not installing on Linux. If you get the "ResolvePackageNotFound" error, try running the following instead:
+```
+conda create -c rdkit -c conda-forge --name pidgin4_env python=2.7 rdkit scikit-learn=0.19.0 pydot graphviz standardiser statsmodel
+```
+
 You also need to download model files. Download and unzip https://tinyurl.com/pidgin4-no-ortho (md5sum: c9b226f864d5199ecd96d058081fe2eb) into the PIDGINv4 main directory (leave all subsequent files compressed).
 
 **Install ILP optimiser**
