@@ -5,6 +5,8 @@ Installation of MAVEN includes several parts:
 2. Install PIDGINv4
 3. Install ILP optimiser
 
+Please note that currently MAVEN only works on Linux and Mac OS. 
+
 **Download SHINY files and install required packages**
 
 Navigate to the [GitHub repo](https://github.com/laylagerami/MAVEN) and clone/download the entire repository. 
