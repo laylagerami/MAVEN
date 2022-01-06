@@ -11,7 +11,7 @@ Please note that currently MAVEN only works on Linux and Mac OS.
 
 Navigate to the [GitHub repo](https://github.com/laylagerami/MAVEN) and clone/download the entire repository. 
 ```
-git clone https://github.com/laylagerami/MAVEN.git
+$ git clone https://github.com/laylagerami/MAVEN.git
 ```
 
 Ensure that you don't move any files around or change any file names. The required R packages have been saved in the renv.lock file. Open RStudio and set the main MAVEN directory as the working directory. The R packages can then be loaded/installed with the following R code:
