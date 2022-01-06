@@ -7,7 +7,7 @@ Please use the navigation side-bar to access installation instructions, tutorial
 This page and the app itself are currently under construction...
 
 #### What is MAVEN?
-MAVEN, or **M**echanism of **A**ction **V**isualisation and **EN**richment, is an R Shiny app which is aimed at researchers wanting to understand the mechanism of action of a compound of interest. It requires 3 types of input from the user; a compound chemical structure, compound-induced gene expression data, and a prior knowledge network (we include the [Omnipath](https://omnipathdb.org/) [[1]](#1) network with the package).
+MAVEN, or **M**echanism of **A**ction **V**isualisation and **EN**richment, is an R Shiny app which is aimed at researchers wanting to understand the mechanism of action of a compound of interest. It requires 3 types of input from the user; a compound chemical structure, compound-induced gene expression data, and a prior knowledge network (we include the [Omnipath](https://omnipathdb.org/) [[1]](#1) network with the package). MAVEN is tested and runs on Linux and Mac OS.
 
 #### How does MAVEN work?
 
