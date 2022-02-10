@@ -10,7 +10,8 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
     libssh2-1-dev \
     unixodbc-dev \
     libcurl4-openssl-dev \
-    libssl-dev
+    libssl-dev \
+    libglpk40
 
 ## update system libraries
 RUN apt-get update && \
@@ -20,6 +21,9 @@ RUN apt-get update && \
 ## copy package installation script
 COPY install_packages.R .
 
+## copy app
+COPY MAVEN/ ./MAVEN
+
 ## run package installation script
 RUN Rscript -e install_packages.R
 
@@ -27,4 +31,4 @@ RUN Rscript -e install_packages.R
 EXPOSE 3838
 
 # run app on container start
-CMD ["R", "-e", "shiny::runGitHub('MAVEN', 'laylagerami', ref = 'docker_test', subdir = 'MAVEN', host = '0.0.0.0', port = 3838)"]
+CMD ["R", "-e", "shiny::runApp('/MAVEN', host = '0.0.0.0', port = 3838)"]
