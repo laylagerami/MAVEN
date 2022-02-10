@@ -25,7 +25,7 @@ COPY install_packages.R .
 COPY MAVEN/ ./MAVEN
 
 ## run package installation script
-RUN Rscript -e install_packages.R
+RUN Rscript install_packages.R
 
 # expose port
 EXPOSE 3838
