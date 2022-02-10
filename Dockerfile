@@ -27,4 +27,4 @@ RUN Rscript -e install_packages.R
 EXPOSE 3838
 
 # run app on container start
-CMD ["R", "-e", "shiny::runGitHub('MAVEN', 'laylagerami', ref = 'master', subdir = 'MAVEN', host = '0.0.0.0', port = 3838)"]
+CMD ["R", "-e", "shiny::runGitHub('MAVEN', 'laylagerami', ref = 'docker_test', subdir = 'MAVEN', host = '0.0.0.0', port = 3838)"]
