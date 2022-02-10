@@ -141,8 +141,7 @@ volumes <- getVolumes()()
 shinyDirChoose(input, 'pidginfolder', roots=volumes, filetypes=c('', 'py'),allowDirCreate=T)
 observe({
   values$pidginfolder = input$pidginfolder
-  skksks <<- values$pidginfolder
-  
+
   values$pidgindir = paste(unlist(unname(values$pidginfolder[1])),collapse="/")
  
   #Check they have selected the (correct) folder

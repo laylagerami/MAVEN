@@ -3,11 +3,14 @@
 <p align="center">
 <img src="https://raw.githubusercontent.com/laylagerami/MAVEN/main/logo.jpg" alt="logo" width="200" align="centre">
 
- Under construction :construction:
+ In Beta Testing :construction:  
+ 
+ For installation instructions, FAQ and Tutorial please visit
  https://laylagerami.github.io/MAVEN/
  
- R shiny app which allows for integrative bioinformatics and chemoinformatics analysis for mechansism of action analysis and visualisation.
- Target prediction provided by PIDGIN (BenderGroup/PIDGINv4) and causal reasoning provided by CARNIVAL (saezlab/CARNIVAL)
+ MAVEN is an R shiny app which allows for integrative bioinformatics and chemoinformatics analysis for mechansism of action analysis and visualisation.
+ Target prediction provided by PIDGIN (BenderGroup/PIDGINv4) and causal reasoning provided by CARNIVAL (saezlab/CARNIVAL).
  
-<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/main/workflow-1.jpeg"/>
+WORKFLOW
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/main/www/workflow-1.jpeg"/>
  </p>

@@ -306,11 +306,11 @@ observe({
   values$solver = solver
   if(solver=="cplex"){
     enable("interactive_solver")
-    output$choose_solver = renderText({"Please use the 'Select Solver' button to select the interactive IBM ILOG CPLEX solver before running CARNIVAL (usually in ibm/ILOG/CPLEX_StudioXXXX/cplex/bin/XXXX)"})
+    output$choose_solver = renderText({"Please use the 'Select Solver' button to select the interactive IBM ILOG CPLEX solver before running CARNIVAL (usually in ibm/ILOG/CPLEX_StudioVERSION/cplex/bin/OSXXX/ and select cplex)"})
   }
   if(solver=="cbc"){
     enable("interactive_solver")
-    output$choose_solver = renderText({"Please use the 'Select Solver' button to select the interactive cbc solver before running CARNIVAL (usually in usr/bin)"})
+    output$choose_solver = renderText({"Please use the 'Select Solver' button to select the interactive cbc solver before running CARNIVAL (usually in usr/bin and select cbc)"})
   }
   if(solver=="lpSolve"){
     disable("interactive_solver")
@@ -404,6 +404,7 @@ observeEvent(input$run_carnival, {
     carnival_log_file = paste0("logs/CARNIVAL_",values$carnival_time_now,".txt")
     write.table(carnival_log,carnival_log_file,sep="\t",quote=F,row.names=F,col.names=F)
     # run CARNIVAL
+    netObj<<-values$networkdf
     withProgress(message=message,value=1, {
       values$carnival_result <- runCARNIVAL(inputObj=targets_df,
                                             netObj = values$networkdf,
