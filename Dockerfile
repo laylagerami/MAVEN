@@ -11,7 +11,9 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
     unixodbc-dev \
     libcurl4-openssl-dev \
     libssl-dev \
-    libglpk40
+    libglpk40 \
+    default-jdk \
+    r-cran-rjava
 
 ## update system libraries
 RUN apt-get update && \
