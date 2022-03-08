@@ -11,7 +11,11 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
     unixodbc-dev \
     libcurl4-openssl-dev \
     libssl-dev \
-    libglpk40
+    libglpk40 \
+    default-jdk \
+    r-cran-rjava \
+    git
+ 
 
 ## update system libraries
 RUN apt-get update && \
@@ -25,7 +29,15 @@ COPY install_packages.R .
 COPY MAVEN/ ./MAVEN
 
 ## run package installation script
-RUN Rscript -e install_packages.R
+RUN Rscript install_packages.R
+
+## get cbc
+RUN git clone https://github.com/coin-or/coinbrew /cbc
+WORKDIR /cbc
+RUN ./coinbrew fetch Cbc@2.9.10 --no-prompt --no-third-party
+RUN ./coinbrew build Cbc@2.9.10 --no-prompt --no-third-party
+
+WORKDIR /root
 
 # expose port
 EXPOSE 3838
