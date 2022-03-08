@@ -30,7 +30,6 @@ COPY MAVEN/ ./MAVEN
 
 ## run package installation script
 RUN Rscript install_packages.R
-<<<<<<< HEAD
 
 ## get cbc
 RUN git clone https://github.com/coin-or/coinbrew /cbc
