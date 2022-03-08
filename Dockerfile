@@ -13,13 +13,9 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
     libssl-dev \
     libglpk40 \
     default-jdk \
-<<<<<<< HEAD
     r-cran-rjava \
     git
  
-=======
-    r-cran-rjava
->>>>>>> e7d7a60006b5369d9693cc48c7892a17caa5db37
 
 ## update system libraries
 RUN apt-get update && \
@@ -43,8 +39,6 @@ RUN ./coinbrew fetch Cbc@2.9.10 --no-prompt --no-third-party
 RUN ./coinbrew build Cbc@2.9.10 --no-prompt --no-third-party
 
 WORKDIR /root
-=======
->>>>>>> e7d7a60006b5369d9693cc48c7892a17caa5db37
 
 # expose port
 EXPOSE 3838
