@@ -1,4 +1,1 @@
-remote_theme: pmarsceill/just-the-docs
-color_scheme: dark
-ga_tracking: G-7VZ8787KMY
-ga_tracking_anonymize_ip: true
+remote_theme: poole/lanyon
