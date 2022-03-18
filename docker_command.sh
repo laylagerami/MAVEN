@@ -1,1 +1,1 @@
-docker run -d -p 3838:3838 maven
+docker run -i -d -p 3838:3838 maven
