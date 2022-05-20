@@ -1,3 +1,5 @@
+options(warn = -1)
+
 # libraries
 library(shiny)
 library(shinyjs)

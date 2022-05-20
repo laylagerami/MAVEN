@@ -136,22 +136,21 @@ observeEvent(input$ncores, {
   values$pidginCores <- input$ncores
 })
 
-# Select PIDGINv4 dir and get .py scripts
+# Select PIDGINv4 predict.py script
 volumes <- getVolumes()()
-shinyDirChoose(input, 'pidginfolder', roots=volumes, filetypes=c('', 'py'),allowDirCreate=T)
+shinyFileChoose(input, 'pidgin_script', roots=volumes,defaultPath=getwd())
 observe({
-  values$pidginfolder = input$pidginfolder
-  skksks <<- values$pidginfolder
+  values$pidginfolder = input$pidgin_script
+  py_file = paste(unlist(unname(values$pidginfolder[1])),collapse="/")
+  values$pidgindir = dirname(py_file)
   
-  values$pidgindir = paste(unlist(unname(values$pidginfolder[1])),collapse="/")
- 
-  #Check they have selected the (correct) folder
+  #Check they have selected the correct file
   if(paste(unlist(unname(values$pidginfolder[1])),collapse="/")==0){
     disable("button")
-    output$pidgin_folder_warning = renderText({"Please select the PIDGINv4 directory, which should contain the model .py files"})
+    output$pidgin_folder_warning = renderText({"Please ensure you select the PIDGINv4 predict.py script using the navigation button. You can install the script from https://github.com/bendergroup/pidginv4 (see full installation instructions)"})
   }else{
-    if(!file.exists(paste0(values$pidgindir,"/predict.py"))){
-      output$pidgin_folder_warning = renderText({"The directory you selected does not contain the 'predict.py' script required to run PIDGIN. Please ensure you have selected the root directory, and have not modified any file or folder names."})
+    if(!file.exists(paste0(values$pidgindir,"/sim_to_train.py"))){
+      output$pidgin_folder_warning = renderText({"The directory you selected does not contain the 'sim_to_train' script required to run similarity analysis. You can install the script from https://github.com/bendergroup/pidginv4 (see full installation instructions)"})
       disable("button")
     }else{
       enable("button")
@@ -257,16 +256,8 @@ output$targettable <- renderDT({
   preds_and_sims$Near_Neighbor_ChEMBLID <- paste0("<a href='",preds_and_sims$chembl_url,"' target='_blank'>",preds_and_sims$Near_Neighbor_ChEMBLID,"</a>")
   preds_and_sims$chembl_url = NULL
   colnames(preds_and_sims) = c("Gene ID","Name","Predicted Probability","Nearest Neighbour","NN Tanimoto Sim","NN pChEMBL")
-  datatable(preds_and_sims,options=list("pageLength"=10),escape=1)
-
-  ### OLD- ADD CHEMBL LINK TO DF
-  #url_df = readRDS("sub/hgnc_chembl_url.rds")
-  #preds_and_url = merge(preds_converted,url_df,by.x="Gene_ID",by.y="hgncs")
-  #preds_and_url$Gene_ID <- paste0("<a href='",preds_and_url$url,"' target='_blank'>",preds_and_url$Gene_ID,"</a>")
-  #preds_and_url$Gene_ID = ifelse(preds_and_url$chembl_ids=="NaN",preds_converted$Gene_ID,preds_and_url$Gene_ID)
-  #preds_and_url = preds_and_url[order(-preds_and_url[,4]),]
-  ##preds_and_url = preds_and_url[,c(1,2,3,4)]
-  #datatable(preds_and_url,options = list("pageLength" = 5),escape=1)
+  datatable(preds_and_sims ,options=list("pageLength"=10),escape=1)  %>% 
+    formatRound(columns = c(3,5,6), digits = 3)
 })
 
 # List selected targets for user-friendliness

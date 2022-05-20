@@ -306,11 +306,11 @@ observe({
   values$solver = solver
   if(solver=="cplex"){
     enable("interactive_solver")
-    output$choose_solver = renderText({"Please use the 'Select Solver' button to select the interactive IBM ILOG CPLEX solver before running CARNIVAL (usually in ibm/ILOG/CPLEX_StudioXXXX/cplex/bin/XXXX)"})
+    output$choose_solver = renderText({"Please use the 'Select Solver' button to select the IBM ILOG CPLEX solver binary file before running CARNIVAL (usually ibm_installation_dir/ILOG/CPLEX_StudioXXXX/cplex/bin/OS/cplex)"})
   }
   if(solver=="cbc"){
     enable("interactive_solver")
-    output$choose_solver = renderText({"Please use the 'Select Solver' button to select the interactive cbc solver before running CARNIVAL (usually in usr/bin)"})
+    output$choose_solver = renderText({"Please use the 'Select Solver' button to select the cbc solver binary file before running CARNIVAL (uusally cplex_installation_dir/coinbrew/build/Cbc/2.*/src/cbc)"})
   }
   if(solver=="lpSolve"){
     disable("interactive_solver")
@@ -320,7 +320,7 @@ observe({
 
 # Get solver path
 volumes <- getVolumes()()
-shinyFileChoose(input, 'interactive_solver', roots=volumes)
+shinyFileChoose(input, 'interactive_solver', roots=volumes,defaultPath=getwd())
 observe({
   values$solver_file = input$interactive_solver
 })

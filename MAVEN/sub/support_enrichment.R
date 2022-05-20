@@ -1,3 +1,9 @@
+library(piano)
+library(parallel)
+library(GSEABase)
+library(snowfall)
+library(readr)
+
 #Copyright (C) 2020  Aurelien Dugourd, Alberto Valdeolivas, Rosa Hernansaiz-Ballesteros
 #Contact : aurelien.dugourd@bioquant.uni-heidelberg.de
 
@@ -30,7 +36,7 @@ gmt_to_csv <- function(gmtfile, fast = T)
     genesets = unlist(genesets)
 
     gene_to_term =plyr::ldply(genesets,function(geneset){
-      temp <- geneIds(geneset)
+      temp <- GSEABase::geneIds(geneset)
       temp2 <- setName(geneset)
       temp3 <- as.data.frame(cbind(temp,rep(temp2,length(temp))))
 
@@ -47,7 +53,7 @@ gmt_to_csv <- function(gmtfile, fast = T)
     names(gene_to_term) <- c("gene","term")
     for (geneset in genesets)
     {
-      temp <- geneIds(geneset)
+      temp <- GSEABase::geneIds(geneset)
       temp2 <- setName(geneset)
       temp3 <- as.data.frame(cbind(temp,rep(temp2,length(temp))))
       names(temp3) <- c("gene","term")

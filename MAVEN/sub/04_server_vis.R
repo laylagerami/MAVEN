@@ -109,7 +109,9 @@ enrich_results <- eventReactive(input$run_enrich, {
     sig_pathways_df$pathway <- paste0("<a href='",sig_pathways_df$url,"' target='_blank'>",sig_pathways_df$pathway,"</a>")
   }
   sig_pathways_df$url = NULL
-  datatable(sig_pathways_df[order(sig_pathways_df[,2]),],selection="single",escape=1)
+  colnames(sig_pathways_df) = c("Pathway ID","Adjusted p-Value")
+  datatable(sig_pathways_df[order(sig_pathways_df[,2]),],selection="single",escape=1)  %>% 
+    formatSignif(columns = c(2), digits = 3)
 })
 
 output$download_pathway <- downloadHandler(
