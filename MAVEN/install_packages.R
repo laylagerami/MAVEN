@@ -1,7 +1,7 @@
 # Script to install packages required
 
 # CRAN
-list.of.packages <- c("rJava","shiny","shinyjs","igraph","DT","miniUI","rhandsontable","shinyBS","shinythemes","shinyFiles","dplyr","tibble","ggplot2","visNetwork","shinyalert","shinyWidgets","lpSolve","sortable","colorspace","devtools","BiocManager")
+list.of.packages <- c("parallel","snowfall","readr","rJava","shiny","shinyjs","igraph","DT","miniUI","rhandsontable","shinyBS","shinythemes","shinyFiles","dplyr","tibble","ggplot2","visNetwork","shinyalert","shinyWidgets","lpSolve","sortable","colorspace","devtools","BiocManager")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
