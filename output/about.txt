@@ -1,1 +1,0 @@
-This directory will populate with PIDGIN and CARNIVAL outputs
