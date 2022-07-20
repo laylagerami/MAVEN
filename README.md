@@ -3,7 +3,6 @@
 <p align="center">
 <img src="https://raw.githubusercontent.com/laylagerami/MAVEN/main/logo.jpg" alt="logo" width="200" align="centre">
 
- In Beta Testing :construction:  
  
  For installation instructions, FAQ and Tutorial please visit
  https://laylagerami.github.io/MAVEN/
@@ -12,5 +11,5 @@
  Target prediction provided by PIDGIN (BenderGroup/PIDGINv4) and causal reasoning provided by CARNIVAL (saezlab/CARNIVAL).
  
 WORKFLOW
-<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/main/www/workflow-1.jpeg"/>
+<img src="https://raw.githubusercontent.com/laylagerami/MAVEN/main/MAVEN/www/workflow-1.jpeg"/>
  </p>
