@@ -1,0 +1,32 @@
+-CARNIVAL-
+up_targets = 
+down_targets = EGFR, ERBB2
+solver = cplex
+timelimit = 3600
+solverPath = /scratch/lh605/ibm/ILOG/CPLEX_Studio201/cplex/bin/x86-64_linux/cplex
+threads = 20
+mipGAP = 0.05
+poolrelGAP = 0.0001
+limitPop = 500
+poolCap = 100
+poolIntensity = 4
+poolReplace = 2
+alphaWeight = 1
+betaWeight = 0.2
+
+-DOROTHEA-
+top = 50
+confidence levels = A
+confidence levels = B
+confidence levels = C
+minsize = 5
+eset.filter = F
+nes = T
+
+-PROGENY-
+scale = T
+perm = 10000
+z_scores = F
+top = 100
+get_nulldist = F
+
