@@ -82,6 +82,7 @@ values <- reactiveValues(
 set.seed(42)
 
 # functions
+#'Rosa Hernansaiz Ballesteros, 2020
 generateTFList <- function (df = df, top = 50, access_idx = 1) 
 {
   if (top == "all") {
@@ -109,6 +110,7 @@ generateTFList <- function (df = df, top = 50, access_idx = 1)
   return(returnList)
 }
 
+#'Rosa Hernansaiz Ballesteros, 2020
 assignPROGENyScores <- function (progeny = progeny, progenyMembers = progenyMembers, 
                                  id = "gene", access_idx = 1) 
 {
@@ -153,6 +155,7 @@ assignPROGENyScores <- function (progeny = progeny, progenyMembers = progenyMemb
   return(pxList)
 }
 
+#'Rosa Hernansaiz Ballesteros, 2020
 carnival_visNet <- function(evis, nvis, mapIDs=NULL){
   
   # color node scale red to blue
