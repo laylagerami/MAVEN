@@ -88,7 +88,7 @@ observeEvent(input$run_dorothea, {
     output$tf_plot = renderPlot({
       ggplot(tf_activities_topn,aes(x = reorder(GeneID, NES), y = NES)) + 
         geom_bar(aes(fill = NES), stat = "identity") +
-        scale_fill_gradient2(low = "darkblue", high = "indianred", 
+        scale_fill_gradient2(high = "darkblue", low = "indianred", 
                              mid = "whitesmoke", midpoint = 0) + 
         theme_minimal() +
         theme(axis.title = element_text(face = "bold", size = 12),
@@ -184,7 +184,7 @@ observeEvent(input$run_progeny, {
        colnames(PA_render)[2] <- "score"
        ggplot(PA_render,aes(x = reorder(Pathway, score), y = score)) + 
          geom_bar(aes(fill = score), stat = "identity") +
-         scale_fill_gradient2(low = "darkblue", high = "indianred", 
+         scale_fill_gradient2(high = "darkblue", low = "indianred", 
                               mid = "whitesmoke", midpoint = 0) + 
          theme_minimal() +
          theme(axis.title = element_text(face = "bold", size = 12),
