@@ -7,7 +7,7 @@ if(length(new.packages)) install.packages(new.packages)
 
 
 # CARNIVAL
-devtools::install_github("saezlab/CARNIVAL@v1.3")
+BiocManager::install("CARNIVAL")
 
 # Bioconductor
 if (require(devtools)) install.packages("BiocManager")#if not already installed
