@@ -39,34 +39,34 @@ enrich_results <- eventReactive(input$run_enrich, {
     gmt_set = "msigdb/h.all.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="Biocarta"){
-    gmt_set = "msigdb/c2.cp.biocarta.v2022.1.symbols.gmt"
+    gmt_set = "msigdb/c2.cp.biocarta.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="KEGG"){
-    gmt_set = "msigdb/c2.cp.kegg.v2022.1.symbols.gmt"
+    gmt_set = "msigdb/c2.cp.kegg.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="PID"){
-    gmt_set="msigdb/c2.cp.pid.v2022.1.symbols.gmt"
+    gmt_set="msigdb/c2.cp.pid.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="Reactome"){
-    gmt_set="msigdb/c2.cp.reactome.v2022.1.symbols.gmt"
+    gmt_set="msigdb/c2.cp.reactome.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="Wikipathways"){
-    gmt_set="msigdb/c2.cp.wikipathways.v2022.1.symbols.gmt"
+    gmt_set="msigdb/c2.cp.wikipathways.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="All"){
-    gmt_set="msigdb/c2.all.v2022.1.symbols.gmt"
+    gmt_set="msigdb/c2.all.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="CP"){
-    gmt_set="msigdb/c2.cp.v2022.1.symbols .gmt"
+    gmt_set="msigdb/c2.cp.v2022.1.Hs.symbols .gmt"
   }
   if(input$msigdb=="GO_BP"){
-    gmt_set="msigdb/c5.go.bp.v2022.1.symbols.gmt"
+    gmt_set="msigdb/c5.go.bp.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="GO_MF"){
-    gmt_set="msigdb/c5.go.mf.v2022.1.symbols.gmt"
+    gmt_set="msigdb/c5.go.mf.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="GO_CC"){
-    gmt_set="msigdb/c5.go.cc.v2022.1.symbols.gmt"
+    gmt_set="msigdb/c5.go.cc.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="Custom"){
     file <- input$custom_msigdb
