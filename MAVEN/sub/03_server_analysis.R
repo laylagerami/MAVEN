@@ -310,7 +310,7 @@ observe({
   }
   if(solver=="cbc"){
     enable("interactive_solver")
-    output$choose_solver = renderText({"Please use the 'Select Solver' button to select the cbc solver binary file before running CARNIVAL (uusally cplex_installation_dir/coinbrew/build/Cbc/2.*/src/cbc)"})
+    output$choose_solver = renderText({"Please use the 'Select Solver' button to select the cbc solver binary file before running CARNIVAL (uusally cplex_installation_dir/coinbrew/build/Cbc/2.*/src/cbc)."})
   }
   if(solver=="lpSolve"){
     disable("interactive_solver")
@@ -329,26 +329,29 @@ observe({
 started_carnival <- reactiveVal(Sys.time()[NA])
 observeEvent(input$run_carnival, {
   started_carnival(Sys.time())
+  values$carnival_result = NULL
   time_now = gsub(" ","_",Sys.time())
   time_now = gsub(":","-",time_now)
   values$carnival_time_now = time_now
   
   # Create target df
+  # Now converted to named vector for CARNIVAL v2.6 
   if(length(values$carnival_targets)>0 | !is.null(values$carnival_targets)){
     # activated
-    act_targets_df = data.frame(t(values$act_targets))
-    colnames(act_targets_df) = act_targets_df[1,]
-    act_targets_df[1,] = rep(1,ncol(act_targets_df)) 
+    act_targets_df = data.frame(values$act_targets)
+    act_targets_df$Sign = rep(1,nrow(act_targets_df))
+    colnames(act_targets_df) = c("Pert","Sign")
     # inhibited
-    inh_targets_df = data.frame(t(values$inh_targets))
-    colnames(inh_targets_df) = inh_targets_df[1,]
-    inh_targets_df[1,] = rep(-1,ncol(inh_targets_df))
+    inh_targets_df = data.frame(values$inh_targets)
+    inh_targets_df$Sign= rep(-1,nrow(inh_targets_df))
+    colnames(inh_targets_df) = c("Pert","Sign")
     # put together
-    targets_df <- cbind(act_targets_df,inh_targets_df)
-    values$carnival_targets_df = targets_df
+    targets_df <- rbind(act_targets_df,inh_targets_df)
+    # turn into named vector
+    values$carnival_targets_df = tibble::deframe(targets_df)
     message <- "Running CARNIVAL with input targets...you can check progress in your R console"
   }else{
-    targets_df <- NULL
+    values$carnival_targets_df <- NULL
     message <- "Running CARNIVAL with no input targets (Inverse CARNIVAL)...you can check progress in your R console"
   }
   
@@ -376,11 +379,8 @@ observeEvent(input$run_carnival, {
     # Create log file
     # CARNIVAL LOG
     if(!is.null(values$carnival_targets_df)){
-      carnival_targets_df = values$carnival_targets_df
-      up_targets_cols = (carnival_targets_df[1,] == 1)
-      down_targets_cols = (carnival_targets_df[1,] == -1)
-      up_targets = paste0("up_targets = ",paste(colnames(carnival_targets_df)[up_targets_cols],collapse=", "))
-      down_targets = paste0("down_targets = ",paste(colnames(carnival_targets_df)[down_targets_cols],collapse=", "))
+      up_targets = paste0("up_targets = ",paste(values$act_targets,collapse=", "))
+      down_targets = paste0("down_targets = ",paste(values$inh_targets,collapse=", "))
     }else{
       up_targets = paste0("up_targets = None")
       down_targets = paste0("down_targets = None")
@@ -405,7 +405,7 @@ observeEvent(input$run_carnival, {
     write.table(carnival_log,carnival_log_file,sep="\t",quote=F,row.names=F,col.names=F)
     # run CARNIVAL
     withProgress(message=message,value=1, {
-      values$carnival_result <- runCARNIVAL(inputObj=targets_df,
+      values$carnival_result <- runCARNIVAL(inputObj=values$carnival_targets_df,
                                             netObj = values$networkdf,
                                             measObj = values$tf_activities_carnival[[1]],
                                             weightObj = values$progenylist[[1]],
@@ -423,15 +423,12 @@ observeEvent(input$run_carnival, {
 # Check if CARNIVAL has finished and save results/params
 observe({
  req(started_carnival())
- if(!is.null(values$carnival_result)&is.null(input$upload_carnival)){ # and include condition that it hasnt yet been uploaded
+ if(!is.null(values$carnival_result)){ # and include condition that it hasnt yet been uploaded
    # Create log file
    # CARNIVAL LOG
    if(!is.null(values$carnival_targets_df)){
-     carnival_targets_df = values$carnival_targets_df
-     up_targets_cols = (carnival_targets_df[1,] == 1)
-     down_targets_cols = (carnival_targets_df[1,] == -1)
-     up_targets = paste0("up_targets = ",paste(colnames(carnival_targets_df)[up_targets_cols],collapse=", "))
-     down_targets = paste0("down_targets = ",paste(colnames(carnival_targets_df)[down_targets_cols],collapse=", "))
+     up_targets = paste0("up_targets = ",paste(values$act_targets,collapse=", "))
+     down_targets = paste0("down_targets = ",paste(values$inh_targets,collapse=", "))
    }else{
      up_targets = paste0("up_targets = None")
      down_targets = paste0("down_targets = None")
@@ -480,6 +477,14 @@ observe({
    saveRDS(values$carnival_result,paste0(carnival_path,"/carnival_result.RDS"))
    sif = data.frame(values$carnival_result$weightedSIF)
    write.table(sif,paste0(carnival_path,"/network.sif"),sep="\t",quote=F,row.names = F)
+   
+   # remove .lp file
+   lp = dir(path=".",pattern="*.lp")
+   file.remove(lp)
+   
+   # remove result file
+   resultf = dir(path=".",pattern="result_t*")
+   file.remove(resultf)
    
    output$carnivaldone <- renderText({
      paste0("CARNIVAL run completed! Output and log file saved to ",carnival_path,", please move onto Visualisation tab.")

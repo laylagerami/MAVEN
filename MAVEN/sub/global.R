@@ -198,10 +198,14 @@ carnival_visNet <- function(evis, nvis, mapIDs=NULL){
     nvis$label = nvis$Node
   }
   
+  # below line added for CARNIVAL update ("NodeType" now comes after "Node")
+  nvis = nvis[c("Node","UpAct","DownAct","AvgAct","NodeType",'label')]
+  
   colnames(nvis) = c("id", "UpAct", "DownAct", "color", "group", "label")
   
-  nvis$group = replace(nvis$group, nvis$group=='T', 'TFs')
-  nvis$group = replace(nvis$group, nvis$group=='S', 'Perturbed')
+  # below lines changed for CARNIVAL update (T -> M and S -> P)
+  nvis$group = replace(nvis$group, nvis$group=='M', 'TFs')
+  nvis$group = replace(nvis$group, nvis$group=='P', 'Perturbed')
   nvis$group = replace(nvis$group, nvis$group=='', 'Protein')
   
   nvis$color = sapply(nvis$color, function(x,b,rb){rb[as.integer(as.character(b$bin[b$value==as.integer(x)]))]}, binned, rb_scale)

@@ -71,12 +71,16 @@ gmt_to_csv <- function(gmtfile, fast = T)
 #'
 #'@param CarnivalResults CARNIVAL output.
 #'@return List with 2 objects the success and the background genes.
+#'NB edited Sept2022 to work with CARNIVAL v2.6.2
 extractCARNIVALnodes <- function(CarnivalResults){
   
   CarnivalNetwork <- 
     as.data.frame(CarnivalResults$weightedSIF, stringsAsFactors = FALSE)
   
   colnames(CarnivalNetwork) <- c("source", "sign", "target", "Weight")
+  
+  ## added below line for v.2.6.2
+  CarnivalNetwork = subset(CarnivalNetwork,Weight!=0)
   
   ## We define the set of nodes interesting for our condition
   sucesses <- unique(c(gsub("_.*","",CarnivalNetwork$source), 

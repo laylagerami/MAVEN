@@ -6,7 +6,6 @@ observe({
   }
 })
 
-
 # Network rendering function
 generateNetwork = function(carnival_result){
   #transoform to data.frame
