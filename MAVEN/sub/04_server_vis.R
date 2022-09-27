@@ -56,7 +56,7 @@ enrich_results <- eventReactive(input$run_enrich, {
     gmt_set="msigdb/c2.all.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="CP"){
-    gmt_set="msigdb/c2.cp.v2022.1.Hs.symbols .gmt"
+    gmt_set="msigdb/c2.cp.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="GO_BP"){
     gmt_set="msigdb/c5.go.bp.v2022.1.Hs.symbols.gmt"
