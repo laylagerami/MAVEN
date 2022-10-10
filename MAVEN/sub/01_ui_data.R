@@ -2,7 +2,7 @@ tabPanel("1. Data",
          # SIDEBAR
          sidebarPanel(
                  # Enables warnings
-                 useShinyalert(),
+                 # useShinyalert(),
                  
                  # Text
                  strong("Step 1: Data Input"),

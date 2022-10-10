@@ -6,7 +6,6 @@ observe({
   }
 })
 
-
 # Network rendering function
 generateNetwork = function(carnival_result){
   #transoform to data.frame
@@ -36,37 +35,37 @@ enrich_results <- eventReactive(input$run_enrich, {
   values$enrichment_result=T
   carnival_result = values$carnival_result
   if(input$msigdb=="Hallmark"){
-    gmt_set = "msigdb/h.all.v7.2.symbols.gmt"
+    gmt_set = "msigdb/h.all.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="Biocarta"){
-    gmt_set = "msigdb/c2.cp.biocarta.v7.2.symbols.gmt"
+    gmt_set = "msigdb/c2.cp.biocarta.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="KEGG"){
-    gmt_set = "msigdb/c2.cp.kegg.v7.2.symbols.gmt"
+    gmt_set = "msigdb/c2.cp.kegg.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="PID"){
-    gmt_set="msigdb/c2.cp.pid.v7.2.symbols.gmt"
+    gmt_set="msigdb/c2.cp.pid.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="Reactome"){
-    gmt_set="msigdb/c2.cp.reactome.v7.2.symbols.gmt"
+    gmt_set="msigdb/c2.cp.reactome.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="Wikipathways"){
-    gmt_set="msigdb/c2.cp.wikipathways.v7.2.symbols.gmt"
+    gmt_set="msigdb/c2.cp.wikipathways.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="All"){
-    gmt_set="msigdb/c2.all.v7.2.symbols.gmt"
+    gmt_set="msigdb/c2.all.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="CP"){
-    gmt_set="msigdb/c2.cp.v7.2.symbols .gmt"
+    gmt_set="msigdb/c2.cp.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="GO_BP"){
-    gmt_set="msigdb/c5.go.bp.v7.2.symbols.gmt"
+    gmt_set="msigdb/c5.go.bp.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="GO_MF"){
-    gmt_set="msigdb/c5.go.mf.v7.2.symbols.gmt"
+    gmt_set="msigdb/c5.go.mf.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="GO_CC"){
-    gmt_set="msigdb/c5.go.cc.v7.2.symbols.gmt"
+    gmt_set="msigdb/c5.go.cc.v2022.1.Hs.symbols.gmt"
   }
   if(input$msigdb=="Custom"){
     file <- input$custom_msigdb

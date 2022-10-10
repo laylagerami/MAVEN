@@ -1,0 +1,4 @@
+This folder is required to install a Docker or Singularity container with IBM ILOG CPLEX optimisation studio. 
+Please note that the cplex.installer.properties file does NOT constitute a license; it is read during the container building process if a valid installation package (cplex_studioXXXX.linux_x86_64.bin) is present in the folder where XXXX is the version number (e.g.,2210).
+You can obtain the installation package from https://www.ibm.com/products/ilog-cplex-optimization-studio after obtaining a license (free for academic use). Download the installer for Linux x86-64 and place it in this folder as-is, i.e., without changing the filename or executing the file.
+To install CPLEX on your own machine please download the appropriate installer for your system and follow the installation instructions.
