@@ -164,7 +164,7 @@ You can click on a row in the results table to output the specific network nodes
 
 
 #### Next Steps
-This is the end of the tutorial - if there were any issues, get in touch (lh605[at]cam[dot]ac[dot]uk). If you decide to use MAVEN to analyse your own data, please cite [COMING SOON].
+This is the end of the tutorial - if there were any issues, get in touch (lh605[at]cam[dot]ac[dot]uk). If you decide to use MAVEN to analyse your own data, please cite [our preprint](https://www.biorxiv.org/content/10.1101/2022.07.20.500792v2).
 
 
 
