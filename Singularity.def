@@ -3,7 +3,8 @@ From: rocker/shiny-verse:latest
 Stage: spython-base
 
 %files
-MAVEN MAVEN/
+install_packages.R .
+MAVEN /MAVEN
 
 %post
 # Base image https://hub.docker.com/u/rocker/
@@ -46,7 +47,7 @@ echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
 && /usr/sbin/update-locale LANG=en_US.UTF-8
 
 ## run package installation script
-Rscript MAVEN/install_packages.R
+Rscript install_packages.R
 
 ## get cbc
 git clone https://github.com/coin-or/coinbrew cbc/ && \
@@ -92,6 +93,6 @@ export CONDA_DIR=/opt/conda
 export PATH=$CONDA_DIR/bin:$PATH
 
 %runscript
-exec /bin/bash R -e shiny::runApp('/MAVEN', host = '0.0.0.0', port = 3838) "$@"
+exec R -e "shiny::runApp('/MAVEN', host = '0.0.0.0', port = 3838)" "$@"
 %startscript
-exec /bin/bash R -e shiny::runApp('/MAVEN', host = '0.0.0.0', port = 3838) "$@"
+exec R -e "shiny::runApp('/MAVEN', host = '0.0.0.0', port = 3838)" "$@"
