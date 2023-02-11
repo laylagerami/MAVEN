@@ -2,8 +2,11 @@
 
 ### About MAVEN
  
-MAVEN is an R shiny app which enables integrated bioinformatics and chemoinformatics analysis for mechansism of action analysis and visualisation.  
-The tool is a collaborative work between the Bender Group at University of Cambridge and Saez Lab at Heidelberg University (Rosa Hernansaiz Ballesteros https://github.com/rosherbal). MAVEN can be installed locally or as a Docker or Singularity container.
+MAVEN is an R shiny app which enables integrated bioinformatics and chemoinformatics analysis for mechansism of action analysis and visualisation. 
+
+The tool is a collaborative work between the Bender Group at University of Cambridge and Saez Lab at Heidelberg University (Rosa Hernansaiz Ballesteros https://github.com/rosherbal). 
+
+Documentation can be found at https://laylagerami.github.io/MAVEN/. MAVEN can be [installed locally or as a Docker or Singularity container](https://laylagerami.github.io/MAVEN/installation.html). For a [step-by-step tutorial for exploring the mechanism of action of a query compound](https://laylagerami.github.io/MAVEN/tutorial.html), you can view our example using the HER2 inhibitor lapatanib. 
 
 <img src="https://raw.githubusercontent.com/laylagerami/MAVEN/main/MAVEN/www/workflow-1.jpeg"/>
 
@@ -17,9 +20,6 @@ Implemented approaches and data:
  - MSigDb gene sets for network pathway enrichment (http://www.gsea-msigdb.org/gsea/msigdb/index.jsp)
  - Helper scripts are provided by saezlab/transcriptutorial
  
-
-For installation instructions, FAQ and Tutorial please visit
- https://laylagerami.github.io/MAVEN/
  
 Check out https://github.com/saezlab/shinyfunki for a multi-omic functional integration and analysis platform which implements many of the same tools.
 
