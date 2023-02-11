@@ -13,7 +13,7 @@ Currently we do not support batch upload. However, we hope to add the option to 
 Most of the time, this should not be an issue. Issues arise when there are mismatches for gene identifiers between gene expression data/network data/targets. The biggest problem is usually due to Excel automatically changing some gene symbols to dates, which may disrupt the downstream analysis. We recommend that you check the log files to ensure that this is not the case.
 
 #### I have a large transcriptional signature (many measured genes) and/or a large network. Can I use MAVEN?
-Due to the transcription factor activity inference step with DoRothEA, large transcriptional signatures are reduced to a smaller set (typically 50-100) of transcription factors meaning that this will not increase the time it takes for the network optimisation to complete. When using a large prior knowledge network with many nodes or edges it is recommended to use the IBM ILOG CPLEX solver, as this solver is able to handle large network inputs better than Cbc.
+Due to the transcription factor activity inference step with DoRothEA, large transcriptional signatures are reduced to a smaller set (typically 50-100) of transcription factors, meaning that inputting a greater number of measured genes will not increase the time it takes for the network optimisation to complete. When using a large prior knowledge network with many nodes or edges it is recommended to use the IBM ILOG CPLEX solver, as this solver is able to handle large network inputs better than Cbc.
 
 ### Targets
 
