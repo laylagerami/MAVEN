@@ -31,7 +31,7 @@ tabPanel("Index",
            "The final step is the visualisation of the network, as well as pathway enrichment which can be carried out with the MSigDB gene sets included with the package OR any custom .gmt file. To aid in the interpretation of the pathway enrichment results, involved proteins can be highlighted on the netowrk.",
            tags$br(),
            tags$br(),
-           "MAVEN is aimed at researchers looking to generate hypotheses for compound mechanism of action, with little to no coding experience required. If you have not used the tools mentioned here before, we recommend you check out our tutorial.",
+           "MAVEN is aimed at researchers looking to generate hypotheses for compound mechanism of action, with little to no coding experience required. If you have not used the tools mentioned here before, we recommend you check out our tutorial (https://laylagerami.github.io/MAVEN/tutorial.html).",
            tags$br(),
            tags$br()
            
