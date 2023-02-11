@@ -3,7 +3,7 @@
 ### About MAVEN
  
 MAVEN is an R shiny app which enables integrated bioinformatics and chemoinformatics analysis for mechansism of action analysis and visualisation.  
-The tool is a collaborative work between the Bender Group at University of Cambridge and Saez Lab at Heidelberg University (Rosa Hernansaiz Ballesteros https://github.com/rosherbal). 
+The tool is a collaborative work between the Bender Group at University of Cambridge and Saez Lab at Heidelberg University (Rosa Hernansaiz Ballesteros https://github.com/rosherbal). MAVEN can be installed locally or as a Docker or Singularity container.
 
 <img src="https://raw.githubusercontent.com/laylagerami/MAVEN/main/MAVEN/www/workflow-1.jpeg"/>
 
